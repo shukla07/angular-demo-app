@@ -1,0 +1,181 @@
+<div class="tenant-config-dialog">
+  <form #form="ngForm" novalidate>
+    <nb-card size="medium">
+      <nb-card-header>
+        <div class="row align-items-center">
+          <div class="col-8" ngClass.xs="p-0">{{ dialogName }}</div>
+        </div>
+      </nb-card-header>
+      <nb-card-body>
+        <div fxLayout="column" fxLayoutAlign="start">
+          <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+            <div
+              class="split-mobile"
+              fxLayout="row wrap"
+              fxLayoutAlign="start"
+              fxFlex="1 0 auto"
+            >
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-md="pr-2"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-label>Auth Client Id</mat-label>
+                <input
+                  matInput
+                  name="authClientId"
+                  maxlength="255"
+                  [(ngModel)]="tenantCalendarConfig.authClientId"
+                  pattern="^[a-zA-Z0-9-_]+$"
+                  required
+                />
+                <mat-error
+                  *ngIf="form.form.controls['authClientId']?.errors?.required"
+                  >Auth Client Id is required</mat-error
+                >
+                <mat-error
+                  *ngIf="form.form.controls['authClientId']?.errors?.pattern"
+                  >Invalid Auth Client Id</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-md="pr-2"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-label>Auth Client Secret</mat-label>
+                <input
+                  matInput
+                  name="authClientSecret"
+                  maxlength="255"
+                  [(ngModel)]="tenantCalendarConfig.authClientSecret"
+                  pattern="^[a-zA-Z0-9-_.~]+$"
+                  required
+                />
+                <mat-error
+                  *ngIf="
+                    form.form.controls['authClientSecret']?.errors?.required
+                  "
+                  >Auth Client Secret is required</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    form.form.controls['authClientSecret']?.errors?.pattern
+                  "
+                  >Invalid Auth Client Secret</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-md="pr-2"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-label>Thumbprint</mat-label>
+                <input
+                  matInput
+                  name="thumbprint"
+                  maxlength="255"
+                  [(ngModel)]="tenantCalendarConfig.thumbprint"
+                  pattern="^[a-zA-Z0-9]*$"
+                  required
+                />
+                <mat-error
+                  *ngIf="form.form.controls['thumbprint']?.errors?.required"
+                  >Thumbprint is required</mat-error
+                >
+                <mat-error
+                  *ngIf="form.form.controls['thumbprint']?.errors?.pattern"
+                  >Invalid Thumbprint</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="50"
+                fxFlex.gt-xs="50"
+                ngClass.gt-md="pr-2"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-label>Auth Url</mat-label>
+                <input
+                  matInput
+                  name="authUrl"
+                  [(ngModel)]="tenantCalendarConfig.authUrl"
+                  pattern="^[a-zA-Z0-9:./]*$"
+                  required
+                />
+                <mat-error
+                  *ngIf="form.form.controls['authUrl']?.errors?.required"
+                  >Auth Url is required</mat-error
+                >
+                <mat-error
+                  *ngIf="form.form.controls['authUrl']?.errors?.pattern"
+                  >Invalid Auth Url</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="50"
+                fxFlex.gt-xs="50"
+                ngClass.gt-md="pr-2"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-label>Token Url</mat-label>
+                <input
+                  matInput
+                  name="tokenUrl"
+                  maxlength="255"
+                  [(ngModel)]="tenantCalendarConfig.tokenUrl"
+                  pattern="^[a-zA-Z0-9:./-]*$"
+                  required
+                />
+                <mat-error
+                  *ngIf="form.form.controls['tokenUrl']?.errors?.required"
+                  >Token Url is required</mat-error
+                >
+                <mat-error
+                  *ngIf="form.form.controls['tokenUrl']?.errors?.pattern"
+                  >Invalid Token Url</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+      <nb-card-footer>
+        <div class="d-flex" ngClass.lt-sm="row">
+          <button
+            nbButton
+            status="danger"
+            class="mr-2"
+            [disabled]="form.pristine || loading"
+            [nbSpinner]="loading"
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+            (click)="addEditCalendarTenantConfig(form)"
+          >
+            Save Config
+          </button>
+          <button
+            nbButton
+            status="basic"
+            (click)="onClickCancel(form)"
+            [disabled]="form.pristine"
+          >
+            Cancel
+          </button>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </form>
+</div>

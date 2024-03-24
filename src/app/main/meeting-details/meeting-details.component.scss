@@ -1,0 +1,88 @@
+@import '../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+.meeting-title {
+  padding: 20px;
+  border-radius: 4px;
+  background-color: nb-theme(background-basic-color-2);
+  display: inline-block;
+  border: 1px solid nb-theme(border-basic-color-3);
+
+  p {
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  .seprator-line {
+    border-bottom: 1px solid nb-theme(border-basic-color-3);
+    margin: 0 -20px 15px;
+  }
+}
+.close-pointer {
+  cursor: pointer;
+}
+.details-avatar {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  border-radius: 100%;
+  margin-right: 15px;
+  position: relative;
+  vertical-align: middle;
+
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 100%;
+  }
+
+  nb-icon {
+    position: absolute;
+    bottom: 0;
+    right: -8px;
+    background-color: nb-theme(background-basic-color-1);
+    font-size: 17px;
+    border-radius: 100%;
+
+    &.accepted {
+      color: nb-theme(color-success-500);
+    }
+    &.declined {
+      color: nb-theme(color-danger-500);
+    }
+  }
+}
+.scroll-size {
+  max-height: 32.875rem;
+  max-width: 96%;
+  margin: 0 auto;
+  overflow: auto;
+
+  @media screen and (min-width: 769px) and (max-width: 991px) {
+    max-height: 18.875rem;
+  }
+  @include media-breakpoint-down(sm) {
+    max-height: 18.875rem;
+  }
+  @media screen and (max-width: 479px) {
+    max-height: 28.875rem;
+  }
+}
+
+.team-name {
+  background-color: nb-theme(default-theme-color);
+  color: nb-theme(color-basic-100);
+  font-size: nb-theme(text-button-tiny-font-size);
+  border-radius: 20px;
+  width: auto;
+  padding: 1px 10px;
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 0px;
+  font-weight: bold;
+}
+.m-details-popup {
+  @include media-breakpoint-up(sm) {
+    min-width: 350px;
+  }
+}

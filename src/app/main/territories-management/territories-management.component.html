@@ -1,0 +1,225 @@
+<nb-layout class="territories-manage-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-md-6 col-sm-4">{{ title }}</div>
+          <div class="col-md-6 col-sm-8 text-right buttons-mrgn-top">
+            <div>
+              <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantTerritory">
+                <button *ngIf="rowChecked" nbButton #activateBtn status="danger" shape="round" outline size="small"
+                  class="ml-0" ngClass.xs="mb-2" nbTooltip="Deactivate Territory" nbTooltipPlacement="bottom" (click)="
+                    open(territoryStatusDialog, activateBtn.status, 'multiple')
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+                <button *ngIf="rowChecked" nbButton #deactivateBtn status="success" shape="round" outline size="small"
+                  class="ml-2" ngClass.xs="mb-2" nbTooltip="Activate Territory" nbTooltipPlacement="bottom" (click)="
+                    open(
+                      territoryStatusDialog,
+                      deactivateBtn.status,
+                      'multiple'
+                    )
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+              </ng-container>
+              <button nbButton status="danger" size="small" class="ml-2 mr-1" ngClass.xs="mb-2"
+                (click)="onClickAddTerritory()" *ngxPermissionsOnly="permissionKey.CreateTenantTerritory">
+                Add Territory
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div class="split-mobile" fxLayout="row wrap" fxLayoutAlign="start" fxFlex="1 0 auto">
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="40" ngClass.gt-xs="pr-1">
+                      <ng-select name="name" [items]="territories" [multiple]="false" [closeOnSelect]="true"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="name" bindValue="id"
+                        placeholder="Territories Name" appearance="outline" notFoundText="No territory found"
+                        [(ngModel)]="filter.territoryId">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="27" fxFlex.gt-xs="32" ngClass.gt-xs="pl-1"
+                      *ngxPermissionsOnly="permissionKey.AddDivisionTags">
+                      <mat-radio-group name="status" class="radio-group" [(ngModel)]="filter.status">
+                        <mat-radio-button class="radio-button" value="1">Active</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="0">Inactive</mat-radio-button>
+                      </mat-radio-group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group align-items-center" ngClass.xs="d-block" ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex">
+                <button nbButton status="danger" size="small" type="submit" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading" [nbSpinner]="loading" nbSpinnerStatus="primary"
+                  nbSpinnerSize="small" (click)="
+                    getTerritoriesList(currentPage, itemsPerPage, form);
+                    isSearched = true
+                  ">
+                  Search
+                </button>
+                <button nbButton status="basic" type="button" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine" (click)="onClearFilter(form); getTerritoriesList(1, 10)">
+                  Clear
+                </button>
+                <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantTerritory">
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="territoryList && !territoryList.length" (click)="checkColumnSelection('CSV')">
+                    Export as CSV
+                  </button>
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="territoryList && !territoryList.length" (click)="checkColumnSelection('PDF')">
+                    Export as PDF
+                  </button>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="territoryList">
+            <vmsl-grid [vmsl-data]="
+                territoryList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalTerritoriesCount
+                      }
+              " [vmsl-column-definition]="columnDefinition" [vmsl-norows-template]="noRowsTemplate"
+              vmsl-row-selection="multiple" [dropdownCount]="dropdownCount.asObservable()"
+              (itemsPerPage)="getPaginationValue($event)" (rowChecked)="onRowChecked($event)"
+              (onGridReady)="onGridReady($event)" [itemsPerPageList]="itemsPerPageList">
+            </vmsl-grid>
+
+            <div ngClass.gt-xs="d-flex justify-content-between align-items-center">
+              <pagination-controls (pageChange)="paginationEvent($event)" responsive="true" previousLabel=""
+                nextLabel="" maxSize="5"></pagination-controls>
+              <div *ngIf="territoryList.length > 0" class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                totalTerritoriesCount > currentPage * itemsPerPage
+                ? currentPage * itemsPerPage
+                : totalTerritoriesCount
+                }}
+                of {{ totalTerritoriesCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+
+        <ng-template #territoryStatusDialog let-data let-ref="statusDialogRef">
+          <nb-card class="territories-popup-width" *ngIf="!statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="statusDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="
+                      data.type === 'single'
+                        ? activOrDeactivTerritory()
+                        : bulkTerritoryStatusChange(data.status)
+                    " class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="territories-popup-width" *ngIf="statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Updated Status</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      statusDialogRef.close(); statusTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+
+        <ng-template #deleteTerritoryDialog let-data let-ref="deleteDialogRef">
+          <nb-card class="territories-popup-width" *ngIf="!deleteTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="deleteDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="deleteTerritory()"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="territories-popup-width" *ngIf="deleteTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Territory Deleted</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      deleteDialogRef.close(); deleteTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

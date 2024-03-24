@@ -1,0 +1,13 @@
+/* CSS */
+.mail-info {
+  cursor: pointer;
+}
+.restore-icon {
+  color: #c5cee0;
+  vertical-align: middle;
+  cursor: pointer;
+
+  &:hover {
+    color: #8f9bb3;
+  }
+}

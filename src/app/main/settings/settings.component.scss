@@ -1,0 +1,36 @@
+@import '../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+.nb-theme-default {
+  .settings-template {
+    .mrgn-top {
+      margin-top: -16px;
+    }
+
+    nb-list {
+      nb-list-item {
+        padding: nb-theme(custom-list-item-padding);
+        border-bottom: 1px solid nb-theme(color-basic-400);
+
+        a {
+          text-decoration: none;
+          color: nb-theme(text-basic-color);
+          display: block;
+          width: 100%;
+          position: relative;
+          padding-left: 1.5rem;
+        }
+        &.active {
+          background-color: nb-theme(background-basic-color-2);
+        }
+        nb-icon {
+          color: nb-theme(text-basic-color);
+          background-color: transparent;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+  }
+}

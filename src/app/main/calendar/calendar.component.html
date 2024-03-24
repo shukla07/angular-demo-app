@@ -1,0 +1,216 @@
+<div class="calender-ui">
+  <div class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-md-8">
+            {{
+            selectedUser && selectedUser.id
+            ? contactName + ' & ' + selectedUser.name + "'s"
+            : contactName
+            }}
+            Calendar
+          </div>
+
+          <div class="col-md-4">
+            <div [ngClass]="
+                userId !== loggedInUser.id || selectedUser?.id
+                  ? 'without-busy-icon'
+                  : ''
+              " class="header-search pos-right with-icon">
+              <nb-icon pack="eva" icon="search-outline" class="ng-select-search-icon" *ngIf="!selectedUser"></nb-icon>
+              <ng-select class="pb-0 mb-2 ng-select-open-right" name="userFilter" [items]="allContacts"
+                [multiple]="false" [closeOnSelect]="true" [searchable]="true" [searchFn]="userSearchFuntion"
+                placeholder="Find User" notFoundText="No users found" (change)="onUserChange()" appearance="outline"
+                [(ngModel)]="selectedUser">
+                <ng-template ng-label-tmp let-item="item">
+                  {{ item.name }}
+                  <small class="font-italic">({{ item.jobTitle || item.role }})</small>
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                  {{ item.name }}
+                  <small class="font-italic">({{ item.jobTitle || item.role }})</small>
+                </ng-template>
+              </ng-select>
+            </div>
+            <div class="create-event-btn">
+              <button nbButton status="basic" shape="round" class="mr-2" (click)="createNewEvent()">
+                <nb-icon pack="eva" icon="plus" nbTooltip="Create Event" nbTooltipPosition="bottom"></nb-icon>
+              </button>
+              <button *ngIf="userId === loggedInUser.id && !selectedUser?.id" nbButton status="basic" shape="round"
+                class="icon-calender-cross" (click)="createBusyEvent()">
+                <nb-icon icon="calendar-times" pack="font-awesome-regular" nbTooltip="Create Busy Event"
+                  nbTooltipPosition="bottom"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calender-theme mx-4 mt-1 ">
+      <ngx-scheduler #calendarObj style="height: calc(100vh - 200px)" [(selectedDate)]="selectedDate"
+        [(selectedView)]="selectedView" [events]="scheduleData" [currentUserId]="loggedInUser.id"
+        [readOnly]="calendarConfig.readOnly" [timezone]="timezone" [showMeetingType]="calendarConfig.showMeetingType"
+        [attendeeDisplayText]="calendarConfig.attendeeDisplayText" [participants]="participants"
+        [RsvpResponses]="calendarConfig.rsvpResponses" [onBeforeEventCreation]="onBeforeEventCreation"
+        [onBeforeEventUpdation]="onBeforeEventUpdation" [onBeforeEventDeletion]="onBeforeEventDeletion"
+        [eventTemplate]="calendarConfig.eventTemplate" [firstDayOfWeek]="calendarConfig.firstDayOfWeek"
+        [onEditEvent]="onEditEvent" [quickInfoTemplatesContent]="quickInfoTemplatesContent"
+        [customFieldsTemplate]="customFieldsTemplate" [onEventClick]="onEventClick"
+        [schedulerHeight]="calendarConfig.schedulerHeight" [showCellQuickInfo]="showCellQuickInfo"
+        [workDays]="calendarConfig.workDays" [workHours]="calendarConfig.workHours" [onFindTimeOpen]="onFindTimeOpen"
+        [cancelButtonText]="calendarConfig.cancelButtonText" [deleteButtonText]="calendarConfig.deleteButtonText"
+        [showProposeTime]="true" [enableToolTip]="true" [existingEventData]="existingEventData"
+        [onNavigation]="onNavigation" [onSchedulerCreated]="onSchedulerCreated" [minStartDate]="minStartDate"
+        [getStartTimeOfNewEVent]="getStartTimeOfNewEVent" [getDefaultAttendeesOnCreate]="getDefaultAttendeesOnCreate"
+        [formValidation]="formValidation" [showHeaderBarOnFindTime]="calendarConfig.showHeaderBarOnFindTime"
+        [showConfirmationPopUpOnEdit]="
+          calendarConfig.showConfirmationPopUpOnEdit
+        " [findTimeEventTemplate]="calendarConfig.eventTemplate" [eventStartTimeConfig]="eventStartTimeConfig"
+        [defaultMeetingType]="calendarConfig.defaultMeetingType"></ngx-scheduler>
+      <div class="btn-calender-legends" [ngClass]="isMobileScreen ? 'legends-mobile' : ''">
+        <div class="position-relative">
+          <button nbButton size="small" status="danger" class="legends-btn" (click)="isLegends()">
+            <span id = 'legendsBtnRef'>Legends <nb-icon icon="chevron-down-outline"></nb-icon></span>
+          </button>
+          <div class="legends-popup-wrapper" *ngIf="isLegendsDropdown">
+            <ul>
+              <li>
+                <span class="color-box mod-time-event"></span>
+                <span class="color-text">MoD Time Event</span>
+              </li>
+              <li>
+                <span class="color-box mod-event-complete"></span>
+                <span class="color-text">MoD Event Completed</span>
+              </li>
+              <li>
+                <span class="color-box vmsl-team-confirmed"></span>
+                <span class="color-text">VMSL/Teams Confirmed Event</span>
+              </li>
+              <li>
+                <span class="color-box vmsl-team-tentative"></span>
+                <span class="color-text">VMSL/Teams Tentative</span>
+              </li>
+              <li>
+                <span class="color-box vmsl-team-completed"></span>
+                <span class="color-text">VMSL/Teams Completed</span>
+              </li>
+              <li>
+                <span class="color-box future-outlook-event"></span>
+                <span class="color-text">Future Outlook Event (non-MoD)</span>
+              </li>
+              <li>
+                <span class="color-box past-outlook-event"></span>
+                <span class="color-text">Past Outlook Event (non-MoD)</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<ng-template #quickInfoTemplatesContent let-data="data">
+  <div class="quick-template-content" *ngIf="currentEvent">
+    <p>
+      <span class="quick-color-box" [ngClass]="quickColorBox">&nbsp;</span>
+      {{ currentEvent.title }}
+      <nb-icon pack="custom-icons" icon="stethoscope" *ngIf="currentEvent['isMaCall']" title="Medical onDemand">
+      </nb-icon>
+    </p>
+    <nb-card class="quick-nb-card p-0">
+      <nb-card-body class="p-0">
+        <p class="d-flex align-items-center">
+          <nb-icon *ngIf="currentEvent.meetingType === 'audio'" icon="phone-outline" pack="eva" class="mr-2"></nb-icon>
+          <nb-icon *ngIf="currentEvent.meetingType === 'video'" icon="video-outline" pack="eva" class="mr-2"></nb-icon>
+          <span class="quick-time">
+            {{ currentEvent.startTime | date: 'MMM d, y, h:mm' }} -
+            {{ currentEvent.endTime | date: 'MMM d, y, h:mm a' }}
+          </span>
+        </p>
+
+        <p class="d-flex flex-row text-capitalize"
+          *ngIf="currentEvent.attendees?.length && !currentEvent['isBusyEvent']">
+          <span class="mr-2">
+            <nb-icon icon="people-outline" pack="eva"></nb-icon>
+          </span>
+          <span class="quick-people">
+            <span class="mr-2 d-block mb-3">{{ currentEvent.attendees.length }} Attendees</span>
+            <div class="ml-2 mb-2" *ngFor="
+                let attendee of currentEvent.attendees | slice: 0:2;
+                last as isLast
+              ">
+              <span class="details-avatar">
+                <img src="assets/avatar.png" alt="" />
+              </span>
+              <span>
+                {{ attendee.name }}
+              </span>
+              <small *ngIf="attendee.isOrganizer" class="font-italic">(Organizer)
+              </small>
+              <nb-icon pack="custom-icons" icon="stethoscope" *ngIf="attendee.extMetadata?.isMaAttendee"
+                title="Medical onDemand"></nb-icon>
+            </div>
+          </span>
+        </p>
+
+        <div class="mb-3 d-flex align-items-center" *ngIf="currentEvent['teamName']">
+          <div class="mr-2"><strong>Team</strong></div>
+          <div class="team-name">{{ currentEvent['teamName'] }}</div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+
+    <div class="mb-2">
+      <a id="meetingLink" *ngIf="showStartOrJoinMeetingButton" nbButton (click)="joinMeeting(currentEvent.id)"
+        status="danger" size="small" class="mr-2">
+        {{ meetingLinkText }}
+      </a>
+      <a *ngIf="!currentEvent['isMsEvent'] && !currentEvent['isBusyEvent']" nbButton size="small"
+        (click)="showMoreDetails(currentEvent)">More Details</a>
+    </div>
+    <div *ngIf="
+        isCurrentUserAnAttendee &&
+        currentEvent['timeline'] != 'past' &&
+        !currentEvent.isCancelled &&
+        !currentEvent['isMsEvent'] &&
+        !currentEvent['isBusyEvent']
+      ">
+      <ng-select class="pb-0 mb-2" [items]="quickNotes" [multiple]="false" [closeOnSelect]="true" bindValue="id"
+        bindLabel="message" placeholder="Send Quick Message" appearance="outline" [searchable]="false"
+        floatLabel="never" (change)="onNoteChange($event)">
+      </ng-select>
+    </div>
+
+    <div *ngIf="showRsvp" class="footer-e-quick-buttons row no-gutters justify-content-center">
+      <div class="col-6">
+        <button nbButton ghost fullWidth size="medium" status="danger" (click)="onRsvpChange('declined')">
+          Decline
+        </button>
+      </div>
+      <div class="col-6 position-relative">
+        <button nbButton ghost fullWidth size="medium" status="success" (click)="onRsvpChange('accepted')">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #customFieldsTemplate let-data="data">
+  <div *ngIf="
+      !isFocusedEventInCreateMode && canChangeOwner && !data.isEditFormReadonly
+    ">
+    <ng-select ng-required id="ownerChange" class="pb-0 mb-2 ng-select-open-right" [items]="possibleOwners"
+      [multiple]="false" [closeOnSelect]="true" [searchable]="true" bindValue="id" bindLabel="name"
+      placeholder="Change Owner" notFoundText="No users found" appearance="standard" floatLabel="never"
+      (change)="onOwnerChange($event)" [(ngModel)]="data.userId">
+      <ng-template ng-option-tmp let-item="item">
+        {{ item.name }}
+        <small class="font-italic">({{ item.jobTitle || item.role }})</small>
+      </ng-template>
+    </ng-select>
+    <input type="text" name="owner" class="e-field hidden" [(ngModel)]="data.userId" />
+  </div>
+</ng-template>

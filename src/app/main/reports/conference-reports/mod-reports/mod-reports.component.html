@@ -1,0 +1,472 @@
+<nb-layout class="conference-reports">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col">MoD Report</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="17"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <mat-label>Start Date-Time</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="fromDate"
+                        [(ngModel)]="filter.fromDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.tillDate ? true : false"
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['fromDate']?.errors?.required"
+                        >Please specify a Start Date-Time!
+                      </mat-error>
+                      <mat-error
+                        *ngIf="form.form.controls['fromDate']?.errors?.invalid"
+                        >Gap between Start & End date-time cannot be more than
+                        one month.
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="17"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>End Date-Time</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="toDate"
+                        [(ngModel)]="filter.tillDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.fromDate ? true : false"
+                      />
+                      <mat-error>Please specify a End Date-Time</mat-error>
+                    </mat-form-field>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <ng-select
+                        name="jobTitle"
+                        [items]="jobTitles"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="jobTitle"
+                        bindValue="jobTitle"
+                        appearance="outline"
+                        placeholder="Roles"
+                        notFoundText="No roles found"
+                        appearance="outline"
+                        [(ngModel)]="filter.jobTitles"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <ng-select
+                        #allRequestor
+                        name="requestors"
+                        [items]="requestors"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="id"
+                        appearance="outline"
+                        placeholder="Requestors"
+                        notFoundText="No requestors found"
+                        appearance="outline"
+                        [(ngModel)]="filter.requestorId"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="territories"
+                        [items]="territories"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="name"
+                        appearance="outline"
+                        placeholder="Territories"
+                        notFoundText="No territories found"
+                        appearance="outline"
+                        [(ngModel)]="filter.territories"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="therapeuticAreas"
+                        [items]="therapeuticAreas"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="name"
+                        placeholder="Therapeutic Areas"
+                        appearance="outline"
+                        notFoundText="No therapeutic areas found"
+                        [(ngModel)]="filter.therapeuticAreas"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="diseaseAreas"
+                        [items]="diseaseAreas"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="name"
+                        placeholder="Product/Disease Areas"
+                        appearance="outline"
+                        notFoundText="No disease areas found"
+                        [(ngModel)]="filter.diseaseAreas"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="teamsNameList"
+                        [items]="teamsNameList"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="teamName"
+                        bindValue="teamName"
+                        placeholder="Teams Name"
+                        appearance="outline"
+                        notFoundText="No teams found"
+                        [(ngModel)]="filter.teams"
+                      >
+                      </ng-select>
+                    </div>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>HCP/Payor Name</mat-label>
+                      <input
+                        matInput
+                        name="hcpOrPayor"
+                        [(ngModel)]="filter.hcpOrPayor"
+                      />
+                    </mat-form-field>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="33.33"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="callStatus"
+                        [items]="callStatus"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        placeholder="Call Status"
+                        bindLabel="label"
+                        bindValue="value"
+                        appearance="outline"
+                        notFoundText="No call statuses found"
+                        [(ngModel)]="filter.callStatus"
+                      >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="btn-group align-items-center justify-content-between"
+                ngClass.xs="d-block"
+                ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex"
+              >
+                <div>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    type="submit"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine || loading"
+                    [nbSpinner]="loading"
+                    nbSpinnerStatus="danger"
+                    nbSpinnerSize="small"
+                    (click)="
+                      getReports(currentPage, itemsPerPage, form, allRequestor);
+                      isSearched = true
+                    "
+                  >
+                    Search
+                  </button>
+                  <button
+                    nbButton
+                    status="basic"
+                    type="button"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine"
+                    (click)="onClearFilter(form)"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="modReportList && !modReportList.length"
+                    (click)="onExportModReportsAsCSV(allRequestor)"
+                  >
+                    Export as CSV
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="modReportList">
+            <vmsl-grid
+              [vmsl-data]="
+                modReportList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalReportsCount
+                      }
+              "
+              [vmsl-column-definition]="columnDefinition"
+              [vmsl-norows-template]="noRowsTemplate"
+              [dropdownCount]="dropdownCount.asObservable()"
+              (onGridReady)="onGridReady($event)"
+              (itemsPerPage)="getPaginationValue($event)"
+              [itemsPerPageList]="itemsPerPageList"
+            >
+            </vmsl-grid>
+            <div
+              ngClass.gt-xs="d-flex justify-content-between align-items-center"
+            >
+              <pagination-controls
+                (pageChange)="paginationEvent($event)"
+                responsive="true"
+                previousLabel=""
+                nextLabel=""
+                maxSize="5"
+              ></pagination-controls>
+              <div
+                *ngIf="modReportList.length > 0"
+                class="page-count"
+                ngClass.xs="pb-3"
+              >
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                  totalReportsCount > currentPage * itemsPerPage
+                    ? currentPage * itemsPerPage
+                    : totalReportsCount
+                }}
+                of {{ totalReportsCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <ng-template #viewModReportDialog let-data let-ref="dialogRef">
+      <div class="view-report-dialog">
+        <nb-card size="medium">
+          <nb-card-header class="p-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>MoD Report Information</div>
+              <div>
+                <button
+                  nbButton
+                  status="basic"
+                  size="small"
+                  (click)="ref.close()"
+                >
+                  <nb-icon pack="eva" icon="arrow-ios-back-outline"></nb-icon>
+                  Close
+                </button>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body class="p-0" *ngIf="data">
+            <div class="profile-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <strong class="mr-1">MoD Event ID: </strong>
+                  {{ data.eventId }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Linked MoD Event ID: </strong>
+                  {{ data.linkedEventId }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Preset Questions: </strong>
+                  <nb-list class="mt-3">
+                    <nb-list-item
+                      *ngFor="let presetQuestion of data.presetQuestions"
+                    >
+                      {{ presetQuestion }}
+                    </nb-list-item>
+                  </nb-list>
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Role: </strong>
+                  <nb-list class="mt-3">
+                    <nb-list-item *ngFor="let jobTitle of data.jobTitle">
+                      {{ jobTitle }}
+                    </nb-list-item>
+                  </nb-list>
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Sent Request to Team Name: </strong>
+                  {{ data.requestedTeams }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Request Timeout Date-Time: </strong>
+                  {{ data.requestTimeout }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">End Date-Time: </strong>
+                  {{ data.endDateTime }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Duration of Call : </strong>
+                  {{ data.duration }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Territories: </strong>
+                  <nb-list class="mt-3">
+                    <nb-list-item *ngFor="let territory of data.territory">
+                      {{ territory }}
+                    </nb-list-item>
+                  </nb-list>
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Therapeutic Areas: </strong>
+                  <nb-list class="mt-3">
+                    <nb-list-item
+                      *ngFor="let therapeuticArea of data.therapeuticArea"
+                    >
+                      {{ therapeuticArea }}
+                    </nb-list-item>
+                  </nb-list>
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Product/Disease Areas: </strong>
+                  <nb-list class="mt-3">
+                    <nb-list-item *ngFor="let diseaseArea of data.diseaseArea">
+                      {{ diseaseArea }}
+                    </nb-list-item>
+                  </nb-list>
+                </div>
+                <div class="col-sm-12">
+                  <strong class="mr-1">Request Sent Sponsor Users: </strong>
+                  <div class="table table-responsive">
+                    <table class="table table-hover">
+                      <caption></caption>
+                      <tr class="text-center">
+                        <th scope="col">User Name</th>
+                        <th scope="col">Team Name</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Action Date-Time</th>
+                      </tr>
+                      <tr *ngFor="let requestedUser of data.modUsersReports">
+                        <td>
+                          {{ requestedUser.userName }}
+                        </td>
+                        <td>
+                          {{ requestedUser.teamName }}
+                        </td>
+                        <td>
+                          {{ requestedUser.requestAction }}
+                        </td>
+                        <td>
+                          {{ requestedUser.actionDateTime }}
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </ng-template>
+  </nb-layout-column>
+</nb-layout>

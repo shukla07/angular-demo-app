@@ -1,0 +1,105 @@
+<button
+  nbButton
+  status="basic"
+  size="tiny"
+  shape="round"
+  nbTooltip="Edit"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="edit()"
+  *ngxPermissionsOnly="permissionKey.UpdateTenantTeam"
+>
+  <nb-icon icon="edit" pack="eva"> </nb-icon>
+</button>
+
+<button
+  nbButton
+  status="danger"
+  size="tiny"
+  shape="round"
+  nbTooltip="View"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="view()"
+  *ngxPermissionsOnly="permissionKey.ViewTenantTeams"
+>
+  <nb-icon icon="eye-outline" pack="eva"> </nb-icon>
+</button>
+
+<button
+  nbButton
+  status="default"
+  size="tiny"
+  shape="round"
+  nbTooltip="Delete"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns dark-btn"
+  (click)="delete()"
+  *ngxPermissionsOnly="permissionKey.DeleteTenantTeam"
+>
+  <nb-icon icon="trash-2-outline" pack="eva"> </nb-icon>
+</button>
+
+<ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantTeam">
+  <button
+    nbButton
+    *ngIf="status === 0"
+    status="danger"
+    size="tiny"
+    shape="round"
+    outline
+    class="mr-2 grid-btns"
+    nbTooltip="Status (Inactive)"
+    nbTooltipPlacement="bottom"
+    pack="eva"
+    (click)="onClickStatus(status)"
+  >
+    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+  </button>
+  <button
+    nbButton
+    *ngIf="status === 1"
+    status="success"
+    size="tiny"
+    shape="round"
+    outline
+    class="mr-2 grid-btns"
+    nbTooltip="Status (Active)"
+    nbTooltipPlacement="bottom"
+    pack="eva"
+    (click)="onClickStatus(status)"
+  >
+    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+  </button>
+</ng-container>
+
+<ng-container *ngxPermissionsExcept="permissionKey.UpdateTenantTeam">
+  <button
+    nbButton
+    *ngIf="status === 0"
+    status="danger"
+    size="tiny"
+    shape="round"
+    outline
+    class="mr-2 grid-btns view"
+    nbTooltip="Status (Inactive)"
+    nbTooltipPlacement="bottom"
+    pack="eva"
+  >
+    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+  </button>
+  <button
+    nbButton
+    *ngIf="status === 1"
+    status="success"
+    size="tiny"
+    shape="round"
+    outline
+    class="mr-2 grid-btns view"
+    nbTooltip="Status (Active)"
+    nbTooltipPlacement="bottom"
+    pack="eva"
+  >
+    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+  </button>
+</ng-container>

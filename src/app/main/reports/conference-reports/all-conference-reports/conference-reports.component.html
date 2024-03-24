@@ -1,0 +1,463 @@
+<nb-layout class="conference-reports">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col">All Meeting Report</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1"
+                    >
+                      <mat-label>Timestamp From</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="fromDate"
+                        [(ngModel)]="filter.fromDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.tillDate ? true : false"
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['fromDate']?.errors?.required"
+                        >Please specify a From Date!
+                      </mat-error>
+                      <mat-error
+                        *ngIf="form.form.controls['fromDate']?.errors?.invalid"
+                        >Gap between From & To date cannot be more than one
+                        month.
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>Timestamp To</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="toDate"
+                        [(ngModel)]="filter.tillDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.fromDate ? true : false"
+                      />
+                      <mat-error>Please specify a To Date</mat-error>
+                    </mat-form-field>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <ng-select
+                        name="createdBy"
+                        [items]="users"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="fullName"
+                        appearance="outline"
+                        placeholder="Created By"
+                        notFoundText="No users found"
+                        appearance="outline"
+                        [(ngModel)]="filter.createdBy"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <ng-select
+                        name="organizer"
+                        [items]="users"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="id"
+                        appearance="outline"
+                        placeholder="Organizer"
+                        notFoundText="No users found"
+                        appearance="outline"
+                        [(ngModel)]="filter.organizer"
+                      >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1"
+                    >
+                      <ng-select
+                        name="username"
+                        [items]="users"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="id"
+                        appearance="outline"
+                        placeholder="Invitee/Attendee"
+                        notFoundText="No users found"
+                        appearance="outline"
+                        [(ngModel)]="filter.userId"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                    <ng-select
+                      name="Name"
+                      [items]="teamsNameList"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="teamName"
+                      bindValue="teamId"
+                      placeholder="Team Name"
+                      appearance="outline"
+                      notFoundText="No team found"
+                      [(ngModel)]="filter.teamId"
+                      (change)="onSelectChange()"
+                    >
+                      </ng-select>
+                    </div>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="role"
+                        [items]="roles"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="name"
+                        placeholder="Platform Role"
+                        appearance="outline"
+                        notFoundText="No platform roles found"
+                        [(ngModel)]="filter.userRole"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1"
+                    >
+                      <ng-select
+                        name="callType"
+                        [items]="callTypes"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="value"
+                        placeholder="Call Types"
+                        appearance="outline"
+                        notFoundText="No call types found"
+                        [(ngModel)]="filter.callType"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="eventType"
+                        [items]="eventTypes"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="value"
+                        placeholder="Event Types"
+                        appearance="outline"
+                        notFoundText="No event types found"
+                        [(ngModel)]="filter.eventType"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="25"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1"
+                    >
+                      <ng-select
+                        name="status"
+                        [items]="reportStatus"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="name"
+                        bindValue="value"
+                        placeholder="Status"
+                        appearance="outline"
+                        notFoundText="No report status found"
+                        [(ngModel)]="filter.status"
+                      >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="btn-group align-items-center justify-content-between"
+                ngClass.xs="d-block"
+                ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex"
+              >
+                <div>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    type="submit"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine || loading"
+                    [nbSpinner]="loading"
+                    nbSpinnerStatus="danger"
+                    nbSpinnerSize="small"
+                    (click)="
+                      getReports(currentPage, itemsPerPage, form);
+                      isSearched = true
+                    "
+                  >
+                    Search
+                  </button>
+                  <button
+                    nbButton
+                    status="basic"
+                    type="button"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine"
+                    (click)="onClearFilter(form)"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="reportList && !reportList.length"
+                    (click)="onExportConferenceList('CSV')"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="reportList && !reportList.length"
+                    (click)="onExportConferenceList('PDF')"
+                  >
+                    Export as PDF
+                  </button>
+                </div>
+
+                <div
+                  *ngIf="reportList"
+                  class="total-duration"
+                  ngClass.xs="mt-3"
+                  ngClass.sm="mt-3"
+                >
+                  Total Duration: {{ totalDuration }}
+                </div>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="reportList">
+            <vmsl-grid
+              [vmsl-data]="
+                reportList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalReportsCount
+                      }
+              "
+              [vmsl-column-definition]="columnDefinition"
+              [vmsl-norows-template]="noRowsTemplate"
+              [dropdownCount]="dropdownCount.asObservable()"
+              (onGridReady)="onGridReady($event)"
+              (itemsPerPage)="getPaginationValue($event)"
+              [itemsPerPageList]="itemsPerPageList"
+            >
+            </vmsl-grid>
+            <div
+              ngClass.gt-xs="d-flex justify-content-between align-items-center"
+            >
+              <pagination-controls
+                (pageChange)="paginationEvent($event)"
+                responsive="true"
+                previousLabel=""
+                nextLabel=""
+                maxSize="5"
+              ></pagination-controls>
+              <div
+                *ngIf="reportList.length > 0"
+                class="page-count"
+                ngClass.xs="pb-3"
+              >
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                  totalReportsCount > currentPage * itemsPerPage
+                    ? currentPage * itemsPerPage
+                    : totalReportsCount
+                }}
+                of {{ totalReportsCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <ng-template #viewReportDialog let-data let-ref="dialogRef">
+      <div class="view-report-dialog">
+        <nb-card size="medium">
+          <nb-card-header class="p-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>Report Information</div>
+              <div>
+                <button
+                  nbButton
+                  status="basic"
+                  size="small"
+                  (click)="ref.close()"
+                >
+                  <nb-icon pack="eva" icon="arrow-ios-back-outline"></nb-icon>
+                  Close
+                </button>
+              </div>
+            </div>
+          </nb-card-header>
+          <nb-card-body class="p-3" *ngIf="data">
+            <div class="profile-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <strong class="mr-1">Event Name: </strong>
+                  {{ data.eventName }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Event Type: </strong>
+                  {{ data.eventType }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Date & Time: </strong>
+                  {{ data.startDateTime }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Duration: </strong>
+                  {{ data.duration }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Team Name: </strong>
+                  {{ data.teamName }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Created By: </strong>
+                  {{ data.createdByName }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Organizer: </strong>
+                  {{ data.organizer }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1"
+                    >{{
+                      data.status === 'Cancelled' || data.status === 'Missed'
+                        ? 'Invitees/Attendees'
+                        : 'Attendees'
+                    }}:
+                  </strong>
+                  {{ data.attendees }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Event Id: </strong>
+                  {{ data.id }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Status: </strong>
+                  {{ data.status }}
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </ng-template>
+  </nb-layout-column>
+</nb-layout>

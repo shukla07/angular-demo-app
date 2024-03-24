@@ -1,0 +1,325 @@
+<nb-card class="content-popup-ui">
+  <nb-card-header class="p-3">Content</nb-card-header>
+  <nb-card-body class="p-0">
+    <div class="p-3">
+      <form #form="ngForm">
+        <div fxLayout="column" fxLayoutAlign="start">
+          <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+            <div
+              class="split-mobile"
+              fxLayout="row wrap"
+              fxLayoutAlign="start"
+              fxFlex="1 0 auto"
+            >
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="title"
+                  [items]="contentNameList | async"
+                  [multiple]="false"
+                  [closeOnSelect]="true"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  [clearable]="true"
+                  [typeahead]="contentSearchStr"
+                  [minTermLength]="1"
+                  typeToSearchText="Please type to search"
+                  [virtualScroll]="true"
+                  bindLabel="title"
+                  bindValue="id"
+                  placeholder="Content Name"
+                  appearance="outline"
+                  notFoundText="No content found"
+                  [(ngModel)]="filter.contentId"
+                  (change)="onSelectChange()"
+                >
+                </ng-select>
+              </div>
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="territories"
+                  [items]="territories"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="name"
+                  bindValue="name"
+                  appearance="outline"
+                  placeholder="Associated Territory"
+                  notFoundText="No territories found"
+                  appearance="outline"
+                  [(ngModel)]="filter.territories"
+                >
+                </ng-select>
+              </div>
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="TherapeuticAreas"
+                  [items]="therapeuticAreas"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="name"
+                  bindValue="name"
+                  appearance="outline"
+                  placeholder="Associated Therapeutic Area"
+                  notFoundText="No Therapeutic Areas found"
+                  appearance="outline"
+                  [(ngModel)]="filter.therapeuticAreas"
+                >
+                </ng-select>
+              </div>
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="DiseaseAreas"
+                  [items]="diseaseAreas"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="name"
+                  bindValue="name"
+                  appearance="outline"
+                  placeholder="Associated Disease Area"
+                  notFoundText="No Product/Disease Area found"
+                  appearance="outline"
+                  [(ngModel)]="filter.diseaseAreas"
+                >
+                </ng-select>
+              </div>
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="Name"
+                  [items]="teamsNameList"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="teamName"
+                  bindValue="teamName"
+                  appearance="outline"
+                  placeholder="Associated Team"
+                  notFoundText="No Team Found"
+                  appearance="outline"
+                  [(ngModel)]="filter.teamsNameList"
+                >
+                </ng-select>
+              </div>
+              <div
+                *ngxPermissionsOnly="permissionKey.UpdateTenantContents"
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="Hcps"
+                  [items]="hcps"
+                  [multiple]="true"
+                  [closeOnSelect]="false"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="fullName"
+                  bindValue="fullName"
+                  appearance="outline"
+                  placeholder="Associated HCP"
+                  notFoundText="No HCP Found"
+                  appearance="outline"
+                  [(ngModel)]="filter.hcps"
+                >
+                </ng-select>
+              </div>
+              <div
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <ng-select
+                  name="FileType"
+                  [items]="fileTypes"
+                  [multiple]="false"
+                  [closeOnSelect]="true"
+                  [searchable]="true"
+                  [clearSearchOnAdd]="true"
+                  bindLabel="value"
+                  bindValue="id"
+                  placeholder="Content Type"
+                  appearance="outline"
+                  notFoundText="No file type found"
+                  [(ngModel)]="filter.fileType"
+                >
+                </ng-select>
+              </div>
+              <div
+                *ngxPermissionsOnly="permissionKey.UpdateTenantContents"
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-md="33.33"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pr-2"
+              >
+                <mat-radio-group
+                  name="status"
+                  class="radio-group"
+                  [(ngModel)]="filter.status"
+                >
+                  <mat-radio-button
+                    class="radio-button"
+                    value="{{ contentEnum.active }}"
+                    >Active</mat-radio-button
+                  >
+                  <mat-radio-button
+                    class="radio-button"
+                    value="{{ contentEnum.inactive }}"
+                    >Inactive</mat-radio-button
+                  >
+                </mat-radio-group>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="btn-group align-items-center"
+          ngClass.xs="d-block"
+          ngClass.sm="d-block"
+          ngClass.gt-xs="d-flex"
+        >
+          <button
+            nbButton
+            status="danger"
+            size="small"
+            type="submit"
+            class="mr-2 mb-2"
+            ngClass.gt-xs="mb-0"
+            [disabled]="form.pristine || loading"
+            [nbSpinner]="loading"
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+            (click)="getContentList(currentPage, itemsPerPage, form)"
+          >
+            Search
+          </button>
+          <button
+            nbButton
+            status="basic"
+            type="button"
+            size="small"
+            class="mr-2 mb-2"
+            ngClass.gt-xs="mb-0"
+            [disabled]="form.pristine"
+            (click)="onClearFilter(form); getContentList(1, 10)"
+          >
+            Clear
+          </button>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="titleList">
+      <vmsl-grid
+        [vmsl-data]="
+          titleList
+            | paginate
+              : {
+                  itemsPerPage: itemsPerPage,
+                  currentPage: currentPage,
+                  totalItems: totalTitlesCount
+                }
+        "
+        [vmsl-column-definition]="columnDefinition"
+        [vmsl-norows-template]="noRowsTemplate"
+        vmsl-row-selection="multiple"
+        [dropdownCount]="dropdownCount.asObservable()"
+        (itemsPerPage)="getPaginationValue($event)"
+        (rowChecked)="onRowChecked($event)"
+        (onGridReady)="onGridReady($event)"
+        [itemsPerPageList]="itemsPerPageList"
+      >
+      </vmsl-grid>
+
+      <div ngClass.gt-xs="d-flex justify-content-between align-items-center">
+        <pagination-controls
+          (pageChange)="paginationEvent($event)"
+          responsive="true"
+          previousLabel=""
+          nextLabel=""
+          maxSize="5"
+        ></pagination-controls>
+        <div *ngIf="titleList.length > 0" class="page-count" ngClass.xs="pb-3">
+          {{ (currentPage - 1) * itemsPerPage + 1 }} -
+          {{
+            totalTitlesCount > currentPage * itemsPerPage
+              ? currentPage * itemsPerPage
+              : totalTitlesCount
+          }}
+          of {{ totalTitlesCount }}
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="p-0">
+    <div
+      class="d-flex justify-content-center footer-buttons"
+      ngClass.lt-sm="row"
+    >
+      <div class="col-6">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          status="basic"
+          size="medium"
+          class="mr-3"
+          (click)="close()"
+        >
+          Cancel
+        </button>
+      </div>
+      <div class="col-6">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          status="default"
+          (click)="setContentData()"
+          size="medium"
+        >
+          Link Content
+        </button>
+      </div>
+    </div>
+  </nb-card-footer>
+</nb-card>

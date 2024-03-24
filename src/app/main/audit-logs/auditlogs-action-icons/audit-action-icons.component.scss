@@ -1,0 +1,15 @@
+/*
+CSS File
+*/
+
+.nb-theme-default [nbButton].size-tiny.grid-btns nb-icon {
+  height: 1rem;
+  width: 1rem;
+  line-height: 1rem;
+}
+
+.nb-theme-default [nbButton].size-tiny.grid-btns.dark-btn {
+  border: 1px solid #323232;
+  background-color: #323232;
+  color: #fff;
+}

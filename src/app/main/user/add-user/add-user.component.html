@@ -1,0 +1,713 @@
+<nb-layout class="add-user-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">{{ title }}</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                type="button"
+                class="mr-1"
+                (click)="goBack()"
+              >
+                <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <form #form="ngForm">
+        <nb-card>
+          <nb-card-body class="no-scroll">
+            <div fxLayout="column" fxLayoutAlign="start">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="35"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <mat-label>Platform Role</mat-label>
+                    <mat-select
+                      #role
+                      name="role"
+                      [(ngModel)]="user.role"
+                      [disabled]="
+                        currentUser ||
+                        (userId && roleTypeId === roleType.Administrator) ||
+                        (userId && roleTypeId === roleType.hcp)
+                      "
+                      (selectionChange)="onRoleChange($event)"
+                      required
+                    >
+                      <div *ngFor="let role of roles">
+                        <mat-option value="{{ role.id }}">
+                          {{ role.name }}
+                        </mat-option>
+                      </div>
+                    </mat-select>
+                    <mat-error>Platform role is required.</mat-error>
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="35"
+                    ngClass.gt-xs="pr-2"
+                    *ngIf="
+                      jobTitles &&
+                      jobTitles.length &&
+                      roleTypeId !== roleType.Administrator &&
+                      roleTypeId !== roleType.hcp
+                    "
+                  >
+                    <mat-label>Role</mat-label>
+                    <mat-select
+                      #jobTitle
+                      name="jobTitle"
+                      [(ngModel)]="user.jobTitle"
+                      [disabled]="currentUser || roleTypeId === roleType.hcp"
+                      required
+                    >
+                      <div *ngFor="let jobTitle of jobTitles">
+                        <mat-option value="{{ jobTitle.id }}">
+                          {{ jobTitle.jobTitle }}
+                        </mat-option>
+                      </div>
+                    </mat-select>
+                    <mat-error>Role is required.</mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="seprater"></div>
+
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="12"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>Title</mat-label>
+                    <mat-select name="title" [(ngModel)]="user.title" required>
+                      <mat-option value="Mr."> Mr. </mat-option>
+                      <mat-option value="Mrs."> Mrs. </mat-option>
+                      <mat-option value="Ms."> Ms. </mat-option>
+                      <mat-option value="Dr."> Dr. </mat-option>
+                    </mat-select>
+                    <mat-error>Title is required.</mat-error>
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="22"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>First Name</mat-label>
+                    <input
+                      matInput
+                      name="firstName"
+                      [(ngModel)]="user.firstName"
+                      pattern="^[a-zA-Z\u00c0-\u017e'&() -]{1,50}$"
+                      required
+                      maxlength="50"
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['firstName']?.errors?.required"
+                      >First name is required.</mat-error
+                    >
+                    <mat-error
+                      *ngIf="form.form.controls['firstName']?.errors?.pattern"
+                      >Invalid first name.</mat-error
+                    >
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="22"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pr-1 pl-1"
+                  >
+                    <mat-label>Last Name</mat-label>
+                    <input
+                      matInput
+                      name="lastName"
+                      [(ngModel)]="user.lastName"
+                      pattern="^[a-zA-Z\u00c0-\u017e'&() -]{1,50}$"
+                      required
+                      maxlength="50"
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['lastName']?.errors?.required"
+                      >Last name is required.</mat-error
+                    >
+                    <mat-error
+                      *ngIf="form.form.controls['lastName']?.errors?.pattern"
+                      >Invalid last name.</mat-error
+                    >
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="22"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>Email</mat-label>
+                    <input
+                      type="email"
+                      matInput
+                      name="email"
+                      #email="ngModel"
+                      [(ngModel)]="user.email"
+                      pattern=".+@.+\..+"
+                      [disabled]="userId"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['email']?.errors?.required"
+                      >Email address is required.</mat-error
+                    >
+                    <mat-error
+                      *ngIf="form.form.controls['email']?.errors?.pattern"
+                      >Invalid email address.</mat-error
+                    >
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="22"
+                    fxFlex.gt-xs="41.33"
+                    ngClass.gt-md="pl-1"
+                    ngClass.gt-xs="pl-1"
+                  >
+                    <mat-label>Mobile No.</mat-label>
+                    <ngx-mat-intl-tel-input
+                      #phone
+                      [preferredCountries]="['us', 'in']"
+                      [enableSearch]="true"
+                      name="phone"
+                      [(ngModel)]="user.phone"
+                      [disabled]="userId"
+                      class="phone-no"
+                      required
+                    ></ngx-mat-intl-tel-input>
+                    <mat-error>Mobile number is incorrect.</mat-error>
+                    <mat-hint *ngIf="!userId">
+                      Please provide your mobile number. This will enable you to
+                      receive notifications for Login verification on your
+                      registered mobile number.
+                    </mat-hint>
+                  </mat-form-field>
+                </div>
+                <div class="seprater"></div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>Address Line 1</mat-label>
+                    <input
+                      matInput
+                      name="addressLine1"
+                      [(ngModel)]="user.addressLine1"
+                      maxlength="50"
+                    />
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pr-1 pl-1"
+                  >
+                    <mat-label>Address Line 2</mat-label>
+                    <input
+                      matInput
+                      name="addressLine2"
+                      [(ngModel)]="user.addressLine2"
+                      maxlength="50"
+                    />
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="20"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pl-1"
+                  >
+                    <mat-label>City</mat-label>
+                    <input
+                      matInput
+                      name="city"
+                      [(ngModel)]="user.city"
+                      pattern="^(?! )[A-Za-z0-9 ]*$"
+                      maxlength="50"
+                    />
+                    <mat-error>Inappropriate city name.</mat-error>
+                  </mat-form-field>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="15"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pr-1"
+                    class="position-relative"
+                  >
+                    <ng-select
+                      name="state"
+                      placeholder="State"
+                      appearance="outline"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      bindValue="state"
+                      bindLabel="state"
+                      [items]="statesByCountry"
+                      [(ngModel)]="user.state"
+                      [disabled]="!user.country"
+                    ></ng-select>
+                    <span
+                      class="mat-errors error-for-state"
+                      *ngIf="!user.country"
+                    >
+                      Please select a specific country in order to select a
+                      state.
+                    </span>
+                  </div>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="15"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pl-1"
+                    ngClass.gt-xs="pl-1 pr-1"
+                  >
+                    <mat-label>Zip</mat-label>
+                    <input
+                      matInput
+                      name="zip"
+                      [(ngModel)]="user.zip"
+                      [pattern]="zipPattern"
+                    />
+                    <mat-error>Invalid Zip</mat-error>
+                  </mat-form-field>
+                  <div
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1"
+                    ngClass.gt-xs="pl-1"
+                    class="position-relative"
+                  >
+                    <ng-select
+                      name="country"
+                      placeholder="Country"
+                      appearance="outline"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      bindLabel="country"
+                      bindValue="country"
+                      [items]="countryData"
+                      [(ngModel)]="user.country"
+                      (change)="getStatesByCountry(user.country, false)"
+                    >
+                    </ng-select>
+                  </div>
+                  <div
+                    appearance="outline"
+                    class="position-relative"
+                    fxFlex="100"
+                    fxFlex.gt-md="35"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pl-1 pr-1"
+                    ngClass.gt-xs="pr-1"
+                    class="position-relative"
+                  >
+                    <ng-select
+                      name="timeZone"
+                      [items]="timeZoneList"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      appearance="outline"
+                      placeholder="Select Time Zone*"
+                      bindLabel="label"
+                      bindValue="momentValue"
+                      [(ngModel)]="user.timeZone"
+                      required
+                    >
+                    </ng-select>
+                    <span
+                      class="mat-errors"
+                      *ngIf="
+                        form.form.controls['timeZone']?.invalid &&
+                        form.form.controls['timeZone']?.errors?.required &&
+                        (form.form.controls['timeZone']?.dirty ||
+                          form.form.controls['timeZone']?.touched)
+                      "
+                      >Time zone is required.</span
+                    >
+                  </div>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="30"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-1 pl-1"
+                    ngClass.gt-xs="pl-1"
+                    *ngIf="
+                      roleTypeId !== roleType.hcp &&
+                      roleTypeId !== roleType.Administrator
+                    "
+                  >
+                    <mat-label>Medical onDemand Link</mat-label>
+                    <input matInput name="maLink" [(ngModel)]="user.maLink" />
+                  </mat-form-field>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                  *ngIf="roleTypeId === roleType.hcp"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="50"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <mat-label>Professional Reg (license number)</mat-label>
+                    <input
+                      matInput
+                      name="licenseNum"
+                      maxlength="255"
+                      [(ngModel)]="user.licenseNumber"
+                      pattern="^[a-zA-Z0-9]*$"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['licenseNum']?.errors?.required"
+                    >
+                      License number is required.
+                    </mat-error>
+                    <mat-error
+                      *ngIf="form.form.controls['licenseNum']?.errors?.pattern"
+                    >
+                      License number can only contain alphanumeric values.
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="50"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pl-2"
+                  >
+                    <mat-label>Institution</mat-label>
+                    <input
+                      matInput
+                      name="Institution"
+                      maxlength="255"
+                      [(ngModel)]="user.institute"
+                      pattern="^[a-zA-Z ]*$"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="
+                        form.form.controls['Institution']?.errors?.required
+                      "
+                    >
+                      Institution is required.
+                    </mat-error>
+                    <mat-error
+                      *ngIf="form.form.controls['Institution']?.errors?.pattern"
+                    >
+                      Institute can only contain alphabetical values.
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="seprater" *ngIf="!userId" hidden></div>
+                <div
+                  class="split-mobile mt-3 mb-3"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                  *ngIf="!userId"
+                >
+                  <div fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33">
+                    <ngx-dropzone
+                      (change)="onPictureUpload($event)"
+                      multiple="false"
+                      accept=".png,.jpg,.jpeg"
+                      class="dropzone"
+                      [disabled]="loadingPicture"
+                      maxFileSize="2000000"
+                    >
+                      <ngx-dropzone-label class="dropzone-label"
+                        >Click or Drag your profile picture
+                        here</ngx-dropzone-label
+                      >
+                      <ngx-dropzone-image-preview
+                        ngProjectAs="ngx-dropzone-preview"
+                        [removable]="true"
+                        (removed)="onRemove()"
+                        *ngFor="let files of profileData; index as i"
+                        [file]="files"
+                      >
+                      </ngx-dropzone-image-preview>
+                    </ngx-dropzone>
+                  </div>
+                </div>
+                <div class="seprater"></div>
+              </div>
+            </div>
+            <div
+              fxLayout="column"
+              fxLayoutAlign="start"
+              *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+            >
+              <div
+                fxLayout="column"
+                fxLayoutAlign="start"
+                fxFlex="1 0 auto"
+                *ngIf="roleTypeId && roleTypeId !== roleType.Administrator"
+              >
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <p><strong>Access Rules</strong></p>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <mat-radio-group
+                      aria-label="Select an option"
+                      name="dsFlag"
+                      fxLayout="row wrap"
+                      fxLayoutAlign="start"
+                      fxFlex="1 0 auto"
+                      [(ngModel)]="user.dsFlag"
+                    >
+                      <div
+                        appearance="outline"
+                        fxFlex="100"
+                        fxFlex.gt-md="100"
+                        fxFlex.gt-xs="100"
+                        ngClass.gt-xs="pr-2"
+                      >
+                        <mat-radio-button
+                          [value]="dsFlag.AssociationOnly"
+                          class="mr-4"
+                          >Association Only</mat-radio-button
+                        >
+                      </div>
+                      <div
+                        fxFlex="100"
+                        fxFlex.gt-md="100"
+                        fxFlex.gt-xs="100"
+                        ngClass.gt-xs="pr-2"
+                        class="d-block"
+                      >
+                        <mat-radio-button [value]="dsFlag.Both" class="mr-4"
+                          >Both Association and Division Tags</mat-radio-button
+                        >
+                      </div>
+                    </mat-radio-group>
+                  </div>
+                </div>
+                <div class="row mt-3" *ngIf="user.role">
+                  <div class="col-sm-12">
+                    <p><strong>User Association</strong></p>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          type="button"
+                          (click)="searchResults(linkAccessRuleDialog, true)"
+                        >
+                          Link Users
+                        </button>
+                      </span>
+                      <p class="has-no-data" *ngIf="!user.relationships.length">
+                        There are no linked users.
+                      </p>
+                      <vmsl-profile-access-rules
+                        [accessRules]="user.relationships"
+                        (tabTitle)="getTabTitleValue($event, true)"
+                        (removeItem)="removeListItem($event)"
+                      >
+                      </vmsl-profile-access-rules>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-3" *ngIf="user.dsFlag === dsFlag.Both">
+                  <div class="col-sm-12">
+                    <p><strong>Division State Tags</strong></p>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          type="button"
+                          (click)="searchResults(linkAccessRuleDialog, false)"
+                          *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+                        >
+                          Link DS Tags
+                        </button>
+                      </span>
+                      <vmsl-profile-access-rules
+                        #dsTags
+                        [accessRules]="user.dsTags"
+                        (tabTitle)="getTabTitleValue($event, false)"
+                        (removeItem)="removeListItem($event)"
+                      >
+                      </vmsl-profile-access-rules>
+                      <span
+                        class="mat-errors mat-tabs-errors"
+                        *ngIf="invalidDsTagField.length"
+                      >
+                        DS Tags associations are required.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+          <nb-card-footer>
+            <div class="btn-group">
+              <button
+                nbButton
+                status="danger"
+                type="submit"
+                class="mr-2"
+                [disabled]="loadingPicture"
+                (click)="addUpdateUser(form)"
+              >
+                Save
+              </button>
+              <button
+                nbButton
+                status="basic"
+                type="button"
+                (click)="cancel(form, phone)"
+              >
+                Clear
+              </button>
+            </div>
+          </nb-card-footer>
+        </nb-card>
+      </form>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #linkAccessRuleDialog let-data let-ref="dialogRef">
+  <nb-card class="links-popup">
+    <nb-card-header>Link {{ data.dialogTitle }}</nb-card-header>
+    <nb-card-body>
+      <ng-select
+        #getModelValue="ngModel"
+        #ngSelectDropdown
+        name="linkAccessRules"
+        [items]="data.dialogData"
+        [multiple]="true"
+        [closeOnSelect]="false"
+        [searchable]="true"
+        [clearSearchOnAdd]="true"
+        [bindLabel]="data.isUserTab ? 'fullName' : 'name'"
+        bindValue="id"
+        placeholder="{{ data.dialogTitle }}"
+        appearance="outline"
+        notFoundText="No {{ data.dialogTitle }} found"
+        [(ngModel)]="data.selected"
+        class="select-custom"
+      >
+        <ng-template *ngIf="!data.isUserTab" ng-header-tmp>
+          <div>
+            <button
+              class="btn btn-link"
+              (click)="onSelectAll(getModelValue, data.dialogTitle)"
+            >
+              Select All
+            </button>
+            <button class="btn btn-link" (click)="onClearAll(getModelValue)">
+              Clear All
+            </button>
+          </div>
+        </ng-template>
+      </ng-select>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-between footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button nbButton ghost fullWidth status="basic" (click)="ref.close()">
+            Cancel
+          </button>
+        </div>
+        <div class="col-8">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            (click)="onClickAddAccessRules(ngSelectDropdown, data.isUserTab)"
+          >
+            Add {{ data.dialogTitle }}
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

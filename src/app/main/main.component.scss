@@ -1,0 +1,314 @@
+@import '../theme/styles/themes';
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+@include nb-install-component() {
+  ::ng-deep router-outlet + * {
+    display: block;
+    animation: fade 1s;
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  }
+
+  nb-layout-column.small {
+    flex: 0.15 !important;
+  }
+
+  nb-sidebar.settings-sidebar {
+    transition: transform 0.3s ease;
+    width: nb-theme(sidebar-width);
+    overflow: hidden;
+    @include nb-ltr(transform, translate3d(100%, 0, 0));
+    @include nb-rtl(transform, translate3d(-100%, 0, 0));
+    &.start {
+      @include nb-ltr(transform, translate3d(-100%, 0, 0));
+      @include nb-rtl(transform, translate3d(100%, 0, 0));
+    }
+
+    &.expanded,
+    &.expanded.start {
+      transform: translate3d(0, 0, 0);
+    }
+
+    ::ng-deep .scrollable {
+      width: nb-theme(sidebar-width);
+      padding: 3.4rem 0.25rem;
+    }
+
+    ::ng-deep .main-container {
+      width: nb-theme(sidebar-width);
+      background: nb-theme(color-bg);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+      position: relative;
+
+      .scrollable {
+        width: nb-theme(sidebar-width);
+      }
+
+      @include nb-for-theme(cosmic) {
+        background: nb-theme(layout-bg);
+      }
+    }
+  }
+
+  nb-sidebar.menu-sidebar {
+    @include nb-for-theme(default) {
+      margin-top: 0;
+    }
+
+    ::ng-deep .main-container {
+      height: calc(#{nb-theme(sidebar-height)} - #{nb-theme(header-height)});
+      @include nb-ltr(border-top-right-radius, nb-theme(radius));
+      @include nb-rtl(border-top-left-radius, nb-theme(radius));
+    }
+
+    ::ng-deep .scrollable {
+      @include nb-for-theme(default) {
+        padding-top: 0;
+      }
+    }
+
+    ::ng-deep nb-sidebar-header {
+      border-bottom: 1px solid nb-theme(color-basic-300);
+    }
+
+    nb-sidebar-footer {
+      padding-top: 0;
+
+      .copyright-section {
+        background-color: nb-theme(background-basic-color-1);
+        position: absolute;
+        z-index: 1;
+        padding: 5px 20px;
+        border-top: 1px solid #e8e8e8;
+        width: inherit;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        .footer-menu {
+          list-style: none;
+          text-align: left;
+          padding: 0;
+          margin: 0;
+
+          li {
+            display: inline-block;
+            position: relative;
+            padding-right: 15px;
+
+            &:after {
+              content: '';
+              position: absolute;
+              right: 7px;
+              top: 5px;
+              height: 15px;
+              width: 1px;
+              background-color: nb-theme(border-basic-color-5);
+            }
+            &:last-child {
+              padding-right: 0;
+
+              &:after {
+                display: none;
+              }
+            }
+
+            a {
+              color: nb-theme(color-basic-600);
+              text-decoration: none;
+              font-size: nb-theme(text-paragraph-2-font-size);
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+        .copyright {
+          text-align: left;
+          color: nb-theme(color-basic-600);
+          font-size: 11px;
+
+          a {
+            color: nb-theme(color-basic-600);
+            text-decoration: none;
+            font-size: 11px;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+        .version-info {
+          text-align: left;
+          color: nb-theme(color-basic-600);
+          font-size: 11px;
+          display: inline-block;
+          padding-left: 15px;
+          position: relative;
+
+          &:after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 4px;
+            height: 13px;
+            width: 1px;
+            background-color: nb-theme(border-basic-color-5);
+          }
+        }
+      }
+    }
+
+    &.compacted {
+      ::ng-deep nb-sidebar-header {
+        padding-left: 8px;
+        padding-right: 0;
+      }
+      ::ng-deep nb-sidebar-footer {
+        display: none;
+      }
+    }
+    &.collapsed {
+      ::ng-deep nb-sidebar-footer {
+        display: none;
+      }
+    }
+  }
+
+  nb-layout-header.fixed {
+    z-index: 33;
+  }
+
+  .main-content {
+    ::ng-deep .layout {
+      min-height: auto;
+    }
+  }
+
+  @include media-breakpoint-down(xs) {
+    .main-content {
+      padding: 0.75rem !important;
+      ::ng-deep .layout {
+        min-height: auto;
+      }
+    }
+  }
+
+  .modal-icon-header {
+    min-width: 360px;
+    @include media-breakpoint-down(sm) {
+      min-width: 100%;
+    }
+
+    nb-icon {
+      font-size: 4.25rem;
+    }
+  }
+
+  .caller-list {
+    text-align: center;
+    padding: 15px;
+
+    h5 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: 0;
+    }
+
+    nb-user {
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+
+      &.size-giant .user-picture {
+        height: 6rem;
+        width: 6rem;
+      }
+    }
+  }
+  .linkme-call-request-model {
+    width: 900px;
+    margin: auto;
+    max-height: 85vh;
+
+    @media screen and (max-width: 991px) {
+      width: 96%;
+      max-height: 80vh;
+    }
+
+    nb-card-body {
+      .alert-no-bg {
+        background-color: transparent;
+        border: 1px solid nb-theme(border-basic-color-5);
+        color: nb-theme(color-success-500);
+      }
+      .ma-left {
+        text-align: center;
+        p {
+          margin-bottom: 10px;
+        }
+      }
+      .ma-right {
+        text-align: left;
+
+        p {
+          margin-bottom: 15px;
+          white-space: normal;
+        }
+        span.ma-tags {
+          background-color: nb-theme(background-basic-color-2);
+          padding: 5px 8px;
+          display: inline-block;
+          font-size: nb-theme(text-paragraph-2-font-size);
+          border-radius: 20px;
+          margin: 5px 5px 5px 7px;
+        }
+        .ma-team-name {
+          background-color: nb-theme(default-theme-color);
+          color: nb-theme(color-basic-100);
+          font-size: nb-theme(text-paragraph-2-font-size);
+          border-radius: 20px;
+          width: auto;
+          padding: 5px 10px;
+          text-align: center;
+          display: inline-block;
+          margin-bottom: 0px;
+          font-weight: normal;
+        }
+      }
+    }
+  }
+  .incoming-call-popup {
+    min-width: 220px !important;
+    max-width: 300px !important;
+
+    @media screen and (max-width: 300px) {
+      width: auto !important;
+      max-width: 100% !important;
+    }
+  }
+  .mark-online-popup {
+    max-width: 500px;
+
+    @include media-breakpoint-down(sm) {
+      max-width: 100%;
+    }
+  }
+}

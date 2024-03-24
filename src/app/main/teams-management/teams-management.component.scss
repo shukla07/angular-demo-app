@@ -1,0 +1,168 @@
+@import '../../theme/styles/themes';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@import '~@ng-select/ng-select/themes/material.theme.css';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+.nb-theme-default {
+  nb-sidebar.left {
+    z-index: 99;
+  }
+
+  .team-manage-ui {
+    .main-bg {
+      padding: 21px 22px 20px;
+
+      @include media-breakpoint-down(sm) {
+        padding: 21px 22px 20px;
+      }
+      @include media-breakpoint-down(xs) {
+        padding: 21px 15px 20px;
+      }
+
+      .buttons-mrgn-top {
+        height: 20px;
+
+        > div {
+          margin-top: -6px;
+        }
+
+        button.v-align-middle {
+          nb-icon {
+            font-size: 16px;
+          }
+        }
+
+        @media screen and (max-width: 570px) {
+          height: auto;
+
+          > div {
+            margin-top: 20px;
+          }
+        }
+      }
+    }
+
+    .no-layout-pdng {
+      margin: -2.2rem -2.2rem -0.5rem;
+      padding: 0 !important;
+
+      @include media-breakpoint-down(md) {
+        margin: -1.5rem -1.5rem 0.5rem;
+      }
+
+      @include media-breakpoint-down(sm) {
+        margin: -1rem -1rem 0;
+      }
+      @include media-breakpoint-down(xs) {
+        margin: -0.75rem -0.75rem 0;
+      }
+
+      .title-header {
+        font-size: 26px;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .modal-icon-header {
+    min-width: 360px;
+    @include media-breakpoint-down(sm) {
+      min-width: 100%;
+    }
+    nb-icon {
+      font-size: 4.25rem;
+    }
+  }
+  .no-scroll {
+    overflow: visible;
+  }
+}
+.split-mobile > * {
+  @include media-breakpoint-down(sm) {
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    padding: 0 !important;
+  }
+}
+
+.ng-select .ng-select-container.ng-appearance-outline {
+  min-height: 63px;
+}
+.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
+  padding: 0 10px;
+  bottom: 16px;
+}
+.ng-select .ng-has-value .ng-placeholder,
+.ng-select.ng-select-opened .ng-placeholder {
+  transform: translateY(-1.48125em) scale(0.75) perspective(100px)
+    translateZ(0.001px);
+}
+.ng-select .ng-select-container.ng-appearance-outline:after {
+  height: calc(100% - 0.3em);
+  bottom: 1px;
+}
+.ng-select .ng-select-container.ng-appearance-outline .ng-placeholder {
+  color: nb-theme(placeholder-color);
+}
+.ng-select .ng-select-container .ng-value-container {
+  border-top: 0.94375em solid transparent;
+}
+.ng-select.ng-select-multiple
+  .ng-select-container.ng-appearance-outline
+  .ng-arrow-wrapper {
+  top: -2px;
+}
+.ng-select.ng-select-multiple
+  .ng-select-container
+  .ng-value-container
+  .ng-value
+  .ng-value-label {
+  font-size: nb-theme(text-paragraph-font-size);
+}
+.ng-select .ng-select-container.ng-appearance-outline .ng-value {
+  padding-top: 5px;
+}
+.ng-select.ng-select-single
+  .ng-select-container.ng-appearance-outline
+  .ng-arrow-wrapper {
+  bottom: 22px;
+}
+.ng-select.ng-select-single
+  .ng-select-container.ng-appearance-outline
+  .ng-clear-wrapper {
+  bottom: 17px;
+}
+.page-count {
+  text-align: right;
+  padding-right: 20px;
+  font-weight: normal;
+  font-family: nb-theme(font-family-primary);
+  color: nb-theme(color-basic-800);
+  font-size: nb-theme(text-paragraph-2-font-size);
+  line-height: normal;
+}
+
+.days-color {
+  display: inline-block;
+  padding: 0 3px;
+  border-radius: 5px;
+  margin: 0 1px;
+
+  &.color-green {
+    color: nb-theme(color-success-600);
+  }
+  .remove-text-capitalize{
+    text-transform: initial !important;
+  }
+}
+
+.popup-width {
+  max-width: 430px;
+
+  @media screen and (max-width: 720px) {
+    max-width: 90%;
+  }
+  @media screen and (max-width: 479px) {
+    max-width: 100%;
+  }
+}

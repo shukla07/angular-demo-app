@@ -1,0 +1,384 @@
+<nb-layout class="audit-logs">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col">Audit Logs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="20"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1"
+                    >
+                      <ng-select
+                        name="username"
+                        [items]="users"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="userTenantId"
+                        appearance="outline"
+                        placeholder="Username"
+                        notFoundText="No users found"
+                        appearance="outline"
+                        [(ngModel)]="filter.userTenantId"
+                      >
+                      </ng-select>
+                    </div>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="20"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <ng-select
+                        name="logTypes"
+                        [items]="logTypes"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        appearance="outline"
+                        placeholder="Audit Log Types"
+                        notFoundText="No log types found"
+                        appearance="outline"
+                        [(ngModel)]="filter.logType"
+                      >
+                      </ng-select>
+                    </div>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="20"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>Timestamp From</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="dateFrom"
+                        [(ngModel)]="filter.dateFrom"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['dateFrom']?.errors?.invalid"
+                        >Gap between From & To date cannot be more than one
+                        month.
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="20"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>Timestamp To</mat-label>
+
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="dateTo"
+                        [(ngModel)]="filter.dateTo"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                      />
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="btn-group align-items-center"
+                ngClass.xs="d-block"
+                ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex"
+              >
+                <button
+                  nbButton
+                  status="danger"
+                  size="small"
+                  type="submit"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading"
+                  [nbSpinner]="loading"
+                  nbSpinnerStatus="danger"
+                  nbSpinnerSize="small"
+                  (click)="
+                    getAuditLogs(currentPage, itemsPerPage, form);
+                    isSearched = true
+                  "
+                >
+                  Search
+                </button>
+                <button
+                  nbButton
+                  status="basic"
+                  type="button"
+                  size="small"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine"
+                  (click)="onClearFilter(form)"
+                >
+                  Clear
+                </button>
+                <button
+                  nbButton
+                  status="danger"
+                  size="small"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="auditLogs && !auditLogs.length"
+                  (click)="onExportUserList('CSV')"
+                >
+                  Export as CSV
+                </button>
+                <button
+                  nbButton
+                  status="danger"
+                  size="small"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="
+                    (auditLogs && !auditLogs.length) || auditLogPDFBtn
+                  "
+                  [nbSpinner]="auditLogPDFBtn"
+                  nbSpinnerStatus="danger"
+                  nbSpinnerSize="small"
+                  (click)="onExportUserList('PDF')"
+                >
+                  Export as PDF
+                </button>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="auditLogs">
+            <vmsl-grid
+              [vmsl-data]="
+                auditLogs
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalUsersCount
+                      }
+              "
+              [vmsl-column-definition]="columnDefinition"
+              [vmsl-norows-template]="noRowsTemplate"
+              [dropdownCount]="dropdownCount.asObservable()"
+              (onGridReady)="onGridReady($event)"
+              (itemsPerPage)="getPaginationValue($event)"
+              [itemsPerPageList]="itemsPerPageList"
+            >
+            </vmsl-grid>
+            <div
+              ngClass.gt-xs="d-flex justify-content-between align-items-center"
+            >
+              <pagination-controls
+                (pageChange)="paginationEvent($event)"
+                responsive="true"
+                previousLabel=""
+                nextLabel=""
+                maxSize="5"
+              ></pagination-controls>
+              <div class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                  totalUsersCount > currentPage * itemsPerPage
+                    ? currentPage * itemsPerPage
+                    : totalUsersCount
+                }}
+                of {{ totalUsersCount }}
+              </div>
+            </div>
+          </div>
+          <div class="p-3 bdr-top" *ngIf="!auditLogs">
+            <p class="mb-0">Please Filter the Logs</p>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #viewOperatorDialog let-data let-ref="dialogRef">
+  <div class="view-operator-dialog">
+    <nb-card size="medium">
+      <nb-card-header class="p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>User Profile</div>
+          <div>
+            <button nbButton status="basic" size="small" (click)="ref.close()">
+              <nb-icon pack="eva" icon="arrow-ios-back-outline"></nb-icon>
+              Close
+            </button>
+          </div>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-3" *ngIf="user">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="profile-header text-center">
+              <ng-container
+                *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+              >
+                <div class="edit-profile-container">
+                  <nb-user
+                    size="giant"
+                    onlyPicture="true"
+                    [name]="user && user.firstName + user.lastName"
+                    [picture]="user.photoUrl ? user.photoUrl : ''"
+                  ></nb-user>
+                </div>
+              </ng-container>
+              <ng-container
+                *ngxPermissionsExcept="permissionKey.UpdateTenantUser"
+              >
+                <div class="edit-profile-container">
+                  <nb-user
+                    size="giant"
+                    onlyPicture="true"
+                    [name]="user && user.firstName + user.lastName"
+                    [picture]="user.photoUrl ? user.photoUrl : ''"
+                  ></nb-user>
+                </div>
+              </ng-container>
+              <h5 class="font-weight-normal">
+                {{ user.firstName }} {{ user.lastName }}
+              </h5>
+              <p>{{ user.userTitle }}</p>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="profile-body">
+              <div class="row">
+                <div class="col-sm-6 email-view">
+                  <strong class="mr-1">Email: </strong>
+                  {{ user.email }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Mobile No: </strong>
+                  {{ user.phone }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Country: </strong>
+                  {{ user.country }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Address: </strong>
+                  {{ user.addressLine1 }} {{ user.addressLine2 }},
+                  {{ user.city }}, {{ user.state }}, {{ user.zip }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Platform Role: </strong>
+                  {{ user.roleName }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</ng-template>
+<ng-template #viewLogsChangeDialog let-data let-ref="dialogRef">
+  <div class="audit-view-logs-change-dialog">
+    <nb-card size="medium">
+      <nb-card-header class="p-3">
+        <div class="row align-items-center">
+          <div class="col-8">Changes made by {{ logViewUserName }}</div>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-0">
+        <div *ngIf="auditLogDiff.length">
+          <vmsl-grid
+            [vmsl-data]="auditLogDiff"
+            [vmsl-column-definition]="diffColumnDefinition"
+            [vmsl-norows-template]="noRowsTemplate"
+            (onGridReady)="onGridReady($event)"
+            class="w-100 hide-per-page"
+          >
+          </vmsl-grid>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0">
+        <div class="d-flex justify-content-center footer-buttons">
+          <div class="col-4 text-center">
+            <button nbButton ghost status="basic" (click)="ref.close()">
+              Close!
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</ng-template>
+<ng-template #viewOperationTimeDialog let-data let-ref="dialogRef">
+  <div class="view-operation-time-dialog">
+    <nb-card size="medium">
+      <nb-card-header class="p-3">
+        <div class="row align-items-center">
+          <div class="col-8">Operation Time.</div>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-3">
+        <div class="col-lg-12">
+          <div class="profile-body">
+            <div class="row">
+              <div class="col-sm-12 email-view">
+                <strong class="mr-1">User Name: </strong>
+                {{ userName }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <div class="profile-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <strong class="mr-1">Operation Time: </strong>
+                {{ operationTime }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0">
+        <div class="d-flex justify-content-center footer-buttons">
+          <div class="col-4 text-center">
+            <button nbButton ghost status="basic" (click)="ref.close()">
+              Close!
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</ng-template>

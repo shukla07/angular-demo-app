@@ -1,0 +1,191 @@
+<div class="notification-ui">
+  <div class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">{{ title }}</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                type="button"
+                shape="round"
+                class="mr-1"
+                (click)="refreshNotifications()"
+                nbTooltip="Refresh Notifications"
+                nbTooltipPlacement="bottom"
+              >
+                <nb-icon icon="refresh-outline" pack="eva"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0" *ngIf="notificationsData">
+          <nb-list>
+            <nb-list-item
+              *ngFor="
+                let notification of notificationsData
+                  | paginate: {itemsPerPage: 6, currentPage: p1, id: 'notifs'}
+              "
+            >
+              <div class="d-flex justify-content-between w-100" ngClass.xs="flex-column">
+                <span class="nofity-text">{{ notification.body }}</span>
+                <span class="nofity-btns" *ngIf="!notification.isOrganiser &&
+                 !notification.isRespondedTo && notification.status === 'pending' 
+                 && notification.type === 'create_event'"
+                >
+                  <button
+                    nbButton
+                    outline
+                    size="small"
+                    status="success"
+                    (click)="getEventAttendees(notification, 'accepted')"
+                    nbTooltip="Confirm"
+                    shape="round"
+                  >
+                    <nb-icon pack="eva" icon="checkmark-outline"></nb-icon>
+                  </button>
+                  <button
+                    nbButton
+                    outline
+                    size="small"
+                    status="danger"
+                    class="ml-2"
+                    (click)="getEventAttendees(notification, 'declined')"
+                    nbTooltip="Decline"
+                    shape="round"
+                  >
+                    <nb-icon pack="eva" icon="close-outline"></nb-icon>
+                  </button>
+                  <button
+                    nbButton
+                    outline
+                    size="small"
+                    status="default"
+                    class="ml-2"
+                    (click)="openNewTimePopup(notification)"
+                    nbTooltip="Propose New Time"
+                    shape="round"
+                  >
+                    <nb-icon pack="eva" icon="calendar-outline"></nb-icon>
+                  </button>
+                </span> 
+                <span *ngIf="notification.status === 'pending' &&
+                 !notification.isRespondedTo &&
+                  notification.type === 'propose_new_time'"
+                >
+                  <button
+                    nbButton
+                    outline
+                    size="small"
+                    status="success"
+                    (click)="respondToNewProposedTime(notification, true)"
+                    nbTooltip="Confirm new proposed time"
+                    shape="round"
+                  >
+                    <nb-icon pack="eva" icon="checkmark-outline"></nb-icon>
+                  </button>
+                  <button
+                    nbButton
+                    outline
+                    size="small"
+                    status="danger"
+                    class="ml-2"
+                    (click)="respondToNewProposedTime(notification, false)"
+                    nbTooltip="Decline new proposed time"
+                    shape="round"
+                  >
+                    <nb-icon pack="eva" icon="close-outline"></nb-icon>
+                  </button>
+                </span>
+                <span class="nofity-date">{{ notification.createdOn }}</span>
+              </div>
+            </nb-list-item>
+          </nb-list>
+          <div
+            ngClass.gt-xs="d-flex justify-content-between align-items-center"
+          >
+            <pagination-controls
+              *ngIf="notificationsData.length"
+              id="notifs"
+              responsive="true"
+              previousLabel=""
+              nextLabel=""
+              maxSize="5"
+              (pageChange)="p1 = $event"
+              (pageBoundsCorrection)="p1 = 1"
+              class="pagination-inline"
+            ></pagination-controls>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #proposeNewTime let-data let-ref="proposeNewTimeRef">
+  <nb-card class="new-time-model">
+    <nb-card-header class="p-3">Propose New Time</nb-card-header>
+    <nb-card-body class="p-3">
+      <div class="text-center modal-icon-header pb-5 mb-5">
+        <mat-form-field
+          appearance="outline"
+          fxFlex="100"
+        >
+          <mat-label>New Time</mat-label>
+
+          <input
+            matInput
+            mwlFlatpickr
+            name="dateTo"
+            [(ngModel)]="filter.newTime"
+            altInput="true"
+            enableTime="true"
+            dateFormat="Z"
+            altFormat="d-m-Y H:i"
+          />
+        </mat-form-field>
+        <p>&nbsp;</p>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0 overflow-hidden">
+      <div
+        class="d-flex justify-content-between align-items-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            class="mr-2"
+            (click)="closeNewTimePopup()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            nbSpinnerStatus="danger"
+            nbSpinnerSize="small"
+            status="danger"
+            (click)="getEventAttendees(data, 'newTime')"
+          >
+           Save
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

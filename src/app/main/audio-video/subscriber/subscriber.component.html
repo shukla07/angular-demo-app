@@ -1,0 +1,12 @@
+<div class="video-frame" [ngClass]="userSpeaking ? 'speaking' : ''">
+  <div #subscriberDiv></div>
+  <div class="user-name Sareen">
+    {{ userName }}
+    <nb-icon
+      pack="eva"
+      [icon]="mic ? 'mic-outline' : 'mic-off-outline'"
+      class="mic-icon"
+      [ngClass]="mic ? 'active' : 'deactive'"
+    ></nb-icon>
+  </div>
+</div>

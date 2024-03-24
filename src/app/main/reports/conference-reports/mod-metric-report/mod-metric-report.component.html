@@ -1,0 +1,164 @@
+<nb-layout class="conference-reports">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col">MoD Metric Report</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="17"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <mat-label>Start Date-Time</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="fromDate"
+                        [(ngModel)]="filter.fromDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.tillDate ? true : false"
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['fromDate']?.errors?.required"
+                        >Please specify a Start Date-Time!
+                      </mat-error>
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['fromDate']?.errors?.maxRequired
+                        "
+                        >Gap between Start & End date-time cannot be more than
+                        one month.
+                      </mat-error>
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['fromDate']?.errors?.minRequired
+                        "
+                        >Gap between Start & End date-time cannot be less than a
+                        week.
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="17"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-1 pl-1"
+                    >
+                      <mat-label>End Date-Time</mat-label>
+                      <input
+                        matInput
+                        mwlFlatpickr
+                        name="toDate"
+                        [(ngModel)]="filter.tillDate"
+                        altInput="true"
+                        enableTime="true"
+                        dateFormat="Z"
+                        altFormat="d-m-Y H:i"
+                        [required]="filter.fromDate ? true : false"
+                      />
+                      <mat-error>Please specify a End Date-Time!</mat-error>
+                    </mat-form-field>
+                    <div
+                      fxFlex="100"
+                      fxFlex.gt-md="30"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pl-1 pr-1"
+                    >
+                      <ng-select
+                        #allRequestor
+                        name="requestors"
+                        [items]="requestors"
+                        [multiple]="true"
+                        [closeOnSelect]="false"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="id"
+                        appearance="outline"
+                        placeholder="Requestors"
+                        notFoundText="No requestors found"
+                        appearance="outline"
+                        [(ngModel)]="filter.requestorId"
+                      >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="btn-group align-items-center justify-content-between"
+                ngClass.xs="d-block"
+                ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex"
+              >
+                <div>
+                  <button
+                    nbButton
+                    status="danger"
+                    size="small"
+                    type="submit"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine || loading"
+                    [nbSpinner]="loading"
+                    nbSpinnerStatus="danger"
+                    nbSpinnerSize="small"
+                    (click)="
+                      getReports(currentPage, itemsPerPage, form, allRequestor);
+                      isSearched = true
+                    "
+                  >
+                    Search
+                  </button>
+                  <button
+                    nbButton
+                    status="basic"
+                    type="button"
+                    size="small"
+                    class="mr-2 mb-2"
+                    ngClass.gt-xs="mb-0"
+                    [disabled]="form.pristine"
+                    (click)="onClearFilter(form)"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="modReportList">
+            <vmsl-grid
+              [vmsl-data]="modReportList"
+              [vmsl-column-definition]="columnDefinition"
+              [vmsl-norows-template]="noRowsTemplate"
+              [dropdownCount]="dropdownCount.asObservable()"
+              (onGridReady)="onGridReady($event)"
+            >
+            </vmsl-grid>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

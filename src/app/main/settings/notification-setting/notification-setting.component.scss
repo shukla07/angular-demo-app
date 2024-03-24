@@ -1,0 +1,24 @@
+@import '../../../theme/styles/themes';
+
+.table-notification {
+  tr {
+    th {
+      border: 0;
+      font-size: nb-theme(text-paragraph-2-font-size);
+      padding: 0.65rem 0.75rem;
+    }
+    td {
+      font-size: nb-theme(text-paragraph-2-font-size);
+      padding: 0.65rem 0.75rem;
+    }
+    td:nth-child(2) {
+      width: 80px;
+    }
+    td:nth-child(3) {
+      width: 80px;
+    }
+    td:nth-child(4) {
+      width: 80px;
+    }
+  }
+}

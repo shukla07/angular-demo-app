@@ -1,0 +1,7 @@
+{{displayName}}
+<em [ngClass]="{'fas fa-sort-up': sortIcon === 'fas fa-sort-up'}" (click)="toggleIcon('DESC')">
+</em>
+<em [ngClass]="{'fas fa-sort-down': sortIcon === 'fas fa-sort-down'}" (click)="toggleIcon('none')">
+</em>
+<em [ngClass]="{'fas fa-sort': sortIcon === 'fas fa-sort'}" (click)="toggleIcon('ASC')">
+</em>

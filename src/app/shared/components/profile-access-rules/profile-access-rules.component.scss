@@ -1,0 +1,16 @@
+.mat-errors2 {
+  font-size: 75%;
+  padding: 0 1em;
+  position: absolute;
+  top: 63px;
+  color: #f44336;
+
+  &.mat-tabs-errors2 {
+    top: inherit;
+    bottom: 5px;
+
+    @media screen and (max-width: 350px) {
+      padding: 0;
+    }
+  }
+}

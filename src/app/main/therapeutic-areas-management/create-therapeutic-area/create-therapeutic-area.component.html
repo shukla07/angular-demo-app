@@ -1,0 +1,161 @@
+<nb-layout class="add-therapeutic-manage-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">Add Therapeutic Area</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                type="button"
+                class="mr-1"
+                (click)="goBack()"
+              >
+                <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <form #form="ngForm">
+        <nb-card>
+          <nb-card-body class="no-scroll">
+            <div fxLayout="column" fxLayoutAlign="start">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="35"
+                    fxFlex.gt-xs="35"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <mat-label>Therapeutic Area Name</mat-label>
+                    <input
+                      matInput
+                      name="therapeuticAreaName"
+                      required
+                      [(ngModel)]="therapeuticArea.name"
+                      pattern="^[a-zA-Z0-9\u00c0-\u017e'&() -]{1,50}$"
+                      maxlength="50"
+                    />
+                    <mat-error
+                      *ngIf="
+                        form.form.controls['therapeuticAreaName']?.errors
+                          ?.required
+                      "
+                    >
+                      Therapeutic Area Name is required!
+                    </mat-error>
+                    <mat-error
+                      *ngIf="
+                        form.form.controls['therapeuticAreaName']?.errors
+                          ?.pattern
+                      "
+                    >
+                      Inappropriate Therapeutic Area Name!
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <mat-label>Therapeutic Area Description</mat-label>
+                    <textarea
+                      matInput
+                      name="therapeutic-area-desc"
+                      required
+                      class="textarea-height"
+                      [(ngModel)]="therapeuticArea.description"
+                      maxlength="100"
+                    ></textarea>
+                    <mat-error
+                      >Therapeutic Area Description is required</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <p><strong>Status</strong></p>
+                    <mat-radio-group
+                      aria-label="Select an option"
+                      name="therapeuticAreaStatus"
+                      [(ngModel)]="therapeuticArea.status"
+                      required
+                    >
+                      <mat-radio-button [value]="1" class="mr-4"
+                        >Active</mat-radio-button
+                      >
+                      <mat-radio-button [value]="0">Inactive</mat-radio-button>
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['therapeuticAreaStatus']?.errors
+                            ?.required
+                        "
+                      >
+                        Therapeutic Area Status is required!
+                      </mat-error>
+                    </mat-radio-group>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+          <nb-card-footer>
+            <div class="btn-group">
+              <button
+                nbButton
+                status="danger"
+                type="submit"
+                class="mr-2"
+                (click)="addUpdateTherapeuticArea(form)"
+              >
+                Save
+              </button>
+              <button
+                nbButton
+                status="basic"
+                type="button"
+                (click)="cancel(form)"
+              >
+                Clear
+              </button>
+            </div>
+          </nb-card-footer>
+        </nb-card>
+      </form>
+    </div>
+  </nb-layout-column>
+</nb-layout>

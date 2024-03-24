@@ -1,0 +1,550 @@
+<form #form="ngForm">
+  <nb-card class="ma-plus-popup position-relative">
+    <nb-card-header>
+      <div class="d-flex justify-content-between align-items-center">
+        <span>Medical onDemand</span>
+        <nb-icon
+          icon="close-outline"
+          pack="eva"
+          (click)="dialogRef.close()"
+        ></nb-icon>
+      </div>
+    </nb-card-header>
+    <nb-card-body class="no-scroll pb-0">
+      <div fxLayout="column" fxLayoutAlign="start">
+        <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+          <div
+            class="split-mobile"
+            fxLayout="row wrap"
+            fxLayoutAlign="start"
+            fxFlex="1 0 auto"
+          >
+            <mat-form-field
+              appearance="outline"
+              fxFlex="100"
+              fxFlex.gt-md="50"
+              fxFlex.gt-xs="50"
+              ngClass.gt-xs="pr-1"
+            >
+              <mat-label>{{
+                maLink.payor ? 'Payor Name' : 'HCP Name'
+              }}</mat-label>
+              <input matInput name="hcpText" [(ngModel)]="maLink.hcpText" />
+            </mat-form-field>
+            <div
+              appearance="outline"
+              fxFlex="100"
+              fxFlex.gt-md="50"
+              fxFlex.gt-xs="50"
+              ngClass.gt-xs="pt-4"
+            >
+              <mat-checkbox
+                name="payor"
+                [(ngModel)]="maLink.payor"
+                class="ml-2"
+              >
+                Payor
+              </mat-checkbox>
+            </div>
+          </div>
+          <div class="seprater"></div>
+          <div
+            class="split-mobile"
+            fxLayout="row wrap"
+            fxLayoutAlign="start"
+            fxFlex="1 0 auto"
+          >
+            <div
+              fxFlex="100"
+              fxFlex.gt-md="50"
+              fxFlex.gt-xs="50"
+              ngClass.gt-xs="pr-2"
+            >
+              <ng-select
+                name="question"
+                [items]="presetQuestion"
+                [multiple]="true"
+                searchable="true"
+                [closeOnSelect]="false"
+                clearSearchOnAdd="true"
+                appearance="outline"
+                placeholder="Preset Question"
+                bindLabel="question"
+                bindValue="question"
+                notFoundText="No item found"
+                [(ngModel)]="maLink.question"
+              ></ng-select>
+            </div>
+            <mat-form-field
+              appearance="outline"
+              fxFlex="100"
+              fxFlex.gt-md="50"
+              fxFlex.gt-xs="50"
+            >
+              <mat-label>Question/UMR</mat-label>
+              <input
+                matInput
+                name="text"
+                [(ngModel)]="maLink.questionText"
+                maxlength="100"
+              />
+            </mat-form-field>
+          </div>
+          <div class="seprater"></div>
+        </div>
+        <div class="tabset-row">
+          <nb-tabset
+            class="form-tabs w-100"
+            (changeTab)="emptyCallerList($event)"
+          >
+            <nb-tab tabTitle="Global Search">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="50"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <ng-select
+                      #daSelect
+                      appearance="outline"
+                      name="diseaseArea"
+                      [items]="diseaseArea"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="name"
+                      placeholder="Product/Disease Area"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectDiseaseArea($event)"
+                    >
+                    </ng-select>
+                    <nb-list
+                      class="mb-4"
+                      ngClass.gt-xs="mb-0"
+                      *ngIf="maLink.diseaseArea.length"
+                    >
+                      <nb-list-item *ngFor="let item of maLink.diseaseArea">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.name }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removeDA(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="50"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <ng-select
+                      #taSelect
+                      appearance="outline"
+                      name="therapeuticArea"
+                      [items]="therapeuticArea"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="name"
+                      placeholder="Therapeutic Area"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectTherapeuticArea($event)"
+                    >
+                    </ng-select>
+                    <nb-list
+                      class="mb-4"
+                      ngClass.gt-xs="mb-0"
+                      *ngIf="maLink.therapeuticArea.length"
+                    >
+                      <nb-list-item *ngFor="let item of maLink.therapeuticArea">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.name }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removeTA(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="50"
+                    ngClass.gt-xs="pr-2"
+                  >
+                    <ng-select
+                      #jobTitle
+                      appearance="outline"
+                      name="jobTitle"
+                      [items]="jobTitles"
+                      [multiple]="false"
+                      closeOnSelect="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="jobTitle"
+                      placeholder="Role"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectJobTitle($event)"
+                    >
+                    </ng-select>
+                    <nb-list
+                      class="mb-4"
+                      ngClass.gt-xs="mb-0"
+                      *ngIf="maLink.jobTitle.length"
+                    >
+                      <nb-list-item *ngFor="let item of maLink.jobTitle">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.jobTitle }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removejobTitle(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="25"
+                    fxFlex.gt-xs="50"
+                  >
+                    <ng-select
+                      #territorySelect
+                      appearance="outline"
+                      name="territorySelect"
+                      [items]="territory"
+                      [multiple]="false"
+                      closeOnSelect="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="name"
+                      placeholder="Territory"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectTerritory($event)"
+                    >
+                    </ng-select>
+                    <nb-list
+                      class="mb-4"
+                      ngClass.gt-xs="mb-0"
+                      *ngIf="maLink.territory.length"
+                    >
+                      <nb-list-item *ngFor="let item of maLink.territory">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.name }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removeTerritory(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="split-mobile"
+                fxLayout="row wrap"
+                fxLayoutAlign="start"
+                fxFlex="1 0 auto"
+              >
+                <mat-form-field
+                  appearance="outline"
+                  fxFlex="100"
+                  fxFlex.gt-md="33.33"
+                  fxFlex.gt-xs="50"
+                  ngClass.gt-xs="pr-2"
+                >
+                  <mat-label>Eligible MoD</mat-label>
+                  <input
+                    matInput
+                    disabled
+                    name="totalFMD"
+                    [(ngModel)]="maLink.totalFMD"
+                  />
+                </mat-form-field>
+                <mat-form-field
+                  appearance="outline"
+                  fxFlex="100"
+                  fxFlex.gt-md="33.33"
+                  fxFlex.gt-xs="50"
+                  ngClass.gt-xs="pr-2"
+                >
+                  <mat-label>Active MoD</mat-label>
+                  <input
+                    matInput
+                    disabled
+                    name="activeFMD"
+                    [(ngModel)]="maLink.activeFMD"
+                  />
+                </mat-form-field>
+                <div
+                  appearance="outline"
+                  fxFlex="100"
+                  fxFlex.gt-md="33.33"
+                  fxFlex.gt-xs="100"
+                  class="mb-4"
+                >
+                  <ng-select
+                    appearance="outline"
+                    name="activeFMDList"
+                    [items]="maLink.activeFMDList"
+                    [multiple]="true"
+                    [closeOnSelect]="true"
+                    [searchable]="true"
+                    [clearSearchOnAdd]="true"
+                    bindLabel="fullName"
+                    bindValue="id"
+                    placeholder="All Active MoD/Select"
+                    notFoundText="No Active MoD found"
+                    [(ngModel)]="callerList"
+                    class="show-dropdown-top"
+                  >
+                  </ng-select>
+                </div>
+              </div>
+            </nb-tab>
+            <nb-tab tabTitle="Search Team">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-2"
+                    *ngIf="loadingTeams || activeTeams.length"
+                  >
+                    <ng-select
+                      #teamSelect
+                      appearance="outline"
+                      name="team"
+                      [items]="activeTeams"
+                      [multiple]="false"
+                      [loading]="loadingTeams"
+                      closeOnSelect="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="teamName"
+                      placeholder="Team"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectTeam($event)"
+                      class="show-dropdown-top"
+                    >
+                    </ng-select>
+                    <nb-list class="mb-4" ngClass.gt-xs="mb-0">
+                      <nb-list-item *ngFor="let item of callerList">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.teamName }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removeCaller(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!loadingTeams && !activeTeams.length">
+                <p>No active team found</p>
+              </div>
+            </nb-tab>
+            <nb-tab tabTitle="Search Individuals">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-2"
+                    *ngIf="activeUsers.length"
+                  >
+                    <ng-select
+                      #userSelect
+                      appearance="outline"
+                      name="user"
+                      [items]="activeUsers"
+                      [multiple]="false"
+                      closeOnSelect="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      bindLabel="nameWithRole"
+                      placeholder="MoD"
+                      notFoundText="No item found"
+                      [clearable]="false"
+                      (change)="selectUser($event)"
+                      class="show-dropdown-top"
+                    >
+                    </ng-select>
+                    <nb-list class="mb-4" ngClass.gt-xs="mb-0">
+                      <nb-list-item *ngFor="let item of callerList">
+                        <div
+                          class="w-100 d-flex justify-content-between align-items-start"
+                        >
+                          <div>{{ item.fullName }}</div>
+                          <div class="ml-2">
+                            <nb-icon
+                              pack="eva"
+                              icon="close-outline"
+                              (click)="removeCaller(item)"
+                            ></nb-icon>
+                          </div>
+                        </div>
+                      </nb-list-item>
+                    </nb-list>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!activeUsers.length">
+                <p>No active MoD found</p>
+              </div>
+            </nb-tab>
+          </nb-tabset>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-6 text-center">
+          <button
+            nbButton
+            ghost
+            status="success"
+            [disabled]="!callerList.length"
+            (click)="makeCall()"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+    <div class="call-connecting" *ngIf="connecting">
+      <nb-card>
+        <nb-card-body class="text-center p-0">
+          <div [nbSpinner]="connecting" nbSpinnerStatus="danger"></div>
+          <div class="text-connect">
+            Connecting to MoD<img src="assets/images/loader.svg" alt="" />
+          </div>
+        </nb-card-body>
+        <nb-card-footer class="text-center p-0 pt-3">
+          <button nbButton ghost status="danger" (click)="disconnectCall()">
+            Disconnect
+          </button>
+        </nb-card-footer>
+      </nb-card>
+    </div>
+  </nb-card>
+</form>
+
+<ng-template #missedCallDialog let-data let-ref="missedCallDialogRef">
+  <nb-card class="no-answer-mod-call-popup">
+    <nb-card-body class="p-3 text-center">
+      <div><strong>No one has answered the call</strong></div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-between footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            size="small"
+            (click)="missedCallDialogRef.close(); dialogRef.close()"
+          >
+            Close
+          </button>
+        </div>
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            size="small"
+            (click)="retry()"
+            class="mr-3"
+          >
+            Retry
+          </button>
+        </div>
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="default"
+            size="small"
+            (click)="missedCallDialogRef.close()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

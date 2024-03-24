@@ -1,0 +1,544 @@
+<nb-layout class="add-team-manage-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">{{ title }}</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                type="button"
+                class="mr-1"
+                (click)="goBack()"
+              >
+                <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <form #form="ngForm" novalidate>
+        <nb-card>
+          <nb-card-body>
+            <div fxLayout="column" fxLayoutAlign="start">
+              <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="33.33"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>Team Name</mat-label>
+                    <input
+                      matInput
+                      name="teamName"
+                      required
+                      pattern="^[a-zA-Z0-9\u00c0-\u017e'&() -]{1,50}$"
+                      [(ngModel)]="team.teamName"
+                      maxlength="50"
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['teamName']?.errors?.required"
+                      >Team Name is required</mat-error
+                    >
+                    <mat-error
+                      *ngIf="form.form.controls['teamName']?.errors?.pattern"
+                      >Team Name must not contain special character</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                  *ngFor="let day of team.availability"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-sm="18"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-sm="pr-1"
+                    ngClass.gt-xs="pr-1"
+                    fxLayoutAlign="left center"
+                  >
+                    <mat-checkbox
+                      [name]="day.day"
+                      class="ml-2 days-checkbox"
+                      [(ngModel)]="day.checked"
+                    >
+                      {{ day.day | titlecase }}
+                    </mat-checkbox>
+                  </div>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-sm="18"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-sm="pr-1"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-label>Start Team Operation</mat-label>
+                    <input
+                      matInput
+                      mwlFlatpickr
+                      [name]="'timeFrom' + day.day"
+                      [(ngModel)]="day.availableFrom"
+                      disableMobile="true"
+                      enableTime="true"
+                      noCalendar="true"
+                      dateFormat="h:i K"
+                      [disabled]="!day.checked"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['startTime']?.errors?.required"
+                      >Start Team Operation is required</mat-error
+                    >
+                  </mat-form-field>
+                  <mat-form-field
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-sm="18"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-sm="pl-1 pr-1"
+                    ngClass.gt-xs="pl-1"
+                  >
+                    <mat-label>End Team Operation</mat-label>
+                    <input
+                      matInput
+                      mwlFlatpickr
+                      [name]="'timeTill' + day.day"
+                      [(ngModel)]="day.availableTill"
+                      disableMobile="true"
+                      enableTime="true"
+                      noCalendar="true"
+                      dateFormat="h:i K"
+                      [disabled]="!day.checked"
+                      required
+                    />
+                    <mat-error
+                      *ngIf="form.form.controls['startTime']?.errors?.required"
+                      >End Team Operation is required</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="34"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-md="pr-4"
+                    ngClass.gt-xs="pr-1"
+                    class="position-relative"
+                  >
+                    <ng-select
+                      name="timeZone"
+                      [items]="timeZoneList"
+                      [multiple]="false"
+                      [closeOnSelect]="true"
+                      [searchable]="true"
+                      [clearSearchOnAdd]="true"
+                      appearance="outline"
+                      placeholder="Select Time Zone*"
+                      bindLabel="label"
+                      bindValue="momentValue"
+                      [(ngModel)]="team.timeZone"
+                      required
+                    >
+                    </ng-select>
+                    <span
+                      class="mat-errors"
+                      *ngIf="
+                        form.form.controls['timeZone']?.invalid &&
+                        form.form.controls['timeZone']?.errors?.required &&
+                        (form.form.controls['timeZone']?.dirty ||
+                          form.form.controls['timeZone']?.touched)
+                      "
+                      >Time zone is required.</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-sm="27"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <p><strong>Allow Ad-Hoc calls</strong></p>
+                    <mat-radio-group
+                      aria-label="Select an option"
+                      name="adhocCalls"
+                      [(ngModel)]="team.allowAdHocCalls"
+                    >
+                      <mat-radio-button checked [value]="true" class="mr-4"
+                        >Yes</mat-radio-button
+                      >
+                      <mat-radio-button [value]="false">No</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+                  <div
+                    class="pt-0"
+                    fxFlex="100"
+                    fxFlex.gt-sm="50"
+                    ngClass.lt-md="pt-3"
+                    ngClass.lt-sm="pt-3"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <p><strong>Chat</strong></p>
+                    <nb-toggle
+                      labelPosition="right"
+                      status="danger"
+                      [(checked)]="team.isChatOn"
+                    >
+                    </nb-toggle>
+                  </div>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div class="mt-3" appearance="outline" fxFlex="100">
+                    <p><strong>Escalation Time</strong></p>
+                    <div>
+                      <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        fxFlex.gt-md="18"
+                        fxFlex.gt-xs="35"
+                        class="pr-1"
+                      >
+                        <mat-label>For Manager (in minutes)</mat-label>
+                        <input
+                          type="number"
+                          matInput
+                          class="mr-4"
+                          name="escalationTimeMml"
+                          [(ngModel)]="team.managerEscalationMinutes"
+                          pattern="^[0-9]+$"
+                          min="0"
+                          required
+                        />
+                        <mat-error
+                          *ngIf="
+                            form.form.controls['escalationTimeMml']?.errors
+                              ?.required
+                          "
+                        >
+                          Manager Escalation minutes are required.
+                        </mat-error>
+                        <mat-error
+                          *ngIf="
+                            form.form.controls['escalationTimeMml']?.errors
+                              ?.pattern
+                          "
+                          >Escalation minutes can't be entered negative or
+                          decimal.</mat-error
+                        >
+                      </mat-form-field>
+                      <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        fxFlex.gt-md="19"
+                        fxFlex.gt-xs="35"
+                        class="pl-1"
+                      >
+                        <mat-label>For Sponsor Director (in minutes)</mat-label>
+                        <input
+                          type="number"
+                          matInput
+                          name="escalationTimeDirector"
+                          [(ngModel)]="team.directorEscalationMinutes"
+                          pattern="^[0-9]+$"
+                          min="0"
+                          required
+                        />
+                        <mat-error
+                          *ngIf="
+                            form.form.controls['escalationTimeDirector']?.errors
+                              ?.required
+                          "
+                        >
+                          Sponsor Director Escalation minutes are required.
+                        </mat-error>
+                        <mat-error
+                          *ngIf="
+                            form.form.controls['escalationTimeDirector']?.errors
+                              ?.pattern
+                          "
+                          >Escalation minutes can't be entered negative or
+                          decimal.</mat-error
+                        >
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="50"
+                    fxFlex.gt-xs="33.33"
+                    ngClass.gt-xs="pr-1"
+                    class="mb-3"
+                  >
+                    <p>
+                      <strong
+                        >Sponsor Users to be notified for the call
+                        request</strong
+                      >
+                    </p>
+                    <mat-radio-group
+                      aria-label="Select an option"
+                      name="callNotification"
+                      [(ngModel)]="team.scheduleCallDisplayOnAvailibility"
+                    >
+                      <mat-radio-button checked [value]="true" class="mr-4"
+                        >Available</mat-radio-button
+                      >
+                      <mat-radio-button [value]="false">All</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+                </div>
+                <div
+                  class="split-mobile"
+                  fxLayout="row wrap"
+                  fxLayoutAlign="start"
+                  fxFlex="1 0 auto"
+                >
+                  <p><strong>Access Rules</strong></p>
+                  <div
+                    appearance="outline"
+                    fxFlex="100"
+                    fxFlex.gt-md="100"
+                    fxFlex.gt-xs="100"
+                    ngClass.gt-xs="pr-1"
+                  >
+                    <mat-radio-group
+                      aria-label="Select an option"
+                      name="dsFlag"
+                      class="d-block"
+                      [(ngModel)]="team.dsFlag"
+                    >
+                      <div
+                        appearance="outline"
+                        fxFlex="100"
+                        fxFlex.gt-md="100"
+                        fxFlex.gt-xs="100"
+                        ngClass.gt-xs="pr-2"
+                      >
+                        <mat-radio-button
+                          [value]="dsFlag.AssociationOnly"
+                          class="mr-4"
+                          >Association Only</mat-radio-button
+                        >
+                      </div>
+                      <div
+                        appearance="outline"
+                        fxFlex="100"
+                        fxFlex.gt-md="100"
+                        fxFlex.gt-xs="100"
+                        ngClass.gt-xs="pr-2"
+                      >
+                        <mat-radio-button [value]="dsFlag.Both" class="mr-4"
+                          >Both Association and Division Tags</mat-radio-button
+                        >
+                      </div>
+                    </mat-radio-group>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-sm-12">
+                    <p><strong>User Association</strong></p>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          type="button"
+                          (click)="searchResults(linkAccessRuleDialog, true)"
+                        >
+                          Link Users
+                        </button>
+                      </span>
+                      <vmsl-profile-access-rules
+                        #linkedUsers
+                        [accessRules]="team.linkedUsers"
+                        (tabTitle)="getTabTitleValue($event, true)"
+                        (removeItem)="removeListItem($event)"
+                      >
+                      </vmsl-profile-access-rules>
+                    </div>
+                    <span
+                      class="mat-errors mat-tabs-errors"
+                      *ngIf="invalidUserField.length"
+                    >
+                      User associations are required.
+                    </span>
+                  </div>
+                </div>
+                <div class="row mt-3" *ngIf="team.dsFlag === dsFlag.Both">
+                  <div class="col-sm-12">
+                    <p><strong>Division State Tags</strong></p>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          type="button"
+                          (click)="searchResults(linkAccessRuleDialog, false)"
+                        >
+                          Link DS Tags
+                        </button>
+                      </span>
+                      <vmsl-profile-access-rules
+                        #dsTags
+                        [accessRules]="team.dsTags"
+                        (tabTitle)="getTabTitleValue($event, false)"
+                        (removeItem)="removeListItem($event)"
+                      >
+                      </vmsl-profile-access-rules>
+                      <span
+                        class="mat-errors mat-tabs-errors"
+                        *ngIf="invalidDsTagField.length"
+                      >
+                        DS Tags associations are required.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+          <nb-card-footer>
+            <div class="btn-group">
+              <button
+                nbButton
+                status="danger"
+                type="submit"
+                class="mr-2"
+                (click)="addUpdateTeam(form)"
+              >
+                Save
+              </button>
+              <button
+                nbButton
+                status="basic"
+                type="button"
+                (click)="cancel(form)"
+              >
+                Clear
+              </button>
+            </div>
+          </nb-card-footer>
+        </nb-card>
+      </form>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #linkAccessRuleDialog let-data let-ref="dialogRef">
+  <nb-card class="links-popup">
+    <nb-card-header>Link {{ data.dialogTitle }}</nb-card-header>
+    <nb-card-body>
+      <ng-select
+        #getModelValue="ngModel"
+        #ngSelectDropdown
+        name="linkAccessRules"
+        [items]="data.dialogData"
+        [multiple]="true"
+        [closeOnSelect]="false"
+        [searchable]="true"
+        [clearSearchOnAdd]="true"
+        [bindLabel]="data.isUserTab ? 'fullName' : 'name'"
+        [bindValue]="data.isUserTab ? 'userTenantId' : 'id'"
+        placeholder="{{ data.dialogTitle }}"
+        appearance="outline"
+        notFoundText="No {{ data.dialogTitle }} found"
+        [(ngModel)]="data.selected"
+        class="select-custom"
+      >
+        <ng-template *ngIf="!data.isUserTab" ng-header-tmp>
+          <div>
+            <button
+              class="btn btn-link"
+              (click)="onSelectAll(getModelValue, data.dialogTitle)"
+            >
+              Select All
+            </button>
+            <button class="btn btn-link" (click)="onClearAll(getModelValue)">
+              Clear All
+            </button>
+          </div>
+        </ng-template>
+      </ng-select>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-between footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            (click)="ref.close()"
+            class="custom-mrgn"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <div class="col-8">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            class="custom-mrgn"
+            (click)="onClickAddAccessRules(ngSelectDropdown, data.isUserTab)"
+          >
+            Add {{ data.dialogTitle }}
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

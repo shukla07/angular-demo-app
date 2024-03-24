@@ -1,0 +1,36 @@
+<div class="video-frame" [ngClass]="userSpeaking ? 'speaking' : ''">
+  <div [ngClass]="{publishing: publishing}" #publisherDiv></div>
+  <div class="user-name Sareen">
+    {{ userName }}
+    <nb-icon
+      pack="eva"
+      [icon]="micIcon ? 'mic-outline' : 'mic-off-outline'"
+      class="mic-icon"
+      [ngClass]="micIcon ? 'active' : 'deactive'"
+    ></nb-icon>
+  </div>
+</div>
+<ng-template #dialog let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <h4 class="mt-3 mb-4">Publishing Failed</h4>
+        <p>
+          {{ data.message }}
+        </p>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <div class="d-flex justify-content-center" ngClass.lt-sm="row">
+        <button
+          nbButton
+          outline
+          status="warning"
+          (click)="retry(); ref.close()"
+        >
+          Retry
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

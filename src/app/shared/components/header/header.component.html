@@ -1,0 +1,186 @@
+<div class="main-header">
+  <div class="header-container">
+    <div class="header-logo">
+      <div class="d-flex align-items-center">
+        <img src="assets/logo/kyodome-logo-white.png" alt="vmsl logo" />
+        <span class="vmsl-title">vmsl.live</span>
+      </div>
+    </div>
+    <nb-icon
+      nbTooltip="Toggle Menu"
+      nbTooltipPlacement="right"
+      icon="menu-2-outline"
+      pack="eva"
+      (click)="toggle()"
+      class="toggle-menu"
+    ></nb-icon>
+  </div>
+  <div class="header-container">
+    <nb-actions>
+      <nb-action *ngIf="user?.tenantPhotoUrl">
+        <img [src]="user?.tenantPhotoUrl" alt="" class="brand-logo" />
+      </nb-action>
+      <nb-action nbTooltip="Support" nbTooltipPlacement="bottom">
+        <a
+          href="https://www.vmsl.live/userguides"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <nb-icon pack="eva" icon="question-mark-circle-outline"></nb-icon>
+        </a>
+      </nb-action>
+      <nb-action
+        nbTooltip="Notifications"
+        nbTooltipPlacement="bottom"
+        icon="bell-outline"
+        routerLink="/main/notifications-list"
+        [badgeText]="newNotification && 'new'"
+        badgePosition="top right"
+        badgeStatus="info"
+        class="badge-active"
+      ></nb-action>
+      <nb-action
+        *ngxPermissionsOnly="permissionKey.CombinedInmailAllowed"
+        class="dropdown-toggle badge-active2"
+        data-toggle="dropdown"
+        [badgeText]="setNewMailNotificaiton && '&nbsp;'"
+        badgePosition="top right"
+        badgeStatus="info"
+      >
+        <nb-icon
+          pack="eva"
+          icon="email-outline"
+          (click)="getRecentMails()"
+        ></nb-icon>
+        <div
+          class="dropdown-menu dropdown-menu-right d-block header-email-date"
+          *ngIf="isEmailDropdown"
+        >
+          <nb-card>
+            <nb-card-body class="p-0">
+              <div class="inner-head" *ngIf="emailStack && emailStack.length">
+                <div
+                  [ngClass]="{'unread-email-notification': email.isNew}"
+                  *ngFor="let email of emailStack"
+                  (click)="getEmailById(email.id)"
+                  class="d-flex justify-content-between align-items-center"
+                >
+                  <span class="header-email-title">{{ email.subject }}</span>
+                  <span class="header-email-date">{{
+                    email.formattedTime
+                  }}</span>
+                  <span class="email-body">{{ email.body }}</span>
+                </div>
+              </div>
+              <div *ngIf="emailStack && !emailStack.length">
+                <div class="p-2 text-center">No new mails received.</div>
+              </div>
+            </nb-card-body>
+            <nb-card-footer
+              class="p-0"
+              *ngIf="emailStack && emailStack.length === 10"
+            >
+              <a class="see-more" (click)="navigateToInbox()">Go to inbox..</a>
+            </nb-card-footer>
+          </nb-card>
+        </div>
+      </nb-action>
+      <nb-action class="pr-0 dropdown-toggle" data-toggle="dropdown">
+        <nb-user
+          [name]="user?.fullName"
+          [title]="user?.userTitle"
+          nbContextMenuTag="submenu-user-header"
+          [picture]="user?.photoUrl"
+          class="menu-header"
+          [badgeText]="status ? '&nbsp' : null"
+          [badgeStatus]="status"
+          badgePosition="top right"
+          (click)="headerDropdownToggle()"
+        ></nb-user>
+        <div
+          class="dropdown-menu dropdown-menu-right d-block"
+          *ngIf="isHeaderDropdown"
+        >
+          <button
+            class="dropdown-item"
+            type="button"
+            routerLink="/main/myProfile"
+            (click)="isHeaderDropdown = false"
+          >
+            <nb-icon pack="custom-icons" icon="icon-users"></nb-icon> My Profile
+          </button>
+          <button
+            *ngxPermissionsOnly="permissionKey.ChangeUserVisibility"
+            class="dropdown-item"
+            type="button"
+            (click)="setOnline(); isHeaderDropdown = false"
+          >
+            <nb-icon pack="custom-icons" icon="icon-buld-active"></nb-icon>
+            Online
+          </button>
+          <button
+            *ngxPermissionsOnly="permissionKey.ChangeUserVisibility"
+            class="dropdown-item"
+            type="button"
+            (click)="setOffline(); isHeaderDropdown = false"
+          >
+            <nb-icon pack="custom-icons" icon="icon-buld-inactive"></nb-icon>
+            Offline
+          </button>
+          <button
+            *ngxPermissionsOnly="permissionKey.ChangeUserVisibility"
+            class="dropdown-item"
+            type="button"
+            (click)="setIncognito(); isHeaderDropdown = false"
+          >
+            <nb-icon pack="custom-icons" icon="icon-incognito"></nb-icon>
+            Private
+          </button>
+          <button
+            *ngxPermissionsOnly="permissionKey.CanShareReferralCode"
+            class="dropdown-item"
+            type="button"
+            (click)="copyReferralCode(); isHeaderDropdown = false"
+          >
+            <nb-icon pack="eva" icon="copy"></nb-icon> Copy Referral Code
+          </button>
+          <button
+            *ngxPermissionsOnly="[
+              permissionKey.ViewAssignedAudit,
+              permissionKey.ViewTenantAuditDirector
+            ]"
+            class="dropdown-item"
+            type="button"
+            routerLink="/main/audit-logs"
+            (click)="isHeaderDropdown = false"
+          >
+            <nb-icon pack="custom-icons" icon="icon-auditlog"></nb-icon> Audit
+            Logs
+          </button>
+          <button
+            *ngxPermissionsExcept="permissionKey.ViewRefererAddressBook"
+            class="dropdown-item"
+            type="button"
+            routerLink="/main/settings"
+            (click)="isHeaderDropdown = false"
+          >
+            <nb-icon pack="eva" icon="settings-outline"></nb-icon> Account
+            Settings
+          </button>
+          <button
+            class="dropdown-item no-border"
+            type="button"
+            (click)="logout(); isHeaderDropdown = false"
+          >
+            <nb-icon pack="eva" icon="log-out-outline"></nb-icon> Logout
+          </button>
+        </div>
+      </nb-action>
+    </nb-actions>
+  </div>
+</div>
+<div
+  class="dropdown-overlay"
+  (click)="isHeaderDropdown = false; isEmailDropdown = false"
+  *ngIf="isHeaderDropdown || isEmailDropdown"
+></div>

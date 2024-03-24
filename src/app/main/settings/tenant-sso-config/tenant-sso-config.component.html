@@ -1,0 +1,59 @@
+<div>
+  <form #form="ngForm">
+    <nb-card>
+      <nb-card-header>
+        <div>{{ dialogName }}</div>
+      </nb-card-header>
+      <nb-card-body>
+        <div>
+          <nb-toggle
+            [(checked)]="isSsoAllowed"
+            [(ngModel)]="isSsoAllowed"
+            name="isSsoAllowed"
+          >
+            <label>Toggle SSO</label></nb-toggle
+          >
+        </div>
+        <label class="mr-2">Microsoft Tenant ID</label>
+        <input
+          nbInput
+          name="msTenantId"
+          [disabled]="!isSsoAllowed"
+          title="Tenant Id"
+          maxlength="255"
+          pattern="^[a-zA-Z0-9-]{36}$"
+          required
+          [(ngModel)]="msTenantId"
+          class="w-100"
+        /><span class="text-danger" *ngIf="!form.valid && form.touched"
+          >The Id is Invalid</span
+        >
+      </nb-card-body>
+      <nb-card-footer>
+        <div class="d-flex justify-content-between" ngClass.lt-sm="row">
+          <button
+            nbButton
+            outline
+            status="info"
+            (click)="onClickCancel(form)"
+            [disabled]="form.pristine"
+          >
+            Cancel
+          </button>
+          <button
+            nbButton
+            outline
+            status="warning"
+            [disabled]="form.pristine || loading"
+            [nbSpinner]="loading"
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+            (click)="editSsoConfig(form)"
+          >
+            Save Config
+          </button>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </form>
+</div>

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "paths": {
+      "@vmsl/core/*": ["src/app/core/*"],
+      "@vmsl/shared/*": ["src/app/shared/*"],
+      "@vmsl/env/*": ["src/environments/*"],
+      "@vmsl/theme/*": ["src/app/theme/*"]
+    }
+  },
+  "files": ["src/main.ts", "src/polyfills.ts"],
+  "include": ["src/**/*.d.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
+}

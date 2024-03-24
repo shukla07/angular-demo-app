@@ -1,0 +1,70 @@
+<nb-layout>
+  <nb-layout-column class="p-0">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="formTemplate">
+      <nb-card>
+        <nb-card-header>Notification Settings</nb-card-header>
+        <nb-card-body  *ngIf="formTemplate.length" class="p-0">
+          <table class="table table-notification table-hover">
+            <caption class="d-none">
+              Notification Settings
+            </caption>
+            <thead>
+              <tr class="text-center">
+                <th scope="col" class="text-left"></th>
+                <th scope="col">IN-APP</th>
+                <th scope="col">SMS</th>
+                <th scope="col">EMAIL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="text-center"
+                formArrayName="notifications"
+                *ngFor="
+                  let control of form.get('notifications')['controls'];
+                  let i = index
+                "
+              >
+                <td class="text-left">
+                  {{ formTemplate[i].displayName }}
+                </td>
+                <ng-container [formGroupName]="i">
+                  <ng-container
+                    *ngFor="let type of notificationType; let j = index"
+                    [formArrayName]="formTemplate[i].id"
+                  >
+                    <td>
+                      <nb-checkbox
+                        status="basic"
+                        [formControlName]="j"
+                      ></nb-checkbox>
+                    </td>
+                  </ng-container>
+                </ng-container>
+              </tr>
+            </tbody>
+          </table>
+        </nb-card-body>
+        <nb-card-body *ngIf="!formTemplate.length">
+          <p>There are no specific account settings for your role.</p>
+        </nb-card-body>
+        <nb-card-footer  *ngIf="formTemplate.length">
+          <div class="btn-group">
+            <button nbButton status="danger" type="submit" class="mr-2">
+              Submit
+            </button>
+            <button
+              nbButton
+              status="basic"
+              type="button"
+              class="mr-2"
+              (click)="onCancel()"
+            >
+              Cancel
+            </button>
+          </div>
+        </nb-card-footer>
+      </nb-card>
+    </form>
+  </nb-layout-column>
+</nb-layout>

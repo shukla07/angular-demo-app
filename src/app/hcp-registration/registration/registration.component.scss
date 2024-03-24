@@ -1,0 +1,447 @@
+@import '../../theme/styles/themes';
+@import '~@ng-select/ng-select/themes/material.theme.css';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+.nb-theme-default {
+  [nbInput].status-success {
+    border-color: #e4e9f2;
+  }
+  .hcp-registration-ui {
+    .login-ui-right {
+      background-color: #fff;
+      border-radius: 0 5px 5px 0;
+      min-height: 480px;
+      overflow: hidden;
+
+      @media screen and (max-width: 576px) {
+        border-radius: 5px;
+        min-height: inherit;
+      }
+
+      &.registration-layout {
+        border-radius: 5px;
+        min-height: inherit;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .form-control-group {
+        margin-bottom: 1.7rem;
+        position: relative;
+
+        .caption {
+          position: absolute;
+          top: 35px;
+          left: 0;
+        }
+      }
+
+      button {
+        text-transform: capitalize;
+        font-weight: normal;
+
+        &.appearance-filled.status-primary.grey-button {
+          background-color: nb-theme(login-screens-bg);
+          border-color: nb-theme(login-screens-bg);
+        }
+      }
+      nb-card.registration-card {
+        height: auto !important;
+        background-color: nb-theme(background-basic-color-1) !important;
+        margin-right: -10px;
+        margin-bottom: 0;
+        border-radius: 5px !important;
+
+        nb-card-header {
+          display: block;
+          font-weight: normal;
+          border: 0;
+          background-color: nb-theme(default-theme-color);
+          color: nb-theme(color-basic-100);
+
+          nb-icon {
+            font-size: 23px;
+            color: nb-theme(color-basic-100);
+            cursor: pointer;
+          }
+        }
+        nb-card-body {
+          height: auto;
+          overflow: visible;
+        }
+        nb-card-footer {
+          border: 0;
+        }
+        .mat-form-field-wrapper {
+          padding-bottom: 9px;
+        }
+      }
+
+      .split-mobile {
+        > * {
+          @include media-breakpoint-down(sm) {
+            max-width: 50% !important;
+            flex: 1 1 50% !important;
+            padding-right: 5px !important;
+          }
+          @media screen and (max-width: 479px) {
+            max-width: 100% !important;
+            flex: 1 1 100% !important;
+            padding-right: 0px !important;
+          }
+        }
+        > .title-div {
+          @include media-breakpoint-down(sm) {
+            max-width: 35% !important;
+            flex: 1 1 35% !important;
+            padding-right: 5px !important;
+          }
+        }
+        > .fname-div {
+          @include media-breakpoint-down(sm) {
+            max-width: 65% !important;
+            flex: 1 1 65% !important;
+            padding-right: 0px !important;
+          }
+        }
+      }
+      .phone-no,
+      .alt-phone-no {
+        background-color: #ff0000;
+        .ngx-mat-tel-input-container input.mat-input-element {
+          padding-left: 0;
+          margin-left: 90px;
+          width: calc(100% - 90px);
+        }
+      }
+
+      .country-list-button .label-wrapper {
+        white-space: normal;
+      }
+
+      .mat-form-field,
+      .mat-select,
+      .mat-button,
+      .mat-raised-button,
+      .mat-icon-button,
+      .mat-stroked-button,
+      .mat-flat-button,
+      .mat-fab,
+      .mat-mini-fab,
+      .mat-menu-item,
+      .mat-option {
+        font-family: nb-theme(font-family-primary);
+        color: nb-theme(color-basic-800);
+        font-size: nb-theme(text-paragraph-font-size);
+      }
+      .mat-form-field {
+        line-height: 1.3;
+      }
+      .ng-select .ng-select-container.ng-appearance-outline {
+        min-height: 63px;
+      }
+      .ng-select .ng-select-container.ng-appearance-outline:after {
+        height: calc(100% - 0.3em);
+        bottom: 1px;
+      }
+      .ng-select .ng-select-container.ng-appearance-outline .ng-placeholder {
+        color: nb-theme(placeholder-color);
+      }
+      .ng-select.ng-select-single
+        .ng-select-container.ng-appearance-outline
+        .ng-placeholder {
+        margin-top: 4px;
+      }
+      .ng-select.ng-select-single .ng-select-container .ng-value-container {
+        border-top: 0.8em solid transparent;
+      }
+      .ng-select.ng-select-multiple .ng-select-container .ng-value-container {
+        border-top: 17px solid transparent;
+      }
+      .ng-select.ng-select-multiple
+        .ng-select-container.ng-appearance-outline
+        .ng-arrow-wrapper {
+        top: -2px;
+      }
+      .ng-select.ng-select-multiple
+        .ng-select-container
+        .ng-value-container
+        .ng-value
+        .ng-value-label {
+        font-size: nb-theme(text-paragraph-font-size);
+      }
+      .ng-select.ng-select-single
+        .ng-select-container.ng-appearance-outline
+        .ng-value {
+        padding-top: 8px;
+      }
+      .ng-select.ng-select-single
+        .ng-select-container.ng-appearance-outline
+        .ng-arrow-wrapper {
+        bottom: 22px;
+      }
+      .ng-select.ng-select-single
+        .ng-select-container.ng-appearance-outline
+        .ng-clear-wrapper {
+        bottom: 17px;
+      }
+      .ng-select.ng-invalid.ng-touched
+        .ng-select-container.ng-appearance-outline:after {
+        border: 2px solid #f44336;
+      }
+
+      .ng-select.ng-invalid.ng-touched
+        .ng-select-container.ng-appearance-outline
+        .ng-placeholder {
+        color: #f44336;
+      }
+      .ng-select.ng-select.ng-select-single
+        .ng-select-container
+        .ng-value-container
+        .ng-input {
+        bottom: 1rem;
+      }
+      .ng-select.ng-select-multiple .ng-has-value .ng-placeholder,
+      .ng-select.ng-select-focused .ng-has-value .ng-placeholder,
+      .ng-select.ng-select-opened .ng-placeholder {
+        transform: translateY(-1.48125em) scale(0.75) perspective(100px)
+          translateZ(0.001px);
+      }
+      .ng-select.ng-select-multiple
+        .ng-select-container
+        .ng-value-container
+        .ng-input {
+        margin-top: 2px;
+      }
+
+      .mat-errors {
+        font-size: 75%;
+        padding: 0 1em;
+        position: absolute;
+        top: 63px;
+        color: #f44336;
+      }
+      .btn-group {
+        @media screen and (max-width: 350px) {
+          display: block;
+          text-align: center;
+
+          button {
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+    .login-para {
+      margin-bottom: 15px;
+      color: nb-theme(color-basic-600);
+      font-size: nb-theme(text-paragraph-2-font-size);
+      text-align: center !important;
+    }
+
+    .title {
+      sub {
+        bottom: 0;
+        font-size: 50%;
+      }
+    }
+    u,
+    a {
+      cursor: pointer;
+    }
+    .custom-tab-layout {
+      width: 100%;
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-bottom: 2px solid nb-theme(border-basic-color-2);
+
+        li {
+          display: inline-block;
+          vertical-align: top;
+          text-align: center;
+          padding: 0;
+
+          a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: nb-theme(background-basic-color-3);
+            color: nb-theme(color-basic-800);
+            text-decoration: none;
+            padding: 13px 0px;
+
+            font-size: nb-theme(text-paragraph-font-size);
+            font-weight: normal;
+            cursor: pointer;
+
+            @include media-breakpoint-down(sm) {
+              padding: 5px;
+              height: 50px;
+              line-height: 16px;
+              font-size: 12px;
+            }
+
+            &:hover {
+              background-color: nb-theme(background-basic-color-4);
+            }
+            &.active {
+              background-color: nb-theme(default-theme-color);
+              color: #fff;
+              cursor: default;
+            }
+          }
+        }
+      }
+    }
+    .custom-content {
+      border-top: 0;
+      padding: 0;
+      background-color: nb-theme(background-basic-color-1);
+      border-radius: 0 0 4px 4px;
+      border-radius: 5px;
+
+      [nbInput].status-basic {
+        background-color: nb-theme(background-basic-color-1);
+      }
+
+      &.otp-screen {
+        .label {
+          font-size: nb-theme(text-paragraph-font-size);
+          color: nb-theme(color-basic-800);
+        }
+        @include media-breakpoint-down(sm) {
+          .otp-input {
+            width: 30px;
+            font-size: 18px;
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+  nb-auth-block {
+    max-width: 700px;
+
+    .sign-in-or-up {
+      margin-top: 2rem;
+      display: block;
+    }
+    .text-link {
+      a {
+        color: nb-theme(color-basic-700);
+      }
+    }
+  }
+  .login-footer-info {
+    color: nb-theme(color-basic-600);
+    font-size: 11px;
+    padding: 20px 0;
+    text-align: center;
+    line-height: 15px;
+
+    a {
+      color: nb-theme(color-basic-600);
+      display: contents;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  nb-auth
+    nb-layout
+    .layout
+    .layout-container
+    .content
+    .columns
+    nb-layout-column {
+    padding: 0;
+    border: 0;
+
+    @include media-breakpoint-down(sm) {
+      padding: 0;
+    }
+
+    nb-card {
+      height: 100vh;
+      background-color: nb-theme(login-screens-bg);
+      border: 0;
+      border-radius: 0;
+
+      @include media-breakpoint-down(sm) {
+        height: calc(100vh - 2 * 0.5rem);
+      }
+
+      nb-card-body {
+        @include media-breakpoint-down(sm) {
+          padding: 1rem 1.6rem;
+        }
+      }
+    }
+  }
+  .alert {
+    font-size: nb-theme(text-paragraph-2-font-size);
+  }
+  .modal-icon-header {
+    min-width: 360px;
+    @include media-breakpoint-down(sm) {
+      min-width: 100%;
+    }
+
+    nb-icon {
+      font-size: 4.25rem;
+    }
+  }
+  .ng-select.ng-select-multiple
+    .ng-select-container
+    .ng-value-container
+    .ng-value {
+    background: nb-theme(default-theme-color);
+    border-radius: 15px;
+    padding: 4px 28px 4px 10px !important;
+  }
+  .ng-select.ng-select-multiple
+    .ng-select-container
+    .ng-value-container
+    .ng-value
+    .ng-value-label {
+    font-size: nb-theme(text-paragraph-2-font-size) !important;
+    float: left;
+  }
+  .ng-select.ng-select-multiple
+    .ng-select-container
+    .ng-value-container
+    .ng-value
+    .ng-value-icon {
+    cursor: pointer;
+    margin: 0 0 0 8px;
+    color: #fff;
+    font-size: 16px;
+  }
+  .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
+    background: nb-theme(background-basic-color-2);
+    color: nb-theme(color-basic-800);
+    position: relative;
+  }
+  .ng-dropdown-panel.ng-select-multiple
+    .ng-dropdown-panel-items
+    .ng-option.ng-option-selected {
+    background: nb-theme(background-basic-color-2);
+    color: nb-theme(color-basic-800);
+    position: relative;
+
+    &:after {
+      position: absolute;
+      top: 14px;
+      right: 1px;
+      font-family: 'Font Awesome 5 Free', sans-serif;
+      font-weight: 900;
+      content: '\f057';
+      color: nb-theme(default-theme-color);
+    }
+  }
+}

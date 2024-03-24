@@ -1,0 +1,22 @@
+<nb-layout class="settings-template">
+  <nb-layout-column class="p-0 mrgn-top">
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <nb-list>
+          <nb-list-item
+            *ngFor="let item of menuLists"
+            routerLinkActive="active"
+          >
+            <a [routerLink]="item.link">
+              <nb-icon icon="{{ item.icon }}" pack="eva" class="mr-2"></nb-icon>
+              {{ item.name }}
+            </a>
+          </nb-list-item>
+        </nb-list>
+      </div>
+      <div class="col-md-9">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

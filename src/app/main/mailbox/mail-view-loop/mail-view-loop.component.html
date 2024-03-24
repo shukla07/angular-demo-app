@@ -1,0 +1,280 @@
+<nb-layout class="mail-view">
+  <nb-layout-column class="p-0">
+    <nb-card class="mb-0 mail-title">
+      <nb-card-body class="p-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h5 class="font-weight-light mb-0">
+              <strong>{{ mailLoopModel.subject }}</strong>
+            </h5>
+            <h6>
+              <span *ngIf="mailLoopModel.forwarded"
+                ><br />
+                Forwarded to: {{ mailLoopModel.forwardedTo }}</span
+              >
+            </h6>
+          </div>
+          <div>
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              type="button"
+              (click)="onBackClick()"
+            >
+              <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>Back
+            </button>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-accordion>
+      <nb-accordion-item
+        [expanded]="i == 0"
+        *ngFor="let mail of mailLoopModel.messages; index as i"
+      >
+        <nb-accordion-item-header class="p-3">
+          <div class="w-100">
+            <div class="d-flex w-100 justify-content-between mb-1">
+              <div class="head-left">{{ mail.fromName }}</div>
+              <div class="head-right">
+                <nb-icon
+                  *ngIf="mail.uploadedAttachmentsInfo?.length"
+                  pack="eva"
+                  class="attachment-icon"
+                  icon="attach-2-outline"
+                ></nb-icon>
+                {{ mail.formattedTime }}
+                <span class="position-relative">
+                  <span
+                    class="star-mark"
+                    (click)="markImportant(mail)"
+                    [ngClass]="mail.isImportant ? 'active' : ''"
+                  >
+                    <nb-icon
+                      pack="eva"
+                      icon="star-outline"
+                      class="icon-unmark"
+                    ></nb-icon>
+                    <nb-icon pack="eva" icon="star" class="icon-mark"></nb-icon>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div
+              class="d-flex w-100 justify-content-between align-items-center"
+            >
+              <p class="mb-0 collapsed-show">
+                <span
+                  [innerHTML]="mail.htmlContent.substring(0, 200)"
+                  class="font-weight-normal"
+                >
+                </span>
+              </p>
+            </div>
+          </div>
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <div class="d-flex w-100 justify-content-between mb-1">
+            <div class="head-left">
+              <strong>{{ mail.fromName }}</strong>
+              <strong class="drafted-message" *ngIf="mail.storage === 'draft'">
+                (Drafted)</strong
+              >
+            </div>
+            <div class="head-right">
+              <nb-icon
+                *ngIf="mail.uploadedAttachmentsInfo?.length"
+                pack="eva"
+                class="attachment-icon"
+                icon="attach-2-outline"
+              ></nb-icon>
+              {{ mail.formattedTime }}
+              <span class="position-relative">
+                <span
+                  class="star-mark"
+                  (click)="markImportant(mail)"
+                  [ngClass]="mail.isImportant ? 'active' : ''"
+                >
+                  <nb-icon
+                    pack="eva"
+                    icon="star-outline"
+                    class="icon-unmark"
+                  ></nb-icon>
+                  <nb-icon pack="eva" icon="star" class="icon-mark"></nb-icon>
+                </span>
+              </span>
+            </div>
+          </div>
+          <div
+            class="d-flex w-100 justify-content-between align-items-center mb-3"
+          >
+            <p class="mb-0 expanded-show">
+              to: {{ mail.combinedToList }}
+              <span *ngIf="!!mail.combinedCcList">
+                <br />cc: {{ mail.combinedCcList }}</span
+              >
+              <span *ngIf="!!mail.combinedBccList && mailType === 'send'"
+                ><br />
+                bcc: {{ mail.combinedBccList }}</span
+              >
+            </p>
+          </div>
+          <div class="mail-body" [innerHTML]="mail.htmlContent"></div>
+          <div
+            *ngIf="mail.uploadedAttachmentsInfo?.length"
+            class="mail-attachments"
+          >
+            <div class="row no-gutters">
+              <div
+                *ngFor="let attachment of mail.uploadedAttachmentsInfo"
+                class="col-md-3 col-6"
+                ngClass.lt-md="mt-3"
+              >
+                <div
+                  class="attachment-file"
+                  [ngStyle]="{
+                    'background-image': 'url(' + attachment.imageUrl + ')'
+                  }"
+                  (click)="viewAttachment(attachment.imageUrl)"
+                >
+                  <div
+                    *ngIf="
+                      attachment.mime.includes('audio') ||
+                      attachment.mime.includes('video')
+                    "
+                    class="h-100 content-play-bar d-flex align-items-center justify-content-center"
+                  >
+                    <nb-icon pack="font-awesome-solid" icon="play"></nb-icon>
+                  </div>
+                  <div
+                    *ngIf="attachment.mime.includes('application/pdf')"
+                    class="h-100 content-play-bar d-flex align-items-center justify-content-center"
+                  >
+                    <nb-icon
+                      icon="file-pdf"
+                      pack="font-awesome-regular"
+                    ></nb-icon>
+                  </div>
+                  <div
+                    *ngIf="
+                      attachment.mime.includes('document') ||
+                      attachment.mime === 'application/octet-stream'
+                    "
+                    class="h-100 content-play-bar d-flex align-items-center justify-content-center"
+                  >
+                    <nb-icon icon="file" pack="font-awesome-regular"></nb-icon>
+                  </div>
+                </div>
+                <div class="image-caption">
+                  <button
+                    nbButton
+                    status="default"
+                    size="tiny"
+                    class="mr-1"
+                    ngClass.lt-md="mt-2"
+                    [nbSpinner]="isAttrachmentDownloading"
+                    [disabled]="isAttrachmentDownloading"
+                    (click)="downloadAttachment(attachment)"
+                  >
+                    <nb-icon icon="download-outline" pack="eva"></nb-icon>
+                  </button>
+                  {{ attachment.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row no-btn-shadow mt-3" *ngIf="!isReply && !isForward">
+            <div class="col btn-list">
+              <button
+                nbButton
+                status="default"
+                size="tiny"
+                class="ml-1"
+                ngClass.lt-md="mt-2"
+                (click)="onReplyClick(mail)"
+                [hidden]="mail.storage === 'draft' || mailType === 'trash'"
+              >
+                <nb-icon icon="corner-down-left-outline" pack="eva"></nb-icon>
+                Reply
+              </button>
+              <button
+                nbButton
+                status="default"
+                size="tiny"
+                class="ml-1"
+                ngClass.lt-md="mt-2"
+                (click)="onReplyAllClick(mail)"
+                [hidden]="mail.storage === 'draft' || mailType === 'trash'"
+              >
+                <nb-icon icon="corner-down-left-outline" pack="eva"></nb-icon>
+                Reply All
+              </button>
+              <button
+                nbButton
+                status="default"
+                size="tiny"
+                class="ml-1"
+                ngClass.lt-md="mt-2"
+                (click)="onForwardClick(mail)"
+                [hidden]="mail.storage === 'draft' || mailType === 'trash'"
+              >
+                <nb-icon icon="arrow-forward-outline" pack="eva"></nb-icon>
+                Forward
+              </button>
+              <button
+                nbButton
+                status="default"
+                size="tiny"
+                class="ml-1"
+                ngClass.lt-md="mt-2"
+                (click)="onPrintClick()"
+              >
+                <nb-icon icon="printer-outline" pack="eva"></nb-icon>
+                Print
+              </button>
+              <button
+                nbButton
+                status="default"
+                size="tiny"
+                class="ml-1 mr-2"
+                ngClass.lt-md="mt-2"
+                (click)="deleteMail(mail.id)"
+              >
+                <nb-icon icon="trash-2-outline" pack="eva"></nb-icon>
+                Remove
+              </button>
+            </div>
+          </div>
+          <vmsl-mailbox-compose-email
+            *ngIf="mail.storage === 'draft' && mail.from.id === currentUserId"
+            class="vmsl-mailbox-compose-email"
+            [mailType]="mailType"
+            [composeEmail]="mail"
+            [onCustomDiscard]="onDiscardDraftedMail"
+          ></vmsl-mailbox-compose-email>
+          <vmsl-mailbox-compose-email
+            #composeReply
+            *ngIf="isReply"
+            class="vmsl-mailbox-compose-email"
+            [onCustomSend]="replyToMail"
+            sendText="Reply"
+            [mailType]="mailType"
+            [composeEmail]="replyOrForwardMail"
+            [onCustomDiscard]="onDiscardDraftedMail"
+          ></vmsl-mailbox-compose-email>
+          <vmsl-mailbox-compose-email
+            *ngIf="isForward"
+            class="vmsl-mailbox-compose-email"
+            [onCustomSend]="forwardMail"
+            mailType="Forward"
+            sendText="Forward"
+            [composeEmail]="replyOrForwardMail"
+            [onCustomDiscard]="onDiscardDraftedMail"
+          ></vmsl-mailbox-compose-email>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    </nb-accordion>
+  </nb-layout-column>
+</nb-layout>

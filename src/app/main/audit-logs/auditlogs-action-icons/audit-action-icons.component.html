@@ -1,0 +1,39 @@
+<button
+  nbButton
+  status="danger"
+  size="tiny"
+  shape="round"
+  nbTooltip="View User Info"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="viewOperator()"
+  *ngxPermissionsOnly="permissionKey.ViewTenantUser"
+>
+  <nb-icon icon="eye-outline" pack="eva"> </nb-icon>
+</button>
+<button
+  *ngIf="!hideDiff"
+  nbButton
+  status="basic"
+  size="tiny"
+  shape="round"
+  nbTooltip="View Changes"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="viewChanges()"
+>
+  <nb-icon icon="flip-2-outline" pack="eva"> </nb-icon>
+</button>
+<button
+  *ngIf="hideDiff"
+  nbButton
+  status="basic"
+  size="tiny"
+  shape="round"
+  nbTooltip="View Operation Time"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="viewOperationTime()"
+>
+  <nb-icon icon="clock-outline" pack="eva"> </nb-icon>
+</button>

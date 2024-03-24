@@ -1,0 +1,287 @@
+<nb-layout class="team-profile-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">Team Profile</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                class="mr-1"
+                (click)="goBack()"
+              >
+                <nb-icon pack="eva" icon="arrow-ios-back-outline"></nb-icon>
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card class="no-card-bg" *ngIf="team">
+        <nb-card-body>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="profile-header text-center">
+                <div class="edit-profile-container">
+                  <nb-user
+                    size="giant"
+                    onlyPicture="true"
+                    name="User Name"
+                    picture="assets/avatar.png"
+                  ></nb-user>
+                  <div class="edit-profile-icon" hidden="true">
+                    <button
+                      nbButton
+                      size="small"
+                      status="danger"
+                      shape="round"
+                      nbTooltip="Edit Team Photo"
+                      nbTooltipPlacement="right"
+                    >
+                      <nb-icon pack="eva" icon="edit-outline"></nb-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <h5 class="font-weight-normal">
+                  {{ team.teamName }}
+
+                  <button
+                    nbButton
+                    size="small"
+                    status="basic"
+                    shape="round"
+                    nbTooltip="Edit Team Profile"
+                    nbTooltipPlacement="bottom"
+                    (click)="editProfile()"
+                  >
+                    <nb-icon pack="eva" icon="edit-outline"></nb-icon>
+                  </button>
+                </h5>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="profile-body">
+                <div class="row">
+                  <div class="col-sm-6 email-view">
+                    <strong class="mr-1">Team Name: </strong>
+                    {{ team.teamName }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1">Timezone: </strong>
+                    {{ teamTimeZone }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1">Allow Ad-Hoc calls: </strong>
+                    {{ team.allowAdHocCalls ? 'Yes' : 'No' }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1"
+                      >Sponsor Director escalation minutes:
+                    </strong>
+                    {{ team.directorEscalationMinutes }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1"
+                      >Sponor Manager escalation minutes:
+                    </strong>
+                    {{ team.managerEscalationMinutes }}
+                  </div>
+                  <div class="col-sm-12">
+                    <strong class="mr-1">Team availability: </strong>
+                    <span *ngFor="let day of team.availability">
+                      <ng-container *ngIf="day.checked">
+                        {{ day.day | titlecase }} ({{ day.availableFrom }} to
+                        {{ day.availableTill }}),
+                      </ng-container>
+                    </span>
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1">Sponsor Users to be notified: </strong>
+                    {{
+                      team.scheduleCallDisplayOnAvailibility
+                        ? 'Available Sponsor Users'
+                        : 'All Sponsor Users'
+                    }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong>Access Rules:</strong>
+                    {{
+                      team.dsFlag === dsFlag.Both
+                        ? 'Both Association and Division Tag'
+                        : 'Association Only'
+                    }}
+                  </div>
+                  <div class="row mt-3 w-100">
+                    <div class="col-sm-12">
+                      <p class="mb-3"><strong>Division State Tags</strong></p>
+                      <div class="position-relative">
+                        <span class="add-button">
+                          <button
+                            nbButton
+                            status="danger"
+                            size="small"
+                            type="button"
+                            (click)="searchResults(linkAccessRuleDialog, true)"
+                            hidden="true"
+                          >
+                            Link Users
+                          </button>
+                        </span>
+                        <vmsl-profile-access-rules
+                          #linkedUsers
+                          [accessRules]="team.linkedUsers"
+                          (tabTitle)="getTabTitleValue($event, true)"
+                          (removeItem)="removeUserListItemDialog($event)"
+                        >
+                        </vmsl-profile-access-rules>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="row mt-3 w-100"
+                    *ngIf="team.dsFlag === dsFlag.Both"
+                  >
+                    <div class="col-sm-12">
+                      <p><strong>Division State Tags</strong></p>
+                      <div class="position-relative">
+                        <span class="add-button">
+                          <button
+                            nbButton
+                            status="danger"
+                            size="small"
+                            type="button"
+                            (click)="searchResults(linkAccessRuleDialog, false)"
+                            hidden="true"
+                          >
+                            Link DS Tags
+                          </button>
+                        </span>
+                        <vmsl-profile-access-rules
+                          #dsTags
+                          [accessRules]="team.dsTags"
+                          (tabTitle)="getTabTitleValue($event, false)"
+                          (removeItem)="removeDsTagsListItemDialog($event)"
+                          (onToggleAssociationType)="editTeam()"
+                        >
+                        </vmsl-profile-access-rules>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #linkAccessRuleDialog let-data let-ref="dialogRef">
+  <nb-card class="links-popup">
+    <nb-card-header>Link {{ data.dialogTitle }}</nb-card-header>
+    <nb-card-body>
+      <ng-select
+        #getModelValue="ngModel"
+        #ngSelectDropdown
+        name="linkAccessRules"
+        [items]="data.dialogData"
+        [multiple]="true"
+        [closeOnSelect]="false"
+        [searchable]="true"
+        [clearSearchOnAdd]="true"
+        [bindLabel]="data.isUserTab ? 'fullName' : 'name'"
+        [bindValue]="data.isUserTab ? 'userTenantId' : 'id'"
+        placeholder="{{ data.dialogTitle }}"
+        appearance="outline"
+        notFoundText="No {{ data.dialogTitle }} found"
+        [(ngModel)]="data.selected"
+        class="select-custom"
+      >
+        <ng-template *ngIf="!data.isUserTab" ng-header-tmp>
+          <div>
+            <button
+              class="btn btn-link"
+              (click)="onSelectAll(getModelValue, data.dialogTitle)"
+            >
+              Select All
+            </button>
+            <button class="btn btn-link" (click)="onClearAll(getModelValue)">
+              Clear All
+            </button>
+          </div>
+        </ng-template>
+      </ng-select>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-between footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button nbButton ghost fullWidth status="basic" (click)="ref.close()">
+            Cancel
+          </button>
+        </div>
+        <div class="col-8">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            (click)="onClickAddAccessRules(ngSelectDropdown, data.isUserTab)"
+          >
+            Add {{ data.dialogTitle }}
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #removeListItemDialog let-data let-ref="removeListItemDialogRef">
+  <nb-card>
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <nb-icon
+          icon="alert-circle-outline"
+          status="warning"
+          pack="eva"
+          [options]="{animation: {type: 'shake', hover: false}}"
+        >
+        </nb-icon>
+        <h4 class="mt-3 mb-4">Are you sure?</h4>
+        <p>remove {{ data.listItem.name }}?</p>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <div class="d-flex justify-content-between" ngClass.lt-sm="row">
+        <button
+          nbButton
+          outline
+          status="info"
+          (click)="removeListItemDialogRef.close()"
+        >
+          Cancel
+        </button>
+        <button
+          nbButton
+          outline
+          status="warning"
+          (click)="removeListItem(data.isUserTab, data.listItem, data.tabTitle)"
+          nbSpinnerStatus="primary"
+          nbSpinnerSize="small"
+        >
+          Yes, remove it.
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

@@ -1,0 +1,48 @@
+<nb-layout>
+  <nb-layout-column class="p-0 main-content" center>
+    <nb-card *ngIf="meetingDetails">
+      <nb-card-header>Meeting Information</nb-card-header>
+      <nb-card-body class="text-center">
+        <div>
+          <p *ngIf="timeleft">
+            <strong
+              >Time left:
+              <countdown
+                #countDown
+                [config]="countdownConfig"
+                (event)="stopTimer($event)"
+              ></countdown>
+              minutes
+            </strong>
+          </p>
+          <p *ngIf="!timeleft && !showJoinButton">
+            Please wait for the owner to start the meeting
+          </p>
+        </div>
+        <div>
+          <p>
+            <strong>{{ meetingDetails.description }}</strong>
+          </p>
+          <p class="small-para">{{ meetingDetails.summary }}</p>
+          <p class="small-para">
+            {{ meetingDetails.startDateTime | date: 'shortTime' }}
+            - {{ meetingDetails.endDateTime | date: 'shortTime' }}
+          </p>
+        </div>
+        <button
+          nbButton
+          status="info"
+          (click)="joinMeeting()"
+          *ngIf="showJoinButton"
+        >
+          {{ buttonText }}
+        </button>
+      </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="showRejoinButton">
+      <nb-card-body class="text-center">
+        <button nbButton status="info" (click)="rejoin()">Rejoin</button>
+      </nb-card-body>
+    </nb-card>
+  </nb-layout-column>
+</nb-layout>

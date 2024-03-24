@@ -1,0 +1,70 @@
+@import '../../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+@import '~@ng-select/ng-select/themes/material.theme.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+.nb-theme-default {
+  nb-sidebar.left {
+    z-index: 99;
+  }
+
+  .add-therapeutic-manage-ui {
+    .main-bg {
+      padding: 21px 22px 20px;
+
+      @include media-breakpoint-down(sm) {
+        padding: 21px 22px 20px;
+      }
+      @include media-breakpoint-down(xs) {
+        padding: 21px 15px 20px;
+      }
+
+      .buttons-mrgn-top {
+        height: 20px;
+
+        > div {
+          margin-top: -6px;
+        }
+      }
+    }
+
+    .no-layout-pdng {
+      margin: -2.2rem -2.2rem -0.5rem;
+      padding: 0 !important;
+
+      @include media-breakpoint-down(md) {
+        margin: -1.5rem -1.5rem 0.5rem;
+      }
+
+      @include media-breakpoint-down(sm) {
+        margin: -1rem -1rem 0;
+      }
+      @include media-breakpoint-down(xs) {
+        margin: -0.75rem -0.75rem 0;
+      }
+
+      .title-header {
+        font-size: 26px;
+        margin-bottom: 0;
+      }
+    }
+
+    .seprater {
+      border-top: 1px dashed nb-theme(color-basic-transparent-200);
+      margin: 0.125rem 0 1rem;
+    }
+    .split-mobile > * {
+      @include media-breakpoint-down(sm) {
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
+        padding: 0 !important;
+      }
+    }
+    .textarea-height {
+      height: 220px;
+      resize: none;
+      line-height: 26px;
+    }
+  }
+}
