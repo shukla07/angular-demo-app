@@ -1,0 +1,219 @@
+<nb-layout class="job-title-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-md-6 col-sm-4">{{ title }}</div>
+          <div class="col-md-6 col-sm-8 text-right buttons-mrgn-top">
+            <div>
+              <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantJobTitles">
+                <button *ngIf="rowChecked" nbButton #activateBtn status="danger" shape="round" outline size="small"
+                  class="ml-0" ngClass.xs="mb-2" nbTooltip="Deactivate Role" nbTooltipPlacement="bottom" (click)="
+                    open(jobTitleStatusDialog, activateBtn.status, 'multiple')
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+                <button *ngIf="rowChecked" nbButton #deactivateBtn status="success" shape="round" outline size="small"
+                  class="ml-2" ngClass.xs="mb-2" nbTooltip="Activate Role" nbTooltipPlacement="bottom" (click)="
+                    open(jobTitleStatusDialog, deactivateBtn.status, 'multiple')
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+              </ng-container>
+              <button nbButton status="danger" size="small" class="ml-2 mr-1" ngClass.xs="mb-2"
+                (click)="onClickAddJobTitle()" *ngxPermissionsOnly="permissionKey.CreateTenantJobTitles">
+                Add Role
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div class="split-mobile" fxLayout="row wrap" fxLayoutAlign="start" fxFlex="1 0 auto">
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="40" ngClass.gt-xs="pr-2">
+                      <ng-select name="jobTitle" [items]="jobTitles" [multiple]="false" [closeOnSelect]="true"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="jobTitle" bindValue="id"
+                        placeholder="Role" appearance="outline" notFoundText="No role found"
+                        [(ngModel)]="filter.jobTitleId">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="27" fxFlex.gt-xs="32" ngClass.gt-xs="pl-2">
+                      <mat-radio-group name="status" class="radio-group" [(ngModel)]="filter.status">
+                        <mat-radio-button class="radio-button" value="{{ jobTitleEnum.active }}">Active
+                        </mat-radio-button>
+                        <mat-radio-button class="radio-button" value="{{ jobTitleEnum.inactive }}">Inactive
+                        </mat-radio-button>
+                      </mat-radio-group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group align-items-center" ngClass.xs="d-block" ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex">
+                <button nbButton status="danger" size="small" type="submit" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading" [nbSpinner]="loading" nbSpinnerStatus="primary"
+                  nbSpinnerSize="small" (click)="getJobTitlesList(currentPage, itemsPerPage, form)">
+                  Search
+                </button>
+                <button nbButton status="basic" type="button" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine" (click)="onClearFilter(form); getJobTitlesList(1, 10)">
+                  Clear
+                </button>
+                <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantJobTitles">
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="titleList && !titleList.length" (click)="checkColumnSelection('CSV')">
+                    Export as CSV
+                  </button>
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="titleList && !titleList.length" (click)="checkColumnSelection('PDF')">
+                    Export as PDF
+                  </button>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="titleList">
+            <vmsl-grid [vmsl-data]="
+                titleList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalTitlesCount
+                      }
+              " [vmsl-column-definition]="columnDefinition" [vmsl-norows-template]="noRowsTemplate"
+              vmsl-row-selection="multiple" [dropdownCount]="dropdownCount.asObservable()"
+              (itemsPerPage)="getPaginationValue($event)" (rowChecked)="onRowChecked($event)"
+              (onGridReady)="onGridReady($event)" [itemsPerPageList]="itemsPerPageList">
+            </vmsl-grid>
+
+            <div ngClass.gt-xs="d-flex justify-content-between align-items-center">
+              <pagination-controls (pageChange)="paginationEvent($event)" responsive="true" previousLabel=""
+                nextLabel="" maxSize="5"></pagination-controls>
+              <div *ngIf="titleList.length > 0" class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                totalTitlesCount > currentPage * itemsPerPage
+                ? currentPage * itemsPerPage
+                : totalTitlesCount
+                }}
+                of {{ totalTitlesCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+
+        <ng-template #jobTitleStatusDialog let-data let-ref="statusDialogRef">
+          <nb-card class="job-title-popup-width" *ngIf="!statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="statusDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="
+                      data.type === 'single'
+                        ? activOrDeactivJobTitle()
+                        : bulkJobTitleStatusChange(data.status)
+                    " class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="job-title-popup-width" *ngIf="statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Updated Status</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      statusDialogRef.close(); statusTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+
+        <ng-template #deleteJobDeleteDialog let-data let-ref="deleteDialogRef">
+          <nb-card *ngIf="!deleteTemplateSwitch" class="job-title-popup-width">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="deleteDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="deleteJobTitle()"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card *ngIf="deleteTemplateSwitch" class="job-title-popup-width">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Role Deleted</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      deleteDialogRef.close(); deleteTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

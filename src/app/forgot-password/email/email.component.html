@@ -1,0 +1,78 @@
+<div class="container reset-forgot">
+  <div class="row">
+    <div class="col-sm-5 login-ui-left col">
+      <div class="logo-container">
+        <div class="main-logo">
+          <h1 class="text-center">
+            <img
+              src="./../../assets/logo/kyodome-logo-white.png"
+              alt="Kyodome"
+            />
+          </h1>
+          <h4 class="title">vmsl.live</h4>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <div class="login-para">
+            Enter your email address and we will send you instructions to reset
+            your password.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-7 login-ui-right p-0">
+      <div class="custom-content">
+        <p class="title mb-5">Reset Your Password</p>
+        <form #form="ngForm" aria-labelledby="title">
+          <div class="form-control-group custom-form-group">
+            <input
+              nbInput
+              fullWidth
+              type="email"
+              inputmode="email"
+              [(ngModel)]="user.email"
+              #email="ngModel"
+              name="email"
+              id="input-email"
+              pattern=".+@.+\..+"
+              placeholder="Email address"
+              autofocus
+              [required]="true"
+              [status]="
+                email.dirty ? (email.invalid ? 'danger' : 'success') : ''
+              "
+              [required]="true"
+              [attr.aria-invalid]="email.invalid && email.touched ? true : null"
+            />
+            <ng-container *ngIf="email.invalid && email.touched">
+              <p class="caption status-danger" *ngIf="email.errors?.required">
+                Email address is required.
+              </p>
+              <p class="caption status-danger" *ngIf="email.errors?.pattern">
+                Please enter a valid email address.
+              </p>
+            </ng-container>
+          </div>
+          <div class="text-right">
+            <a
+              class="d-inline-block back-to-login caption-2"
+              (click)="navigateToSponsorLogin()"
+              >Back to Log In</a
+            >
+            <button
+              nbButton
+              status="danger"
+              [disabled]="!form.valid || loading"
+              [nbSpinner]="loading"
+              nbSpinnerStatus="danger"
+              nbSpinnerSize="small"
+              (click)="sendLinkToEmail(form)"
+            >
+              Send email
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

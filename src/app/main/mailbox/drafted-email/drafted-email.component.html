@@ -1,0 +1,7 @@
+<vmsl-mailbox-compose-email
+  *ngIf="draftedMail"
+  class="vmsl-mailbox-compose-email"
+  [mailType]="mailType"
+  [composeEmail]="draftedMail"
+  [onCustomDiscard]="deleteMail"
+></vmsl-mailbox-compose-email>

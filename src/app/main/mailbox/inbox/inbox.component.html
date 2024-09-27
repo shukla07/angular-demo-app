@@ -1,0 +1,280 @@
+<nb-layout>
+  <nb-layout-column class="p-0">
+    <nb-card>
+      <nb-card-header style="padding-left: 15px; padding-right: 15px">
+        <div
+          class="row justify-content-between align-items-center mb-3 pb-3"
+          style="border-bottom: 1px solid #e8e8e8"
+        >
+          <div class="col-7 col-md-3">
+            <button
+              nbButton
+              fullWidth
+              status="primary"
+              routerLink="/main/mailbox/compose-email"
+            >
+              Compose Mail
+            </button>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-md-3">Inbox ({{ unreadCount }})</div>
+          <div class="col-md-9 text-right" ngClass.lt-md="mt-3">
+            <div class="mailbox-search">
+              <nb-icon
+                pack="eva"
+                icon="search-outline"
+                class="ng-select-search-icon"
+                *ngIf="!filter.userId"
+              ></nb-icon>
+              <ng-select
+                name="Name"
+                class="ng-select-open-right"
+                [items]="contacts"
+                [multiple]="false"
+                [closeOnSelect]="true"
+                [searchable]="true"
+                [clearSearchOnAdd]="true"
+                bindLabel="fullName"
+                bindValue="id"
+                placeholder="Search email"
+                appearance="outline"
+                notFoundText="No users found"
+                [(ngModel)]="filter.userId"
+                (change)="getMailsByUserName()"
+              >
+              </ng-select>
+            </div>
+            <div class="mail-checkbox-filter">
+              <mat-checkbox
+                (change)="getMails()"
+                class="mr-4"
+                name="filterType"
+                [(ngModel)]="isImportantSelected"
+                >Important</mat-checkbox
+              >
+              <mat-checkbox
+                (change)="getMails()"
+                name="filterType"
+                [(ngModel)]="isUnreadSelected"
+                >Unread emails</mat-checkbox
+              >
+            </div>
+          </div>
+        </div>
+        <div class="no-btn-shadow row align-items-center mt-3">
+          <div class="col-7">
+            <span class="slct-all-chekbox mr-2">
+              <nb-checkbox
+                size="small"
+                nbTooltipPlacement="bottom"
+                nbTooltip="Select All"
+                [value]="selectedMailIds?.length === inboxMails?.length"
+                (valueChange)="onSelectAll($event)"
+              ></nb-checkbox>
+            </span>
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              (click)="getMails()"
+              class="mr-1"
+              nbTooltip="Refresh Inbox"
+              nbTooltipPlacement="bottom"
+            >
+              <nb-icon icon="refresh-outline" pack="eva"></nb-icon>
+            </button>
+            <button
+              *ngIf="
+                selectedMailIds?.length && nonImportantSelectedMailsCount > 0
+              "
+              nbButton
+              status="warning"
+              size="small"
+              class="mr-1"
+              nbTooltip="Mark as Important"
+              nbTooltipPlacement="bottom"
+              (click)="markImportant(true)"
+            >
+              <nb-icon icon="star-outline" pack="eva"></nb-icon>
+            </button>
+            <button
+              *ngIf="selectedMailIds?.length && importantSelectedMailsCount > 0"
+              nbButton
+              status="basic"
+              size="small"
+              class="mr-1"
+              nbTooltip="Mark as not Important"
+              nbTooltipPlacement="bottom"
+              (click)="markImportant(false)"
+            >
+              <nb-icon icon="star-outline" pack="eva"></nb-icon>
+            </button>
+            <button
+              *ngIf="selectedMailIds?.length"
+              nbButton
+              status="danger"
+              size="small"
+              class="mr-1"
+              nbTooltip="Move to Trash"
+              (click)="deleteMail()"
+              nbTooltipPlacement="bottom"
+            >
+              <nb-icon icon="trash-2-outline" pack="eva"></nb-icon>
+            </button>
+          </div>
+          <div class="col-5 text-right">
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              class="ml-1"
+              nbTooltip="Prev"
+              nbTooltipPlacement="bottom"
+              (click)="moveToPreviousPage()"
+            >
+              <nb-icon
+                icon="arrow-ios-back-outline"
+                pack="eva"
+              ></nb-icon>
+            </button>
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              class="ml-1"
+              nbTooltip="Next"
+              nbTooltipPlacement="bottom"
+              (click)="moveToNextPage()"
+            >
+              <nb-icon
+                icon="arrow-ios-forward-outline"
+                pack="eva"
+              ></nb-icon>
+            </button>
+          </div>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-0">
+        <div *ngIf="!inboxMails?.length">
+          <p class="pl-3 mb-0 no-record-found">No Records Found</p>
+        </div>
+        <div class="table-responsive table-height">
+          <table class="table table-hover table-email table-hover date-time">
+            <caption class="d-none">
+              inbox email list
+            </caption>
+            <thead class="d-none">
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Address</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Date/Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                [ngClass]="mail.isNew ? 'unread' : ''"
+                *ngFor="
+                  let mail of inboxMails
+                    | paginate
+                      : {
+                          itemsPerPage: pageSize,
+                          currentPage: currentPage,
+                          totalItems: totalMailsCount
+                        }
+                "
+              >
+                <td>
+                  <nb-checkbox
+                    class="d-flex"
+                    [(ngModel)]="mail.isSelected"
+                    (valueChange)="onMailCheckUncheck($event, mail)"
+                  ></nb-checkbox>
+                </td>
+                <td>
+                  <div class="position-relative pl-4">
+                    <span
+                      class="star-mark"
+                      [ngClass]="mail.isImportant ? 'active' : ''"
+                      (click)="markMailImportant(mail)"
+                    >
+                      <span class="inner-star">
+                        <nb-icon
+                          pack="eva"
+                          icon="star-outline"
+                          class="icon-unmark"
+                        ></nb-icon>
+                        <nb-icon
+                          pack="eva"
+                          icon="star"
+                          class="icon-mark"
+                        ></nb-icon>
+                      </span>
+                    </span>
+                    <a class="mail-info" (click)="viewMail(mail)"
+                      >{{ mail.fromName }}
+                      {{
+                        mail.messageIds?.length > 1
+                          ? mail.messageIds.length
+                          : ''
+                      }}</a
+                    >
+                  </div>
+                </td>
+                <td>
+                  <a class="mail-info" (click)="viewMail(mail)"
+                    >{{ mail.subject }}
+                  </a>
+                </td>
+                <td class="text-right date-time">
+                  <nb-icon
+                    *ngIf="mail.hasAttachment"
+                    pack="eva"
+                    icon="attach-2-outline"
+                  ></nb-icon>
+
+                  <span class="ml-2">{{ mail.formattedTime }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          *ngIf="inboxMails?.length"
+          ngClass.gt-xs="d-flex justify-content-between align-items-center"
+        >
+          <pagination-controls
+            (pageChange)="moveToPage($event)"
+            responsive="true"
+            previousLabel=""
+            nextLabel=""
+            maxSize="5"
+          ></pagination-controls>
+          <div class="px-2">
+            <div class="page-count" ngClass.xs="pb-3">
+              {{ (currentPage - 1) * pageSize + 1 }} -
+              {{
+                totalMailsCount > currentPage * pageSize
+                  ? currentPage * pageSize
+                  : totalMailsCount
+              }}
+              of {{ totalMailsCount }}
+            </div>
+            <div class="items-per-page">
+              Items per page :
+              <select (change)="onItemsPerPageChange()" [(ngModel)]="pageSize">
+                <option
+                  *ngFor="let itemsPerPage of itemsPerPageList"
+                  [value]="itemsPerPage"
+                >
+                  {{ itemsPerPage }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-layout-column>
+</nb-layout>

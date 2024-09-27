@@ -1,0 +1,349 @@
+<div class="hcp-registration-ui">
+  <div class="row">
+    <div class="text-left login-para">
+      Your portal to engage with medical professionals at biopharmaceutical
+      companies to conduct compliant and engaging scientific exchange from any
+      location of your choice.
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 login-ui-right registration-layout p-0">
+      <div class="custom-content">
+        <form #form="ngForm">
+          <nb-card class="registration-card">
+            <nb-card-header class="pl-3 pr-3 pt-2 pb-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>HCP Registration</span>
+                <nb-icon
+                  icon="close-outline"
+                  pack="eva"
+                  (click)="navigateToHcpLogin()"
+                ></nb-icon>
+              </div>
+            </nb-card-header>
+            <nb-card-body class="pl-3 pr-3 pb-0">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="15"
+                      ngClass.gt-xs="pr-1"
+                      class="title-div"
+                    >
+                      <mat-label>Title</mat-label>
+                      <mat-select
+                        name="title"
+                        [(ngModel)]="user.title"
+                        required
+                      >
+                        <mat-option value="Mr."> Mr. </mat-option>
+                        <mat-option value="Mrs."> Mrs. </mat-option>
+                        <mat-option value="Ms."> Ms. </mat-option>
+                        <mat-option value="Dr."> Dr. </mat-option>
+                      </mat-select>
+                      <mat-error>Title is required.</mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="25"
+                      ngClass.gt-xs="pr-2"
+                      class="fname-div"
+                    >
+                      <mat-label>First Name</mat-label>
+                      <input
+                        matInput
+                        name="firstName"
+                        [(ngModel)]="user.firstName"
+                        pattern="^[a-zA-Z\u00c0-\u017e'&() -]{1,50}$"
+                        required
+                        maxlength="50"
+                      />
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['firstName']?.errors?.required
+                        "
+                        >First name is required.</mat-error
+                      >
+                      <mat-error
+                        *ngIf="form.form.controls['firstName']?.errors?.pattern"
+                        >Invalid first name.</mat-error
+                      >
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="25"
+                      ngClass.gt-xs="pr-2"
+                    >
+                      <mat-label>Last Name</mat-label>
+                      <input
+                        matInput
+                        name="lastName"
+                        [(ngModel)]="user.lastName"
+                        pattern="^[a-zA-Z\u00c0-\u017e'&() -]{1,50}$"
+                        required
+                        maxlength="50"
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['lastName']?.errors?.required"
+                        >Last name is required.</mat-error
+                      >
+                      <mat-error
+                        *ngIf="form.form.controls['lastName']?.errors?.pattern"
+                        >Invalid last name.</mat-error
+                      >
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="35"
+                      ngClass.gt-xs="pr-0"
+                    >
+                      <mat-label>Email</mat-label>
+                      <input
+                        matInput
+                        type="email"
+                        inputmode="email"
+                        name="email"
+                        #email="ngModel"
+                        [(ngModel)]="user.email"
+                        pattern=".+@.+\..+"
+                        required
+                      />
+                      <mat-error
+                        *ngIf="form.form.controls['email']?.errors?.required"
+                        >Email address is required.</mat-error
+                      >
+                      <mat-error
+                        *ngIf="form.form.controls['email']?.errors?.pattern"
+                        >Invalid email address.</mat-error
+                      >
+                    </mat-form-field>
+
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-2"
+                    >
+                      <mat-label>Mobile No.</mat-label>
+                      <ngx-mat-intl-tel-input
+                        #phone
+                        [preferredCountries]="['us', 'in']"
+                        [enableSearch]="true"
+                        name="phone"
+                        [(ngModel)]="user.phone"
+                        class="phone-no"
+                        required
+                      ></ngx-mat-intl-tel-input>
+                      <mat-error>Mobile No. is incorrect</mat-error>
+                      <mat-hint>
+                        Please provide your mobile number. This will enable you
+                        to receive notifications for Login verification on your
+                        registered mobile number.
+                      </mat-hint>
+                    </mat-form-field>
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-0"
+                    >
+                      <ng-select
+                        name="timeZone"
+                        [items]="timeZoneList"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        appearance="outline"
+                        placeholder="Select Time Zone*"
+                        bindLabel="label"
+                        bindValue="momentValue"
+                        [(ngModel)]="user.timeZone"
+                      >
+                      </ng-select>
+                    </div>
+
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-2"
+                    >
+                      <mat-label>Professional Reg (license number)</mat-label>
+                      <input
+                        matInput
+                        name="licenseNum"
+                        maxlength="255"
+                        [(ngModel)]="user.licenseNumber"
+                        pattern="^[a-zA-Z0-9]*$"
+                        required
+                      />
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['licenseNum']?.errors?.required
+                        "
+                      >
+                        License number is required.
+                      </mat-error>
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['licenseNum']?.errors?.pattern
+                        "
+                      >
+                        License number can only contain alphanumeric values.
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-0"
+                    >
+                      <mat-label>Institution</mat-label>
+                      <input
+                        matInput
+                        name="Institution"
+                        maxlength="255"
+                        [(ngModel)]="user.institute"
+                        pattern="^[a-zA-Z ]*$"
+                        required
+                      />
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['Institution']?.errors?.required
+                        "
+                      >
+                        Institution is required.
+                      </mat-error>
+                      <mat-error
+                        *ngIf="
+                          form.form.controls['Institution']?.errors?.pattern
+                        "
+                      >
+                        Institute can only contain alphabetical values.
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <mat-form-field
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-2"
+                    >
+                      <mat-label>Register using: </mat-label>
+                      <mat-select
+                        name="state"
+                        [(ngModel)]="regByOrg"
+                        required
+                        (selectionChange)="onOptionChange($event)"
+                      >
+                        <mat-option [value]="false">
+                          Reference Code
+                        </mat-option>
+                      </mat-select>
+                      <mat-error>Please choose one of the options</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field
+                      *ngIf="!regByOrg"
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-xs="50"
+                      ngClass.gt-xs="pr-0"
+                    >
+                      <mat-label>Referrence Code</mat-label>
+                      <input
+                        matInput
+                        name="referenceCode"
+                        [(ngModel)]="user.referralCode"
+                        required
+                      />
+                      <mat-error>Reference Code is required.</mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-3">
+              <div class="btn-group">
+                <button
+                  nbButton
+                  status="danger"
+                  type="submit"
+                  class="mr-2"
+                  (click)="registerHcp(form)"
+                  [disabled]="loading"
+                  [nbSpinner]="loading"
+                  nbSpinnerStatus="danger"
+                  nbSpinnerSize="small"
+                >
+                  Register
+                </button>
+                <button
+                  nbButton
+                  status="basic"
+                  type="button"
+                  (click)="cancel(form)"
+                >
+                  Cancel
+                </button>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="row login-footer-info">
+    <div>
+      By Registering on this website, I confirm that I am a Health Care
+      Professional or a similar professional in accordance with laws of the
+      state, province, or country in which I reside. I agree to conduct only
+      approved scientific echanges with sponsor medical professionals on this
+      site and I agree to the
+      <a
+        href="https://www.vmsl.live/terms-and-conditions"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Terms of Use</a
+      >
+      and
+      <a
+        href="https://www.vmsl.live/privacy-policy"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Privacy Policy</a
+      >
+      of the site and those of the sponsors that utilize this site.
+    </div>
+    <div class="w-100 text-center mt-3">
+      Have Questions? Please see our
+      <a
+        href="https://www.vmsl.live/support"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Support</a
+      >
+      Page
+    </div>
+  </div>
+</div>

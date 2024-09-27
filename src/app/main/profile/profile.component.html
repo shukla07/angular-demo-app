@@ -1,0 +1,561 @@
+<nb-layout class="view-my-profile-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-8">User Profile</div>
+          <div class="col-4 text-right buttons-mrgn-top">
+            <div>
+              <button
+                nbButton
+                status="basic"
+                size="small"
+                class="mr-1"
+                (click)="goBack()"
+              >
+                <nb-icon pack="eva" icon="arrow-ios-back-outline"></nb-icon>Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card class="no-card-bg" *ngIf="user">
+        <nb-card-body>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="profile-header text-center">
+                <div class="edit-profile-container">
+                  <nb-user
+                    size="giant"
+                    onlyPicture="true"
+                    [name]="user?.fullName"
+                    [picture]="user?.photoUrl"
+                  ></nb-user>
+                  <div
+                    class="edit-profile-icon"
+                    *ngIf="user.roleType !== roleType.jrHcp"
+                  >
+                    <button
+                      nbButton
+                      size="small"
+                      status="danger"
+                      shape="round"
+                      (click)="openPhotoDialog(dialog)"
+                      nbTooltip="Edit Profile Photo"
+                      nbTooltipPlacement="right"
+                    >
+                      <nb-icon pack="eva" icon="edit-outline"></nb-icon>
+                    </button>
+                  </div>
+                </div>
+                <h5 class="font-weight-normal">
+                  {{ user.firstName }} {{ user.lastName }}
+                  <ng-container
+                    *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+                  >
+                    <button
+                      nbButton
+                      size="small"
+                      status="basic"
+                      shape="round"
+                      nbTooltip="Edit Profile"
+                      nbTooltipPlacement="bottom"
+                      (click)="editProfile(user.id)"
+                    >
+                      <nb-icon pack="eva" icon="edit-outline"></nb-icon>
+                    </button>
+                  </ng-container>
+                  <ng-container
+                    *ngxPermissionsExcept="permissionKey.UpdateTenantUser"
+                  >
+                    <button
+                      nbButton
+                      size="small"
+                      status="basic"
+                      shape="round"
+                      nbTooltip="Edit Profile"
+                      nbTooltipPlacement="bottom"
+                      (click)="editProfile()"
+                      *ngIf="currentUser && user.roleType !== roleType.jrHcp"
+                    >
+                      <nb-icon pack="eva" icon="edit-outline"></nb-icon>
+                    </button>
+                  </ng-container>
+                </h5>
+                <p>{{ user.userTitle }}</p>
+                <button
+                  *ngxPermissionsOnly="permissionKey.SyncCalendar"
+                  nbButton
+                  fullWidth
+                  class="mb-2"
+                  status="danger"
+                  (click)="onSyncClick()"
+                  size="small"
+                  [disabled]="isCalSyncing"
+                  [nbSpinner]="isCalSyncing"
+                  nbSpinnerStatus="danger"
+                  nbSpinnerSize="small"
+                >
+                  {{ syncButtonName }}
+                  <nb-icon icon="sync" pack="font-awesome-solid"></nb-icon>
+                </button>
+                <div>
+                  <qrcode
+                    #qrcode
+                    hidden="true"
+                    [qrdata]="qrData"
+                    [errorCorrectionLevel]="'M'"
+                    [width]="128"
+                    elementType="png"
+                  ></qrcode>
+                </div>
+                <ng-select
+                  hidden
+                  *ngxPermissionsOnly="permissionKey.canSwitchOrg"
+                  name="org"
+                  placeholder="Change Organisation"
+                  appearance="outline"
+                  [multiple]="false"
+                  [closeOnSelect]="true"
+                  [searchable]="true"
+                  bindValue="tenantId"
+                  bindLabel="tenantName"
+                  notFoundText="No organizations are present"
+                  [hideSelected]="true"
+                  [disabled]="user.isOnCall"
+                  [items]="orgsToSwitch"
+                  [(ngModel)]="store.getUser().tenantId"
+                  (change)="changeOrg($event)"
+                ></ng-select>
+                <div
+                  hidden
+                  *ngIf="
+                    user.isOnCall &&
+                    (user.roleType === roleType.hcp ||
+                      user.roleType === roleType.jrHcp)
+                  "
+                  class="caption status-danger"
+                >
+                  Please end the current call to change the organization
+                </div>
+                <button
+                  hidden
+                  nbButton
+                  *ngxPermissionsOnly="permissionKey.canSwitchOrg"
+                  (click)="registerInOrg()"
+                >
+                  Register in other organisation
+                </button>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="profile-body">
+                <div class="row">
+                  <div class="col-sm-6 email-view">
+                    <strong class="mr-1">Email: </strong>
+                    {{ user.email }}
+                  </div>
+                  <div class="col-sm-3">
+                    <strong class="mr-1">Mobile No: </strong>
+                    {{ user.phone }}
+                  </div>
+                  <div class="col-sm-3" *ngIf="user.country">
+                    <strong class="mr-1">Country: </strong>
+                    {{ user.country }}
+                  </div>
+                  <div *ngIf="address.length" class="col-sm-12">
+                    <strong class="mr-1">Address: </strong>
+                    {{ address }}
+                  </div>
+                  <div class="col-sm-12" *ngIf="user.maLink">
+                    <strong class="mr-1">Medical onDemand Link: </strong>
+                    <span class="split-line">{{ user.maLink }}</span>
+                  </div>
+                  <div *ngIf="user.teamNames" class="col-sm-12">
+                    <strong class="mr-1">Teams: </strong>
+                    {{ user.teamNames }}
+                  </div>
+                  <div class="col-sm-6">
+                    <strong class="mr-1">Timezone: </strong>
+                    {{ userTimeZone }}
+                  </div>
+                  <div
+                    class="col-sm-6"
+                    *ngIf="user.roleType !== roleType.Administrator"
+                  >
+                    <strong>Access Rules:</strong>
+                    {{
+                      user.dsFlag === 1
+                        ? 'Both Association and Division Tag'
+                        : 'Association Only'
+                    }}
+                  </div>
+                  <div
+                    class="col-sm-12"
+                    *ngxPermissionsOnly="permissionKey.CanShareReferralCode"
+                  >
+                    <strong class="mr-1">Referral Code: </strong>
+                    {{ user.referralCode }}
+                    <nb-icon
+                      icon="copy-outline"
+                      pack="eva"
+                      status="success"
+                      (click)="copyReferInfo()"
+                      nbTooltip="Copy Referral URL"
+                      nbTooltipPlacement="bottom"
+                      class="cursor"
+                    >
+                    </nb-icon>
+                  </div>
+                </div>
+                <div class="row" *ngIf="!hideAssignedUsers">
+                  <div class="col-sm-12">
+                    <strong class="mr-1">Linked Users: </strong>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          (click)="searchResults(linkAccessRuleDialog, true)"
+                          *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+                          hidden="true"
+                        >
+                          Link Users
+                        </button>
+                      </span>
+                      <p class="has-no-data" *ngIf="!user.relationships.length">
+                        There are no linked users.
+                      </p>
+                      <vmsl-profile-access-rules
+                        [accessRules]="user.relationships"
+                        (tabTitle)="getTabTitleValue($event, true)"
+                        (removeItem)="openRemoveListItemDialog($event, true)"
+                      >
+                      </vmsl-profile-access-rules>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="row"
+                  *ngIf="!hideAssignedUsers && user.dsFlag === dsFlag.Both"
+                >
+                  <div class="col-sm-12">
+                    <p class="mb-3"><strong>Division State Tags: </strong></p>
+                    <div class="position-relative">
+                      <span class="add-button">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          (click)="searchResults(linkAccessRuleDialog, false)"
+                          *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+                          hidden="true"
+                        >
+                          Link DS Tags
+                        </button>
+                      </span>
+                      <vmsl-profile-access-rules
+                        #dsTags
+                        [accessRules]="user.dsTags"
+                        (tabTitle)="getTabTitleValue($event, false)"
+                        (removeItem)="openRemoveListItemDialog($event, false)"
+                        (onToggleAssociationType)="editUser()"
+                      >
+                      </vmsl-profile-access-rules>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #dialog let-data let-ref="dialogRef">
+  <div class="upload-profile-picture">
+    <nb-card size="small" *ngIf="!deletePhoto">
+      <nb-card-header>Upload Profile Picture</nb-card-header>
+      <nb-card-body>
+        <div class="text-center modal-icon-header">
+          <ngx-dropzone
+            (change)="onSelect($event)"
+            class="dropzone"
+            multiple="false"
+            accept=".png,.jpg,.jpeg"
+            maxFileSize="2000000"
+            [disabled]="uploadingPicture"
+          >
+            <ngx-dropzone-label class="dropzone-label"
+              >Click or Drag your profile picture here</ngx-dropzone-label
+            >
+            <ngx-dropzone-image-preview
+              ngProjectAs="ngx-dropzone-preview"
+              [removable]="true"
+              (removed)="onRemove()"
+              *ngFor="let files of profile; index as i"
+              [file]="files"
+            >
+            </ngx-dropzone-image-preview>
+          </ngx-dropzone>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0 overflow-hidden">
+        <div
+          class="d-flex justify-content-between align-items-center footer-buttons"
+          ngClass.lt-sm="row"
+        >
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="basic"
+              [disabled]="uploadingPicture"
+              (click)="ref.close(); onRemove()"
+            >
+              Cancel
+            </button>
+          </div>
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="danger"
+              [disabled]="
+                user.photoUrl === 'assets/avatar.png' || uploadingPicture
+              "
+              (click)="deletePhoto = true"
+              class="split-btn-txt"
+            >
+              Remove Image
+            </button>
+          </div>
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="success"
+              (click)="updateProfile()"
+              [disabled]="uploadingPicture || !profile"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+    <nb-card *ngIf="deletePhoto">
+      <nb-card-header>Remove Profile Picture</nb-card-header>
+      <nb-card-body>
+        <div class="text-left modal-icon-header">
+          <p>Are you sure you want to remove picture?</p>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0">
+        <div
+          class="d-flex justify-content-between footer-buttons"
+          ngClass.lt-sm="row"
+        >
+          <div class="col-6">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="danger"
+              (click)="deletePhoto = false"
+            >
+              No
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="success"
+              (click)="deleteProfile()"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</ng-template>
+
+<ng-template #linkAccessRuleDialog let-data let-ref="dialogRef">
+  <nb-card class="links-popup">
+    <nb-card-header>Link {{ data.dialogTitle }}</nb-card-header>
+    <nb-card-body>
+      <ng-select
+        #getModelValue="ngModel"
+        #ngSelectDropdown
+        name="linkAccessRules"
+        [items]="data.dialogData"
+        [multiple]="true"
+        [closeOnSelect]="false"
+        [searchable]="true"
+        [clearSearchOnAdd]="true"
+        [bindLabel]="data.isUserTab ? 'fullName' : 'name'"
+        bindValue="id"
+        placeholder="{{ data.dialogTitle }}"
+        appearance="outline"
+        notFoundText="No {{ data.dialogTitle }} found"
+        [(ngModel)]="data.selected"
+        class="select-custom"
+      >
+        <ng-template *ngIf="!data.isUserTab" ng-header-tmp>
+          <div>
+            <button
+              class="btn btn-link"
+              (click)="onSelectAll(getModelValue, data.dialogTitle)"
+            >
+              Select All
+            </button>
+            <button class="btn btn-link" (click)="onClearAll(getModelValue)">
+              Clear All
+            </button>
+          </div>
+        </ng-template>
+      </ng-select>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-between footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button nbButton ghost fullWidth status="basic" (click)="ref.close()">
+            Cancel
+          </button>
+        </div>
+        <div class="col-8">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            (click)="onClickAddAccessRules(ngSelectDropdown, data.isUserTab)"
+          >
+            Add {{ data.dialogTitle }}
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #removeListItemDialog let-data let-ref="removeListItemDialogRef">
+  <nb-card>
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <nb-icon
+          icon="alert-circle-outline"
+          status="warning"
+          pack="eva"
+          [options]="{animation: {type: 'shake', hover: false}}"
+        >
+        </nb-icon>
+        <h4 class="mt-3 mb-4">Are you sure?</h4>
+        <p>remove {{ data.listItem.name }}?</p>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            (click)="removeListItemDialogRef.close()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            (click)="
+              removeListItem(data.isUserTab, data.listItem, data.tabTitle)
+            "
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+          >
+            Yes, remove it.
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #registerHcpDialog let-data let-ref="registerHcpDialog">
+  <nb-card>
+    <nb-card-header class="p-3">Register in other organisation</nb-card-header>
+    <nb-card-body class="p-3 nb-body-visible">
+      <div class="text-center modal-icon-header">
+        <ng-select
+          name="org"
+          placeholder="Organisation"
+          appearance="outline"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="true"
+          bindValue="tenantId"
+          bindLabel="tenantName"
+          [items]="orgsToRegister"
+          [(ngModel)]="orgIdToRegister"
+        ></ng-select>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            (click)="registerHcpDialogRef.close()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            (click)="registerHcpInOrg()"
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+            [disabled]="!orgIdToRegister"
+          >
+            Register
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

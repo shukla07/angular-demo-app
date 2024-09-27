@@ -1,0 +1,348 @@
+<nb-layout class="address-book-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-sm-8 col-md-9">Contacts</div>
+          <div class="col-sm-4 col-md-3">
+            <div class="header-search">
+              <nb-form-field>
+                <input
+                  type="text"
+                  nbInput
+                  fullWidth
+                  name="search"
+                  [(ngModel)]="userFilter.fullName"
+                  placeholder="Search"
+                  autocomplete="off"
+                />
+                <button nbButton status="danger" type="submit">
+                  <nb-icon icon="search-outline" pack="eva"></nb-icon>
+                </button>
+              </nb-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="custom-tabs">
+      <nb-tabset>
+        <nb-tab tabTitle="Online">
+          <ng-container *ngIf="availableCont | filterBy: userFilter as results">
+            <div class="row align-items-stretch contact-list">
+              <div
+                class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                *ngFor="
+                  let user of results
+                    | paginate
+                      : {itemsPerPage: 12, currentPage: p1, id: 'availP'}
+                "
+              >
+                <span
+                  class="star-mark"
+                  [ngClass]="user.favourite ? 'active' : null"
+                >
+                  <span class="inner-star">
+                    <nb-icon
+                      pack="eva"
+                      icon="star-outline"
+                      class="icon-unmark"
+                      [nbTooltip]="
+                        user.favourite ? 'Un-Mark Favourite' : 'Mark Favourite'
+                      "
+                      nbTooltipPlacement="top"
+                      (click)="
+                        user.favourite
+                          ? unMarkFavourite(user)
+                          : markFavourite(user)
+                      "
+                    ></nb-icon>
+                    <nb-icon
+                      pack="eva"
+                      icon="star"
+                      class="icon-mark"
+                      [nbTooltip]="
+                        user.favourite ? 'Un-Mark Favourite' : 'Mark Favourite'
+                      "
+                      nbTooltipPlacement="top"
+                      (click)="
+                        user.favourite
+                          ? unMarkFavourite(user)
+                          : markFavourite(user)
+                      "
+                    ></nb-icon>
+                  </span>
+                </span>
+                <nb-card>
+                  <nb-user
+                    onlyPicture="false"
+                    badgeText="&nbsp"
+                    [badgeStatus]="
+                      user.state === 'online' && !user.isOnCall
+                        ? 'success'
+                        : 'danger'
+                    "
+                    badgePosition="top right"
+                    [picture]="user.photoUrl"
+                    [name]="user.fullName"
+                    [title]="user.userTitle"
+                  ></nb-user>
+
+                  <div class="button-group">
+                    <button
+                      nbButton
+                      class="btn-round btn-voice"
+                      size="small"
+                      [nbTooltip]="
+                        isOnCall ? 'You might be on another call' : 'Audio Call'
+                      "
+                      nbTooltipPlacement="bottom"
+                      (click)="audioCall(user)"
+                      [disabled]="isOnCall || user.isOnCall"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        [icon]="
+                          isOnCall ? 'phone-off-outline' : 'phone-outline'
+                        "
+                      ></nb-icon>
+                    </button>
+                    <button
+                      nbButton
+                      class="btn-round btn-video"
+                      size="small"
+                      [nbTooltip]="
+                        isOnCall ? 'You might be on another call' : 'Video Call'
+                      "
+                      nbTooltipPlacement="bottom"
+                      (click)="videoCall(user)"
+                      [disabled]="isOnCall || user.isOnCall"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        [icon]="
+                          isOnCall ? 'video-off-outline' : 'video-outline'
+                        "
+                      ></nb-icon>
+                    </button>
+                    <button
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Calendar"
+                      nbTooltipPlacement="bottom"
+                      (click)="openCalendar(user)"
+                    >
+                      <nb-icon pack="eva" icon="calendar-outline"></nb-icon>
+                    </button>
+                    <button
+                      *ngxPermissionsOnly="permissionKey.CombinedInmailAllowed"
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Send Email"
+                      nbTooltipPlacement="bottom"
+                      (click)="openComposeMail(user)"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        icon="email-outline"
+                      ></nb-icon>
+                    </button>
+                    <button
+                      *ngxPermissionsOnly="permissionKey.ChatModuleAllowed"
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Chat"
+                      nbTooltipPlacement="bottom"
+                      (click)="chat(user)"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        icon="message-circle-outline"
+                      ></nb-icon>
+                    </button>
+                  </div>
+                </nb-card>
+              </div>
+              <p
+                class="pl-3 mb-0 no-record-found"
+                *ngIf="availableCont.length === 0"
+              >
+                No Contact is Online
+              </p>
+              <p
+                class="pl-3 mb-0 no-record-found"
+                *ngIf="
+                  (availableCont | filterBy: userFilter).length === 0 &&
+                  availableCont.length > 0
+                "
+              >
+                No Records Found
+              </p>
+            </div>
+            <pagination-controls
+              *ngIf="results.length"
+              id="availP"
+              responsive="true"
+              previousLabel=""
+              nextLabel=""
+              maxSize="5"
+              (pageChange)="p1 = $event"
+              (pageBoundsCorrection)="p1 = 1"
+            ></pagination-controls>
+          </ng-container>
+        </nb-tab>
+        <nb-tab tabTitle="Offline">
+          <ng-container
+            *ngIf="unavailableCont | filterBy: userFilter as results"
+          >
+            <div class="row align-items-stretch contact-list">
+              <div
+                class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                *ngFor="
+                  let user of results
+                    | paginate
+                      : {itemsPerPage: 12, currentPage: p2, id: 'unavailP'}
+                "
+              >
+                <span
+                  class="star-mark"
+                  [ngClass]="user.favourite ? 'active' : null"
+                >
+                  <span class="inner-star">
+                    <nb-icon
+                      pack="eva"
+                      icon="star-outline"
+                      class="icon-unmark"
+                      [nbTooltip]="
+                        user.favourite ? 'Un-Mark Favourite' : 'Mark Favourite'
+                      "
+                      nbTooltipPlacement="top"
+                      (click)="
+                        user.favourite
+                          ? unMarkFavourite(user)
+                          : markFavourite(user)
+                      "
+                    ></nb-icon>
+                    <nb-icon
+                      pack="eva"
+                      icon="star"
+                      class="icon-mark"
+                      [nbTooltip]="
+                        user.favourite ? 'Un-Mark Favourite' : 'Mark Favourite'
+                      "
+                      nbTooltipPlacement="top"
+                      (click)="
+                        user.favourite
+                          ? unMarkFavourite(user)
+                          : markFavourite(user)
+                      "
+                    ></nb-icon>
+                  </span>
+                </span>
+                <nb-card>
+                  <nb-user
+                    onlyPicture="false"
+                    badgeText="&nbsp"
+                    badgeStatus="basic"
+                    badgePosition="top right"
+                    [picture]="user.photoUrl"
+                    [name]="user.fullName"
+                    [title]="user.userTitle"
+                  ></nb-user>
+                  <div class="button-group">
+                    <button
+                      nbButton
+                      class="btn-round btn-voice"
+                      size="small"
+                      nbTooltip="Audio Call"
+                      nbTooltipPlacement="bottom"
+                      disabled
+                    >
+                      <nb-icon pack="eva" icon="phone-off-outline"></nb-icon>
+                    </button>
+                    <button
+                      nbButton
+                      class="btn-round btn-video"
+                      size="small"
+                      nbTooltip="Video Call"
+                      nbTooltipPlacement="bottom"
+                      disabled
+                    >
+                      <nb-icon pack="eva" icon="video-off-outline"></nb-icon>
+                    </button>
+                    <button
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Calendar"
+                      nbTooltipPlacement="bottom"
+                      (click)="openCalendar(user)"
+                    >
+                      <nb-icon pack="eva" icon="calendar-outline"></nb-icon>
+                    </button>
+                    <button
+                      *ngxPermissionsOnly="permissionKey.CombinedInmailAllowed"
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Send Email"
+                      nbTooltipPlacement="bottom"
+                      (click)="openComposeMail(user)"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        icon="email-outline"
+                      ></nb-icon>
+                    </button>
+                    <button
+                      *ngxPermissionsOnly="permissionKey.ChatModuleAllowed"
+                      nbButton
+                      class="btn-round btn-calender"
+                      size="small"
+                      nbTooltip="Chat"
+                      nbTooltipPlacement="bottom"
+                      (click)="chat(user)"
+                    >
+                      <nb-icon
+                        pack="eva"
+                        icon="message-circle-outline"
+                      ></nb-icon>
+                    </button>
+                  </div>
+                </nb-card>
+              </div>
+              <p
+                class="pl-3 mb-0 no-record-found"
+                *ngIf="unavailableCont.length === 0"
+              >
+                No Contact is Offline
+              </p>
+              <p
+                class="pl-3 mb-0 no-record-found"
+                *ngIf="
+                  (unavailableCont | filterBy: userFilter).length === 0 &&
+                  unavailableCont.length > 0
+                "
+              >
+                No Records Found
+              </p>
+            </div>
+            <pagination-controls
+              *ngIf="results.length"
+              id="unavailP"
+              responsive="true"
+              previousLabel=""
+              nextLabel=""
+              maxSize="5"
+              (pageChange)="p2 = $event"
+              (pageBoundsCorrection)="p2 = 1"
+            ></pagination-controls>
+          </ng-container>
+        </nb-tab>
+      </nb-tabset>
+    </div>
+  </nb-layout-column>
+</nb-layout>

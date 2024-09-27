@@ -1,0 +1,90 @@
+//ag-grid theme
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine-mixin.scss';
+
+@import '../../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+.ag-theme-alpine {
+  @include ag-theme-alpine();
+
+  font-family: nb-theme(font-family-primary);
+  color: nb-theme(color-basic-800);
+
+  .ag-header-row {
+    font-family: nb-theme(font-family-primary);
+    color: nb-theme(color-basic-800);
+    font-size: nb-theme(text-paragraph-2-font-size);
+  }
+  .ag-row,
+  .ag-cell {
+    font-family: nb-theme(font-family-primary);
+    color: nb-theme(color-basic-800);
+    font-size: nb-theme(text-paragraph-2-font-size);
+  }
+  .ag-root-wrapper {
+    border-radius: 0;
+    border-width: 0;
+    border-top-width: 1px;
+  }
+  .ag-paging-panel {
+    > span.ag-paging-page-summary-panel {
+      margin-right: 160px;
+      .ag-paging-description {
+        min-width: 80px;
+        margin: 0;
+      }
+      @include media-breakpoint-down(sm) {
+        margin-right: 138px;
+        margin-left: 0;
+      }
+      .ag-paging-button-wrapper {
+        @include media-breakpoint-down(sm) {
+          margin: 0;
+        }
+      }
+    }
+    > span.ag-paging-row-summary-panel {
+      @include media-breakpoint-down(sm) {
+        display: none;
+      }
+    }
+  }
+}
+.ag-theme-alpine
+  .ag-ltr
+  .ag-has-focus
+  .ag-cell-focus:not(.ag-cell-range-selected),
+.ag-theme-alpine .ag-ltr .ag-has-focus .ag-cell-focus.ag-cell-range-single-cell,
+.ag-theme-alpine .ag-ltr .ag-cell-range-single-cell.ag-cell-range-handle,
+.ag-theme-alpine
+  .ag-rtl
+  .ag-has-focus
+  .ag-cell-focus:not(.ag-cell-range-selected),
+.ag-theme-alpine .ag-rtl .ag-has-focus .ag-cell-focus.ag-cell-range-single-cell,
+.ag-theme-alpine .ag-rtl .ag-cell-range-single-cell.ag-cell-range-handle {
+  border-color: transparent;
+  outline: none;
+}
+.items-per-page {
+  float: right;
+  margin-top: 1.22rem;
+  position: relative;
+  z-index: 1;
+  margin-right: 20px;
+  -webkit-font-smoothing: antialiased;
+  font-family: nb-theme(font-family-primary);
+  color: nb-theme(color-basic-800);
+  font-size: nb-theme(text-paragraph-2-font-size);
+  line-height: normal;
+  @include media-breakpoint-down(sm) {
+    margin-right: 5px;
+  }
+
+  select {
+    border: 1px solid nb-theme(color-basic-800);
+    color: nb-theme(color-basic-800);
+    border-radius: 3px;
+    height: 21px;
+  }
+}

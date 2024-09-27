@@ -1,0 +1,460 @@
+<nb-card
+  id="full-screen-mode"
+  class="call-modules step2"
+  [ngClass]="{
+    'share-screen-active': shareIcon || screenSubs,
+    'mobile-device': isMobileScreen
+  }"
+  *ngIf="session"
+>
+  <nb-card-header class="px-2 py-2 mr-1">
+    <div class="d-flex justify-content-between">
+      <div>
+        <span *ngIf="!connected">Calling {{ callDetails.receiverName }}</span>
+      </div>
+      <div class="text-right">
+        {{ timerDisplay }}
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body class="p-0">
+    <div class="d-flex w-100 h-100">
+      <div class="leftbar">
+        <div class="video-gird position-relative">
+          <div class="expend-icon">
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              [nbTooltip]="fullScreenMode ? 'Exit Full Screen' : 'Full Screen'"
+              nbTooltipPlacement="bottom"
+              (click)="fullScreenMode ? closefullscreen() : openfullscreen()"
+            >
+              <nb-icon
+                pack="eva"
+                [icon]="fullScreenMode ? 'collapse-outline' : 'expand-outline'"
+              ></nb-icon>
+            </button>
+          </div>
+          <div class="rec-main" *ngIf="recording">
+            <span class="rec"></span>
+            <span class="rec-data">REC</span>
+          </div>
+          <div class="speaker-section">
+            <nb-card class="audio-video-row">
+              <nb-card-body class="p-0">
+                <div
+                  class="
+                    row
+                    no-gutters
+                    align-items-stretch
+                    justify-content-center
+                  "
+                  [ngClass]="{
+                    'col-only-two': streams.length == 1,
+                    'col-only-three-four':
+                      streams.length == 2 || streams.length == 3,
+                    'col-only-five-six':
+                      streams.length == 4 || streams.length == 5,
+                    'col-only-seven-eight':
+                      streams.length >= 6 && streams.length <= 8,
+                    'col-only-nine-twelve':
+                      streams.length >= 9 && streams.length <= 11,
+                    'col-only-13': streams.length >= 12 && streams.length <= 15,
+                    'col-only-16': streams.length >= 16 && streams.length <= 19,
+                    'col-only-21': streams.length >= 20,
+                    'row-align-center': streams.length < 4,
+                    'row-align-top': streams.length >= 4
+                  }"
+                >
+                  <div
+                    class="video-frame-col col-6"
+                    [ngClass]="{
+                      'col-md-12': streams.length == 0,
+                      'col-md-6': streams.length >= 1 && streams.length <= 3,
+                      'col-md-4':
+                        streams.length == 2 ||
+                        (streams.length >= 4 && streams.length <= 8),
+                      'col-md-3': streams.length >= 9 && streams.length <= 19,
+                      'col-prcnt-20': streams.length >= 20
+                    }"
+                  >
+                    <app-publisher
+                      #publisher
+                      [session]="session"
+                      [call-type]="callDetails.mediaType"
+                      [screen-share]="shareIcon"
+                      [recording]="recording"
+                      [mic]="micIcon"
+                      [video]="videoIcon"
+                      [facingMode]="facingMode"
+                      [videoDevices]="videoDevices"
+                      (disconnect)="unpublish()"
+                    ></app-publisher>
+                  </div>
+                  <div
+                    class="video-frame-col col-6"
+                    *ngFor="let stream of streams"
+                    [ngClass]="{
+                      'col-md-12': streams.length == 0,
+                      'col-md-6': streams.length >= 1 && streams.length <= 3,
+                      'col-md-4':
+                        streams.length == 2 ||
+                        (streams.length >= 4 && streams.length <= 8),
+                      'col-md-3': streams.length >= 9 && streams.length <= 19,
+                      'col-prcnt-20': streams.length >= 20
+                    }"
+                  >
+                    <app-subscriber
+                      [stream]="stream"
+                      [session]="session"
+                    ></app-subscriber>
+                  </div>
+                </div>
+              </nb-card-body>
+            </nb-card>
+            <div
+              class="
+                row
+                no-gutters
+                align-items-center
+                justify-content-center
+                screen-share-row
+              "
+            >
+              <div class="screen-share-frame-col">
+                <div
+                  id="screen-preview"
+                  class="screen-share-preview"
+                  #parentScreenPreview
+                >
+                  <div class="presenting-screen" id="presentingScreen">
+                    <div>
+                      <h6>You're Presenting Screen</h6>
+                      <div class="mb-2">
+                        <button
+                          nbButton
+                          status="danger"
+                          size="small"
+                          (click)="stopScreenShare()"
+                        >
+                          Stop Sharing
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    id="screen-sharing-container"
+                    class="screen-share-preview"
+                  >
+                    {{ userSharingScreen }} is sharing the screen
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="
+              d-flex
+              justify-content-between
+              align-items-center
+              auto-video-controls
+            "
+          >
+            <div class="align-self-stretch video-control-left p-0">
+              <div class="blank-spacer">&nbsp;</div>
+            </div>
+            <div class="control-middle">
+              <button
+                nbButton
+                [status]="!recording ? 'danger' : 'basic'"
+                shape="round"
+                (click)="record()"
+                [nbTooltip]="!recording ? 'Start Recording' : 'Stop Recording'"
+                nbTooltipPlacement="top"
+                size="large"
+                class="mx-2 record-btn d-none"
+              >
+                <nb-icon pack="font-awesome-solid" icon="circle"></nb-icon>
+              </button>
+              <button
+                *ngIf="videoDevices.length > 10"
+                nbButton
+                status="basic"
+                shape="round"
+                (click)="switchCamera()"
+                nbTooltip="Change Camera"
+                nbTooltipPlacement="top"
+                size="large"
+                class="custom-svg-icon"
+                [disabled]="!videoIcon"
+              >
+                <nb-icon
+                  pack="screen-share-icons"
+                  icon="switch-camera"
+                ></nb-icon>
+              </button>
+              <button
+                nbButton
+                status="basic"
+                shape="round"
+                (click)="videoToggle()"
+                [nbTooltip]="videoIcon ? 'Turn off Camera' : 'Turn on Camera'"
+                nbTooltipPlacement="top"
+                size="large"
+                class="mx-2"
+                [ngClass]="videoIcon ? 'null' : 'icon-red'"
+              >
+                <nb-icon
+                  pack="eva"
+                  [icon]="videoIcon ? 'video-outline' : 'video-off-outline'"
+                ></nb-icon>
+              </button>
+              <button
+                nbButton
+                status="basic"
+                shape="round"
+                (click)="micToggle()"
+                [nbTooltip]="
+                  micIcon ? 'Turn off Microphone' : 'Turn on Microphone'
+                "
+                nbTooltipPlacement="top"
+                size="large"
+                class="mx-2"
+                [ngClass]="micIcon ? 'null' : 'icon-red'"
+              >
+                <nb-icon
+                  pack="eva"
+                  [icon]="micIcon ? 'mic-outline' : 'mic-off-outline'"
+                ></nb-icon>
+              </button>
+              <button
+                nbButton
+                status="basic"
+                shape="round"
+                (click)="!shareIcon ? screenshare() : stopScreenShare()"
+                [nbTooltip]="
+                  shareIcon
+                    ? 'Turn off Screen Sharing'
+                    : 'Turn on Screen Sharing'
+                "
+                nbTooltipPlacement="top"
+                class="mx-2"
+                size="large"
+                *ngIf="!screenSubs"
+                [disabled]="isMobileScreen"
+              >
+                <nb-icon
+                  *ngIf="!shareIcon"
+                  [icon]="
+                    isMobileScreen
+                      ? 'screen-share-disabled'
+                      : 'screen-share-active'
+                  "
+                  pack="screen-share-icons"
+                  class="custom-svg-icon"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="shareIcon"
+                  icon="screen-share"
+                  pack="screen-share-icons"
+                  class="custom-svg-icon"
+                ></nb-icon>
+              </button>
+              <button
+                nbButton
+                status="basic"
+                shape="round"
+                nbTooltip="Another user is currently sharing their screen"
+                nbTooltipPlacement="top"
+                class="mx-2"
+                size="large"
+                *ngIf="screenSubs"
+              >
+                <nb-icon pack="eva" icon="monitor-outline"></nb-icon>
+              </button>
+              <button
+                nbButton
+                status="basic"
+                shape="round"
+                nbTooltip="Start Chat"
+                nbTooltipPlacement="top"
+                class="mx-2 d-none"
+                size="large"
+              >
+                <nb-icon pack="eva" icon="message-square-outline"></nb-icon>
+              </button>
+
+              <div *ngIf="connected" class="d-inline position-relative">
+                <button
+                  *ngxPermissionsOnly="permissionKey.AddAttendeeToCall"
+                  nbButton
+                  shape="round"
+                  status="basic"
+                  (click)="getUsersToadd()"
+                  [nbTooltip]="'Add Participant'"
+                  nbTooltipPlacement="top"
+                  size="large"
+                  class="mx-2"
+                >
+                  <nb-icon pack="eva" icon="person-add-outline"></nb-icon>
+                </button>
+                <div class="add-user-popup" *ngIf="addUser">
+                  <div>
+                    <nb-card>
+                      <nb-card-header class="p-3">
+                        <div class="d-flex justify-content-between">
+                          <div>Add Participant</div>
+                          <span
+                            class="close-icon-addUser"
+                            (click)="addUser = false"
+                            ><nb-icon
+                              icon="close-outline"
+                              pack="eva"
+                              class="custom-svg-icon"
+                            ></nb-icon>
+                          </span>
+                        </div>
+                      </nb-card-header>
+                      <nb-card-body class="p-3">
+                        <ng-select
+                          name="add"
+                          [items]="myContacts"
+                          [multiple]="false"
+                          [closeOnSelect]="true"
+                          [searchable]="true"
+                          [clearSearchOnAdd]="true"
+                          bindLabel="nameWithRole"
+                          bindValue="id"
+                          appearance="outline"
+                          notFoundText="No users found"
+                          appearance="outline"
+                          placeholder="Available Users"
+                          (change)="addParticipant($event.id)"
+                        >
+                        </ng-select>
+                      </nb-card-body>
+                    </nb-card>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="align-self-stretch video-control-right">
+              <button
+                nbButton
+                status="danger"
+                shape="round"
+                (click)="disconnect()"
+                nbTooltip="Leave Call"
+                nbTooltipPlacement="top"
+                class="mx-2"
+                size="large"
+              >
+                <nb-icon pack="eva" icon="phone-outline"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<ng-template #disconnectCallDialog let-data let-ref="dialogRef">
+  <nb-card class="call-modules-popup">
+    <nb-card-header class="p-3 text-center">
+      <div>Disconnect Call</div>
+    </nb-card-header>
+    <nb-card-body class="p-3 text-center">
+      <p class="mb-0">Please select one of the actions</p>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            size="medium"
+            (click)="ref.close()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            size="medium"
+            (click)="ref.close(); leaveMeeting(true, true)"
+            class="mr-3"
+          >
+            Leave Call
+          </button>
+        </div>
+        <div class="col-4">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            size="medium"
+            (click)="ref.close(); leaveMeeting(true)"
+            class="mr-3"
+          >
+            End Call
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #addAttendeeDialog let-data let-ref="dialogRef">
+  <nb-card class="call-modules-popup">
+    <nb-card-header class="p-3 text-center">
+      <div>Add contact</div>
+    </nb-card-header>
+    <nb-card-body class="p-3 text-center">
+      <p class="mb-0">{{ addAttendeeDetails?.message }}</p>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            size="small"
+            (click)="ref.close()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            size="small"
+            (click)="addParticipant(addAttendeeDetails?.id, true)"
+            class="mr-3"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

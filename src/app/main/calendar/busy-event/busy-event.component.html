@@ -1,0 +1,70 @@
+<form #form="ngForm" novalidate class="req-meeting-form">
+  <nb-card size="small">
+    <nb-card-header>
+      <div class="">Mark Busy</div>
+    </nb-card-header>
+    <nb-card-body>
+      <div fxLayout="column">
+        <p class="small-para"><strong>Busy Slot</strong></p>
+        <div class="row event-time-row mb-3">
+          <div class="col-12 mb-2">
+            <ejs-datetimepicker
+              ng-required
+              id="startTime"
+              class="e-field"
+              data-name="startTime"
+              format="M/dd/yy h:mm a"
+              placeholder="Start"
+              (change)="onStartTimeChange($event)"
+              floatLabelType="Always"
+              name="startTime"
+              [min]="minStartTime"
+              [(ngModel)]="meetingDetails.startTime"
+              (created)="onCreated()"
+              [readonly]="meetingDetails.isEditFormReadonly"
+            ></ejs-datetimepicker>
+          </div>
+          <div class="col-12">
+            <ejs-datetimepicker
+              ng-required
+              id="endTime"
+              class="e-field"
+              data-name="endTime"
+              format="M/dd/yy h:mm a"
+              placeholder="End"
+              name="endTime"
+              [min]="minStartTime"
+              floatLabelType="Always"
+              [(ngModel)]="meetingDetails.endTime"
+              [readonly]="meetingDetails.isEditFormReadonly"
+            ></ejs-datetimepicker>
+          </div>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0 overflow-hidden">
+      <div class="d-flex justify-content-between align-items-center footer-buttons" ngClass.lt-sm="row">
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic" 
+            (click)="close()">
+            cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            (click)="save()">
+              Save
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</form>

@@ -1,0 +1,349 @@
+<div
+  class="chat-list"
+  [ngClass]="{
+    'open-chat': chatOpen,
+    'close-chat': !chatOpen,
+    'msg-notify': unread
+  }"
+>
+  <div class="chat-header d-flex justify-content-between align-items-center">
+    <div class="chat-title" [title]="chat.chatName">
+      <nb-user
+        size="small"
+        [name]="chat.chatName"
+        [title]="chat.chatTitle"
+        [picture]="chat.chatProfile"
+        [ngClass]="multiUserView ? 'multiUser' : ''"
+        (click)="multiUserView = !multiUserView"
+        *ngIf="chatOpen"
+      >
+      </nb-user>
+      <nb-user
+        size="small"
+        [name]="chat.chatName"
+        [title]="chat.chatTitle"
+        *ngIf="!chatOpen"
+      >
+      </nb-user>
+    </div>
+    <div class="chat-icons">
+      <nb-icon
+        pack="eva"
+        icon="download-outline"
+        title="Export chat"
+        class="icon-red ml-2"
+        (click)="openExportChat()"
+        *ngIf="chatOpen"
+      ></nb-icon>
+      <span
+        [nbPopover]="addChatUser"
+        nbPopoverPlacement="left"
+        nbPopoverTrigger="noop"
+        *ngIf="!chat.teamChat && chatOpen"
+      >
+        <nb-icon
+          pack="eva"
+          icon="person-add-outline"
+          title="Add Participant"
+          class="icon-red ml-2"
+          (click)="openAddParticipant()"
+        ></nb-icon>
+      </span>
+      <nb-icon
+        pack="eva"
+        icon="minus-outline"
+        title="minimize"
+        class="ml-2"
+        *ngIf="chatOpen"
+        (click)="chatOpen = false"
+      ></nb-icon>
+      <nb-icon
+        pack="font-awesome-regular"
+        icon="window-maximize"
+        title="Maximize"
+        class="ml-2 icon-font"
+        *ngIf="!chatOpen"
+        (click)="chatOpen = true; unread = false"
+      ></nb-icon>
+      <nb-icon
+        pack="eva"
+        icon="close-outline"
+        title="Close"
+        class="ml-2"
+        (click)="closeChat()"
+        [ngClass]="!chatOpen ? 'close-icon' : ''"
+      ></nb-icon>
+    </div>
+  </div>
+  <div class="chat-body" *ngIf="chatOpen">
+    <button
+      *ngIf="showLoadMoreButton"
+      nbButton
+      status="danger"
+      size="small"
+      shape="round"
+      class="chat-load-more"
+      (click)="getLaterChat()"
+    >
+      <span>Load More</span>
+    </button>
+    <nb-chat size="small" status="danger" [scrollBottom]="scroll" [ngClass]="images.length || uploading ? 'h-small' : null">
+      <nb-chat-message
+        *ngFor="let message of messages"
+        [type]="message.type"
+        [message]="message.text"
+        [reply]="message.reply"
+        [sender]="message.user.name"
+        [date]="message.date"
+        [files]="message.files"
+        [quote]="message.quote"
+        [avatar]="profileObject[message.user.id]"
+        dateFormat="medium"
+      >
+      </nb-chat-message>
+    </nb-chat>
+    <div *ngIf="!canChat" class="no-linked-user">
+      You are not linked to the user anymore
+    </div>
+    <div *ngIf="canChat" class="custom-chat-form">
+      <div class="chat-buttons">
+        <nb-icon
+          *ngxPermissionsOnly="permissionKey.ContentModuleAllowed"
+          pack="eva"
+          title="Add Content"
+          icon="plus-circle-outline"
+          class="mr-2"
+          [ngClass]="uploading ? 'no-cursor' : null"
+          (click)="addContent()"
+        ></nb-icon>
+        <nb-icon
+          pack="eva"
+          title="Attach Files"
+          icon="attach-2-outline"
+          class="mr-2"
+          [ngClass]="uploading ? 'no-cursor' : null"
+          (click)="uploader.click()"
+        ></nb-icon>
+        <input
+          hidden
+          type="file"
+          accept=".bmp,.png,.jpg,.jpeg,.pdf,.vcf,.ics,.docx,.doc,.xls,.xlsx,.ppt,.pptx,.xps,.rtf,.txt,.wav,.mov,.avi,.mid,.mp3,.mp4,.csv"
+          multiple
+          #uploader
+          (change)="uploadFile($event)"
+        />
+      </div>
+      <div class="message-area" [ngClass]="showContent ? null : 'msg-width'">
+        <div
+          nbInput
+          class="chat-input"
+          contenteditable="true"
+          data-ph="Type your message"
+          (input)="newMsg = $event.target.textContent"
+          (keyup)="sendTypingSignal()"
+          (keydown.enter)="onEnter($event)"
+        ></div>
+        <button
+          nbButton
+          status="danger"
+          size="small"
+          type="submit"
+          shape="round"
+          class="msg-btn"
+          (click)="sendMessage()"
+        >
+          <nb-icon pack="eva" icon="paper-plane-outline"></nb-icon>
+        </button>
+      </div>
+      <div class="typer-name" *ngIf="typing">{{ typing }}</div>
+    </div>
+    <div class="custom-dropped-files" *ngIf="images.length">
+      <ng-container *ngFor="let image of images">
+        <div *ngIf="image.type">
+          <img [src]="image.url" alt="" />
+          <span *ngIf="!uploading" class="remove" (click)="onRemove(image)"
+            >&times;</span
+          >
+          <span *ngIf="uploading" class="img-loader"
+            ><span class="loader"></span
+          ></span>
+        </div>
+        <div *ngIf="!image.type">
+          <nb-icon icon="file-text-outline" pack="nebular-essentials"></nb-icon>
+          <span *ngIf="!uploading" class="remove" (click)="onRemove(image)"
+            >&times;</span
+          >
+          <span *ngIf="uploading" class="img-loader"
+            ><span class="loader"></span
+          ></span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="multiple-users-list" *ngIf="multiUserView">
+      <nb-card class="p-0">
+        <nb-card-body class="p-0">
+          <nb-list>
+            <nb-list-item *ngFor="let participant of chat.participants">
+              <nb-user
+                size="small"
+                [name]="participant.fullName || participant.name"
+                [title]="
+                  participant.userTitle
+                    ? participant.userTitle
+                    : participant.jobTitle
+                    ? participant.jobTitle
+                    : participant.roleName
+                "
+                [picture]="participant.imageKey || participant.photoUrl"
+              ></nb-user>
+            </nb-list-item>
+          </nb-list>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #addChatUser>
+  <nb-card class="add-chat-user">
+    <nb-card-header class="px-3 py-2">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>Add Participant</span>
+        <nb-icon
+          pack="eva"
+          icon="close-outline"
+          (click)="closeAddParticipant()"
+        ></nb-icon>
+      </div>
+    </nb-card-header>
+    <nb-card-body class="p-3">
+      <ng-select
+        appearance="outline"
+        placeholder="Select Participant"
+        name="Participants"
+        [closeOnSelect]="false"
+        [multiple]="true"
+        [searchable]="true"
+        bindLabel="fullName"
+        [items]="allUsers"
+        [(ngModel)]="addUser"
+      >
+      </ng-select>
+      <div class="participants-info">
+        Once participant(s) are added, the chat will initiate a new window with
+        all the combined participants. Chat history will not be shared with the
+        new participant(s).
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div
+        class="d-flex justify-content-center footer-buttons"
+        ngClass.lt-sm="row"
+      >
+        <div class="col-12">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            [disabled]="!addUser || !addUser.length"
+            (click)="addParticipants()"
+          >
+            Add Participant
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #exportChat let-data let-ref="dialogRef">
+  <form #form="ngForm">
+    <nb-card class="export-chat">
+      <nb-card-header class="px-3 py-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <span>Export Chat Conversation</span>
+          <nb-icon
+            pack="eva"
+            icon="close-outline"
+            (click)="ref.close()"
+          ></nb-icon>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-3">
+        <div fxLayout="column" fxLayoutAlign="start">
+          <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+            <div
+              class="split-mobile"
+              fxLayout="row wrap"
+              fxLayoutAlign="start"
+              fxFlex="1 0 auto"
+            >
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pl-1 pr-1"
+              >
+                <mat-label>From Date</mat-label>
+                <input
+                  matInput
+                  mwlFlatpickr
+                  name="timeFrom"
+                  altInput="true"
+                  disableMobile="true"
+                  enableTime="true"
+                  dateFormat="Z"
+                  altFormat="d-m-Y H:i"
+                  [(ngModel)]="exportChatModel.startDate"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field
+                appearance="outline"
+                fxFlex="100"
+                fxFlex.gt-xs="50"
+                ngClass.gt-xs="pl-1 pr-1"
+              >
+                <mat-label>To Date</mat-label>
+                <input
+                  matInput
+                  mwlFlatpickr
+                  name="timeTill"
+                  altInput="true"
+                  disableMobile="true"
+                  enableTime="true"
+                  dateFormat="Z"
+                  altFormat="d-m-Y H:i"
+                  [(ngModel)]="exportChatModel.toDate"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0">
+        <div
+          class="d-flex justify-content-center footer-buttons"
+          ngClass.lt-sm="row"
+        >
+          <div class="col-12">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="success"
+              type="submit"
+              [disabled]="!messages.length"
+              (click)="export()"
+            >
+              Export Chat
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </form>
+</ng-template>

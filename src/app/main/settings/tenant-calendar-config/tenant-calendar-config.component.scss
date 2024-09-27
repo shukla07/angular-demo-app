@@ -1,0 +1,38 @@
+@import '../../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+.tenant-config-dialog {
+  width: 1000px;
+  max-width: 90%;
+  margin: auto;
+
+  @include media-breakpoint-down(md) {
+    width: 90%;
+  }
+  @include media-breakpoint-down(sm) {
+    margin: 10px auto;
+  }
+
+  nb-card.size-medium {
+    height: auto;
+
+    @media screen and (min-width: 769px) and (max-width: 991px) {
+      height: 18.875rem;
+      overflow: auto;
+    }
+    @include media-breakpoint-down(sm) {
+      height: 18.875rem;
+      overflow: auto;
+    }
+    @media screen and (max-width: 479px) {
+      height: 28.875rem;
+    }
+  }
+  .mat-form-field {
+    line-height: 1.3;
+  }
+}
+.settings-template .tenant-config-dialog {
+  max-width: 100%;
+}

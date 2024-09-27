@@ -1,0 +1,114 @@
+<nb-card class="p-0 main-content scroll-size m-details-popup" center>
+  <nb-card-header class="p-3">
+    Meeting Details
+    <span (click)="closeDialog($event)" class="float-right close-pointer">
+      <nb-icon icon="close" pack="eva"></nb-icon>
+    </span>
+  </nb-card-header>
+  <nb-card-body class="p-3 text-left">
+    <div class="meeting-title">
+      <p>
+        <strong
+          >{{ meetingDetails.title }}
+          <nb-icon
+            pack="custom-icons"
+            icon="stethoscope"
+            *ngIf="meetingDetails['isMaCall']"
+            title="Medical onDemand"
+          ></nb-icon></strong
+        ><small class="d-block text-capitalize">{{
+          meetingDetails.status
+        }}</small>
+      </p>
+      <div class="seprator-line"></div>
+      <p><strong>Meeting Time</strong></p>
+      <p class="small-para">
+        <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+        <span class="ml-1">
+          Start time:&nbsp;{{
+            meetingDetails.startTime | date: 'MMM d, y, h:mm a'
+          }}
+        </span>
+      </p>
+      <p class="small-para">
+        <nb-icon icon="clock-outline" pack="eva"></nb-icon>
+        <span class="ml-1">
+          End time:&nbsp;{{ meetingDetails.endTime | date: 'MMM d, y, h:mm a' }}
+        </span>
+      </p>
+      <div class="seprator-line"></div>
+      <p><strong>Meeting Type</strong></p>
+      <p class="small-para">
+        <span *ngIf="meetingDetails.meetingType === 'audio'">
+          <nb-icon icon="phone-outline" pack="eva" class="mr-1"></nb-icon>
+          <span>Audio</span>
+        </span>
+        <span *ngIf="meetingDetails.meetingType === 'video'">
+          <nb-icon icon="video-outline" pack="eva" class="mr-1"></nb-icon>
+          <span>Video</span>
+        </span>
+      </p>
+      <div class="seprator-line" *ngIf="meetingDetails.teamName"></div>
+      <div
+        class="mb-3 d-flex align-items-center"
+        *ngIf="meetingDetails.teamName"
+      >
+        <div class="mr-2"><strong>Team</strong></div>
+        <div class="team-name">{{ meetingDetails.teamName }}</div>
+      </div>
+      <div class="seprator-line"></div>
+      <p><strong>Invited People</strong></p>
+      <div class="text-left" *ngFor="let attendee of meetingDetails.attendees">
+        <div class="mb-2">
+          <span class="d-flex align-items-center text-capitalize">
+            <span class="details-avatar">
+              <img src="assets/avatar.png" alt="" />
+              <nb-icon
+                *ngIf="attendee.response == 'accepted'"
+                pack="eva"
+                icon="checkmark-circle-2-outline"
+                class="accepted"
+                nbTooltip="accepted"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="attendee.response == 'declined'"
+                pack="eva"
+                icon="close-circle-outline"
+                class="declined"
+                nbTooltip="declined"
+              ></nb-icon>
+            </span>
+            <span>
+              {{ attendee.name }}
+              <small class="font-italic mr-2" *ngIf="attendee.isOrganizer"
+                >(Organizer)</small
+              >
+              <nb-icon
+                *ngIf="attendee.meetingStatus"
+                icon="person"
+                pack="eva"
+                nbTooltip="Attended"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="!attendee.meetingStatus"
+                icon="person-outline"
+                pack="eva"
+                nbTooltip="Not Attended"
+              ></nb-icon>
+
+              <small *ngIf="attendee.meetingLastUpdateId" class="font-italic">
+                {{ quickNotes[attendee.meetingLastUpdateId] }}
+              </small>
+              <nb-icon
+                pack="custom-icons"
+                icon="stethoscope"
+                *ngIf="attendee.extMetadata?.isMaAttendee"
+                title="Medical onDemand"
+              ></nb-icon>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

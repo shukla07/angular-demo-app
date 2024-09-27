@@ -1,0 +1,89 @@
+@import '../../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+.nb-theme-default {
+  nb-sidebar.left {
+    z-index: 99;
+  }
+}
+
+.e-float-input.e-input-group .e-input-group-icon,
+.e-float-input.e-control-wrapper.e-input-group .e-input-group-icon {
+  font-size: 16px;
+}
+
+.mat-form-field,
+.mat-select,
+.mat-button,
+.mat-raised-button,
+.mat-icon-button,
+.mat-stroked-button,
+.mat-flat-button,
+.mat-fab,
+.mat-mini-fab,
+.mat-menu-item,
+.mat-option {
+  font-family: nb-theme(font-family-primary);
+  color: nb-theme(color-basic-800);
+  font-size: nb-theme(text-paragraph-font-size);
+}
+.mat-form-field {
+  line-height: 1.3;
+}
+.ng-dropdown-panel {
+  min-width: 300px;
+}
+
+p.small-para {
+  font-size: nb-theme(text-paragraph-2-font-size);
+}
+
+.req-meeting-form {
+  width: 320px;
+  margin: auto;
+
+  @media screen and (max-width: 350px) {
+    width: 100%;
+  }
+
+  nb-card-header,
+  nb-card-body {
+    padding: 1rem 15px;
+  }
+  .event-time-row {
+    padding-left: 30px;
+    position: relative;
+
+    &::before {
+      content: '\e20c';
+      font-family: 'e-icons', sans-serif;
+      position: absolute;
+      top: 2px;
+      left: 17px;
+      font-weight: 900;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+  nb-card.size-small {
+    height: auto;
+
+    @include media-breakpoint-down(md) {
+      height: 26.1875rem;
+    }
+
+    @media screen and (min-width: 769px) and (max-width: 991px) {
+      height: 65vh;
+    }
+
+    @include media-breakpoint-down(sm) {
+      height: 65vh;
+    }
+
+    @media screen and (max-width: 479px) {
+      height: 25.1875rem;
+    }
+  }
+}

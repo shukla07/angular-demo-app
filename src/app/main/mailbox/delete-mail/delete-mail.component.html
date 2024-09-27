@@ -1,0 +1,40 @@
+<nb-card>
+  <nb-card-header class="p-3 text-center">
+    <div>Delete</div>
+  </nb-card-header>
+  <nb-card-body class="p-3 text-center">
+    <p class="mb-0">Are you sure you want to delete this email?</p>
+  </nb-card-body>
+  <nb-card-footer class="p-0">
+    <div
+      class="d-flex justify-content-center footer-buttons"
+      ngClass.lt-sm="row"
+    >
+      <div class="col-6">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          status="basic"
+          size="medium"
+          (click)="close()"
+        >
+          No
+        </button>
+      </div>
+      <div class="col-6">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          status="danger"
+          size="medium"
+          (click)="deleteMail()"
+          class="mr-3"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </nb-card-footer>
+</nb-card>

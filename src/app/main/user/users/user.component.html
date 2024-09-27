@@ -1,0 +1,346 @@
+<nb-layout class="users-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-sm-3">User List</div>
+          <div class="col-sm-9 text-right buttons-mrgn-top" *ngxPermissionsOnly="permissionKey.CreateTenantUser">
+            <div>
+              <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantUser">
+
+                <button *ngIf="rowChecked && isUnverifiedSelected.length === 0" nbButton #activateBtn size="small"
+                  status="danger" shape="round" outline class="ml-2" ngClass.xs="mb-2" nbTooltip="Deactivate User"
+                  nbTooltipPlacement="bottom" (click)="
+                    open(userStatusDialog, activateBtn.status, 'multiple')
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+                <button *ngIf="rowChecked && isUnverifiedSelected.length === 0" nbButton #deactivateBtn status="success"
+                  shape="round" outline size="small" class="ml-2" ngClass.xs="mb-2" nbTooltip="Activate User"
+                  nbTooltipPlacement="bottom" (click)="
+                    open(userStatusDialog, deactivateBtn.status, 'multiple')
+                  ">
+                  <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                </button>
+
+              </ng-container>
+              <button nbButton status="danger" size="small" class="ml-2" ngClass.xs="mb-2" (click)="onClickAddUser()"
+                *ngxPermissionsOnly="permissionKey.CreateTenantUser">
+                Add User
+              </button>
+              <button nbButton status="default" size="small" class="ml-2 default-btn-dark" ngClass.gt-sm="mr-1"
+                ngClass.xs="mb-2" *ngxPermissionsOnly="permissionKey.CreateTenantUser" (click)="onClickImport()">
+                Import User
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div class="split-mobile" fxLayout="row wrap" fxLayoutAlign="start" fxFlex="1 0 auto">
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="25" ngClass.gt-xs="pr-1">
+                      <ng-select name="role" [items]="roles" [multiple]="false" [closeOnSelect]="true"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="name" bindValue="name"
+                        placeholder="Platform Role" appearance="outline" notFoundText="No platform role found"
+                        [(ngModel)]="filter.role">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="30" fxFlex.gt-xs="30"
+                      ngClass.gt-xs="pr-1 pl-1">
+                      <ng-select name="Name" [items]="userNameList | async" [multiple]="false" [closeOnSelect]="true"
+                        [searchable]="true" [clearSearchOnAdd]="true" [clearable]="true" [typeahead]="userSearchStr"
+                        [minTermLength]="1" typeToSearchText="Please type to search" [virtualScroll]="true"
+                        bindLabel="fullName" bindValue="id" placeholder="Name" appearance="outline"
+                        notFoundText="No users found" [(ngModel)]="filter.userId" (change)="onSelectChange()">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="27" fxFlex.gt-xs="32" ngClass.gt-xs="pl-1">
+                      <mat-radio-group name="status" class="radio-group" [(ngModel)]="filter.status">
+                        <mat-radio-button class="radio-button" value="1">Active</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="2">Inactive</mat-radio-button>
+                        <mat-radio-button class="radio-button" value="0">Unverified</mat-radio-button>
+                      </mat-radio-group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group align-items-center" ngClass.xs="d-block" ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex">
+                <button nbButton status="danger" size="small" type="submit" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading" [nbSpinner]="loading" nbSpinnerStatus="danger"
+                  nbSpinnerSize="small" (click)="
+                    getUserList(currentPage, itemsPerPage, form);
+                    isSearched = true
+                  ">
+                  Search
+                </button>
+                <button nbButton status="basic" type="button" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine" (click)="onClearFilter(form); getUserList(1, 10)">
+                  Clear
+                </button>
+                <ng-container *ngxPermissionsOnly="permissionKey.CreateTenantUser">
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="userList && !userList.length" (click)="checkColumnSelection('CSV')">
+                    Export as CSV
+                  </button>
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    [disabled]="userList && !userList.length" (click)="checkColumnSelection('PDF')">
+                    Export as PDF
+                  </button>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="userList">
+            <vmsl-grid [vmsl-data]="
+                userList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalUsersCount
+                      }
+              " [vmsl-column-definition]="columnDefinition" [vmsl-norows-template]="noRowsTemplate"
+              vmsl-row-selection="multiple" [dropdownCount]="dropdownCount.asObservable()"
+              (itemsPerPage)="getPaginationValue($event)" (rowChecked)="onRowChecked($event)"
+              (onGridReady)="onGridReady($event)" [itemsPerPageList]="itemsPerPageList">
+            </vmsl-grid>
+
+            <div ngClass.gt-xs="d-flex justify-content-between align-items-center">
+              <pagination-controls (pageChange)="paginationEvent($event)" responsive="true" previousLabel=""
+                nextLabel="" maxSize="5"></pagination-controls>
+              <div class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                totalUsersCount > currentPage * itemsPerPage
+                ? currentPage * itemsPerPage
+                : totalUsersCount
+                }}
+                of {{ totalUsersCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+
+        <ng-template #userStatusDialog let-data let-ref="statusDialogRef">
+          <nb-card class="activate-popup" *ngIf="!statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 *ngIf="data.verified" class="mt-3 mb-4">Are you sure?</h4>
+                <h4 *ngIf="!data.verified" class="mt-3 mb-4">
+                  Resend registration email?
+                </h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="statusDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6" *ngIf="!data.verified">
+                  <button class="remove-text-capitalize" *ngIf="!data.verified" nbButton ghost fullWidth status="danger"
+                    [disabled]="sendEmailLoading" [nbSpinner]="sendEmailLoading" nbSpinnerStatus="primary"
+                    (click)="resendRegistrationEmail()">
+                    Resend email
+                  </button>
+                </div>
+                <div class="col-6" *ngIf="data.verified">
+                  <button *ngIf="data.verified" nbButton ghost fullWidth status="danger" (click)="
+                      data.type === 'single'
+                        ? activOrDeactivUser()
+                        : bulkUserStatusChange(data.status)
+                    " class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="activate-popup" *ngIf="statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 *ngIf="data.verified" class="mt-3 mb-4">Updated Status</h4>
+                <h4 *ngIf="!data.verified" class="mt-3 mb-4">Success</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton status="success" ghost fullWidth (click)="
+                      statusDialogRef.close(); statusTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+
+        <ng-template #deleteUserDialog let-data let-ref="deleteDialogRef">
+          <nb-card class="user-delete-popup" *ngIf="!deleteTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p *ngIf="data.isTeamMember">{{ data.teamMessage }}</p>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="deleteDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="deleteUser()"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="user-delete-popup" *ngIf="deleteTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">User deleted.</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      deleteDialogRef.close(); deleteTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+
+        <ng-template #unlockUserDialog let-data let-ref="unlockDialogRef">
+          <nb-card class="activate-popup" *ngIf="!unlockTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="warning" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="unlockDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="unlockUser()" [nbSpinner]="unlockLoading"
+                    nbSpinnerStatus="primary" nbSpinnerSize="small" [disabled]="unlockLoading"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="activate-popup" *ngIf="unlockTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">User unlocked.</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      unlockDialogRef.close(); unlockTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+
+<ng-template #csvDropZone let-data let-ref="csvDialogRef">
+  <nb-card class="import-users-popup">
+    <nb-card-header>Import Users</nb-card-header>
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <ngx-dropzone (change)="onSelect($event)" multiple="false" accept=".csv" class="dropzone">
+          <ngx-dropzone-label class="dropzone-label">Click or drag your .csv file here.</ngx-dropzone-label>
+          <ngx-dropzone-preview ngProjectAs="ngx-dropzone-preview" [removable]="true" (removed)="onRemove()"
+            *ngFor="let files of csvFile; index as i">
+            <ngx-dropzone-label class="file-info">{{ csvFile[i].name }} ({{ csvFile[i].type }})</ngx-dropzone-label>
+          </ngx-dropzone-preview>
+        </ngx-dropzone>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0 overflow-hidden">
+      <div class="d-flex justify-content-between align-items-center footer-buttons" ngClass.lt-sm="row">
+        <div class="col-2">
+          <button nbButton ghost fullWidth status="basic" class="mr-2" (click)="csvDialogRef.close(); onRemove()">
+            Cancel
+          </button>
+        </div>
+        <div class="col-4">
+          <nb-select placeholder="Download .csv sample" (selectedChange)="onClickImportSample($event)">
+            <nb-option value="4">Administrator</nb-option>
+            <nb-option value="5">Sponsor User</nb-option>
+            <nb-option value="7">Health Care Professional</nb-option>
+          </nb-select>
+        </div>
+        <div class="col-4">
+          <button nbButton ghost fullWidth status="default" class="mr-2 download-csv-btn remove-text-capitalize"
+            (click)="onClickTimezoneSample()">
+            Download timezone sample
+          </button>
+        </div>
+        <div class="col-2">
+          <button nbButton ghost fullWidth [nbSpinner]="importLoading" nbSpinnerStatus="danger" nbSpinnerSize="small"
+            status="danger" [disabled]="!csvFile" (click)="importUsers()" class="remove-text-capitalize">
+            Import file.
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

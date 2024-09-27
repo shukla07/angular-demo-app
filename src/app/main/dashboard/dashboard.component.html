@@ -1,0 +1,562 @@
+<nb-layout
+  class="dashboard-ui"
+  *ngxPermissionsOnly="permissionKey.CanViewDashboard"
+>
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">Dashboard</div>
+      <div class="row d-block d-sm-block d-md-none">
+        <div class="col pt-3">
+          <mat-form-field fxFlex="100" appearance="outline">
+            <mat-label>Select Meeting</mat-label>
+            <mat-select (selectionChange)="onConfSelect($event)">
+              <mat-option value="adHocConf" selected
+                >Ad-hoc Team Meeting Requests</mat-option
+              >
+              <mat-option value="schedConf" selected
+                >Scheduled Team Meeting Requests</mat-option
+              >
+              <mat-option value="todaysCalender"
+                >Today's Meeting Calender</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div class="pt-1 pl-4 pr-4">
+      <div class="row reduce-pdng no-sm-pdng">
+        <div class="col-lg-8">
+          <div class="row reduce-pdng">
+            <div
+              class="col-md-6"
+              [ngClass]="adHocConf ? null : 'd-none d-md-block'"
+            >
+              <div class="pdng-inner-bg">
+                <nb-card class="no-head-bg">
+                  <nb-card-header>
+                    <div
+                      class="d-flex justify-content-between align-items-start"
+                    >
+                      <span
+                        >Ad-hoc Team Meeting Requests <br />
+                        <small
+                          >Selected Filter - {{ selectedAdHocItem }}</small
+                        ></span
+                      >
+                      <span
+                        class="position-relative ml-2"
+                        (click)="newCall = []"
+                      >
+                        <button
+                          nbButton
+                          status="basic"
+                          size="small"
+                          class="filter-btn"
+                          nbContextMenuTag="adhoc-team-menu"
+                          [nbContextMenu]="teams"
+                          nbContextMenuPlacement="left"
+                        >
+                          <nb-icon pack="eva" icon="options-outline"></nb-icon>
+                        </button>
+                        <span *ngIf="newCall.length" class="filter-dot"></span>
+                      </span>
+                    </div>
+                  </nb-card-header>
+                </nb-card>
+                <nb-card class="no-bg no-radius" size="medium">
+                  <nb-card-body class="p-0">
+                    <p class="text-center" *ngIf="adhocQueue.length === 0">
+                      No calls lined up.
+                    </p>
+
+                    <nb-card *ngFor="let call of adhocQueue" class="inner-card">
+                      <div class="card-item">
+                        <div class="team-text">
+                          <p *ngIf="call.status === 'queued'">
+                            <nb-icon
+                              *ngIf="call.callType === 'audio'"
+                              pack="eva"
+                              icon="phone-outline"
+                              class="mr-1"
+                            ></nb-icon>
+                            <nb-icon
+                              *ngIf="call.callType === 'video'"
+                              pack="eva"
+                              icon="video-outline"
+                              class="mr-1"
+                            ></nb-icon>
+                            <countdown
+                              (event)="stopTimer($event, call)"
+                              #countDown
+                              [config]="call.timeLeft"
+                            ></countdown>
+                            sec left to answer
+                          </p>
+                        </div>
+                        <nb-user
+                          onlyPicture="false"
+                          [picture]="call.callerProfile"
+                          [name]="call.caller"
+                          [title]="call.callerRoleName"
+                          title="call.caller"
+                        ></nb-user>
+                        <div class="middle-content">
+                          <div class="team-name" *ngIf="call.teamName">
+                            {{ call.teamName }}
+                          </div>
+                        </div>
+                      </div>
+                      <nb-card-footer class="text-center">
+                        <div
+                          class="row no-gutters justify-content-center"
+                          *ngIf="call.status === 'queued'"
+                        >
+                          <div class="col-6 pr-1">
+                            <button
+                              *ngIf="call.status === 'queued'"
+                              nbButton
+                              ghost
+                              fullWidth
+                              size="small"
+                              status="success"
+                              (click)="acceptCall(call)"
+                            >
+                              Accept
+                            </button>
+                          </div>
+                        </div>
+
+                        <span
+                          *ngIf="
+                            call.status === 'done' && call.attendeeFirstName
+                          "
+                          class="answered-by-text"
+                          >Answered by {{ call.attendee }}</span
+                        >
+                        <span
+                          *ngIf="
+                            call.status === 'done' && !call.attendeeFirstName
+                          "
+                          class="answered-by-text"
+                          >Cancelled</span
+                        >
+                        <span
+                          *ngIf="call.status === 'missed'"
+                          class="answered-by-text"
+                          >Missed call from {{ call.caller }}</span
+                        >
+                      </nb-card-footer>
+                    </nb-card>
+                  </nb-card-body>
+                </nb-card>
+              </div>
+            </div>
+
+            <div
+              class="col-md-6"
+              [ngClass]="schedConf ? null : 'd-none d-md-block'"
+            >
+              <div class="pdng-inner-bg">
+                <nb-card class="no-head-bg">
+                  <nb-card-header>
+                    <div
+                      class="d-flex justify-content-between align-items-start"
+                    >
+                      <span
+                        >Scheduled Team Meeting Requests <br />
+                        <small
+                          >Selected Filter - {{ selectedScheduleItem }}</small
+                        ></span
+                      >
+                      <span
+                        class="position-relative ml-2"
+                        (click)="newMeeting = []"
+                      >
+                        <button
+                          nbButton
+                          status="basic"
+                          size="small"
+                          class="filter-btn"
+                          [nbContextMenu]="teams"
+                          nbContextMenuTag="sched-team-menu"
+                          nbContextMenuPlacement="left"
+                        >
+                          <nb-icon pack="eva" icon="options-outline"></nb-icon>
+                        </button>
+                        <span
+                          *ngIf="newMeeting.length"
+                          class="filter-dot"
+                        ></span>
+                      </span>
+                    </div>
+                  </nb-card-header>
+                </nb-card>
+                <nb-card class="no-bg no-radius" size="medium">
+                  <nb-card-body class="p-0">
+                    <p class="text-center" *ngIf="scheduledQueue.length === 0">
+                      No meetings scheduled.
+                    </p>
+
+                    <nb-card
+                      *ngFor="let call of scheduledQueue"
+                      class="inner-card"
+                    >
+                      <div class="card-item">
+                        <div class="flag-icon">
+                          <nb-icon
+                            pack="eva"
+                            icon="flag-outline"
+                            *ngIf="call.managerEscalated"
+                            nbTooltip="Sponsor Manager Escalated"
+                            nbTooltipPlacement="bottom"
+                          ></nb-icon>
+                          <nb-icon
+                            pack="eva"
+                            icon="flag"
+                            *ngIf="call.directorEscalated"
+                            nbTooltip="Sponsor Director Escalated"
+                            nbTooltipPlacement="bottom"
+                          ></nb-icon>
+                        </div>
+                        <div class="team-text">
+                          <nb-badge
+                            status="basic"
+                            [text]="call.createdOn"
+                          ></nb-badge>
+                        </div>
+                        <nb-user
+                          onlyPicture="false"
+                          [picture]="call.callerProfile"
+                          [name]="call.caller"
+                          [title]="call.callerRoleName"
+                          title="call.caller"
+                        ></nb-user>
+                        <div class="middle-content">
+                          <div class="team-name" *ngIf="call.teamName">
+                            {{ call.teamName }}
+                          </div>
+                          <p class="second-left">
+                            {{ call.date }}
+                            {{ call.startTime }} -
+                            {{ call.endTime }}
+                          </p>
+                        </div>
+                      </div>
+                      <nb-card-footer class="text-center">
+                        <div class="row no-gutters justify-content-center">
+                          <div
+                            class="col-6 pr-1"
+                            *ngIf="call.status === 'queued'"
+                          >
+                            <button
+                              nbButton
+                              ghost
+                              fullWidth
+                              size="small"
+                              status="success"
+                              *ngIf="call.status === 'queued'"
+                              (click)="acceptScheduleMeeting(call)"
+                            >
+                              Accept
+                            </button>
+                          </div>
+                          <div
+                            class="
+                              col-6
+                              pl-1
+                              position-relative
+                              accept-button-div
+                            "
+                            *ngxPermissionsOnly="
+                              permissionKey.CanAssignTeamMeeting
+                            "
+                          >
+                            <button
+                              nbButton
+                              ghost
+                              fullWidth
+                              size="small"
+                              status="success"
+                              *ngIf="call.status === 'queued'"
+                              (click)="call.showTeamMembers = true"
+                            >
+                              Assign
+                            </button>
+
+                            <div
+                              class="add-user-popup"
+                              *ngIf="call.showTeamMembers"
+                            >
+                              <div>
+                                <nb-card>
+                                  <nb-card-header class="py-1 px-3">
+                                    <div class="d-flex justify-content-between">
+                                      <div>Assign</div>
+                                      <span
+                                        class="close-icon-addUser"
+                                        (click)="call.showTeamMembers = false"
+                                        ><nb-icon
+                                          icon="close-outline"
+                                          pack="eva"
+                                          class="custom-svg-icon"
+                                        ></nb-icon>
+                                      </span>
+                                    </div>
+                                  </nb-card-header>
+                                  <nb-card-body class="py-1 px-3">
+                                    <ng-select
+                                      name="add"
+                                      [items]="call.members"
+                                      [multiple]="false"
+                                      [closeOnSelect]="true"
+                                      [searchable]="true"
+                                      [clearSearchOnAdd]="true"
+                                      bindLabel="user_name"
+                                      bindValue="user_id"
+                                      appearance="outline"
+                                      notFoundText="No users found"
+                                      appearance="outline"
+                                      placeholder="Available Users"
+                                      (change)="
+                                        assignScheduleMeeting(
+                                          call,
+                                          $event.user_id
+                                        )
+                                      "
+                                    >
+                                    </ng-select>
+                                  </nb-card-body>
+                                </nb-card>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <span
+                          *ngIf="call.status === 'cancelled'"
+                          class="answered-by-text"
+                          >Cancelled</span
+                        >
+                        <span
+                          *ngIf="call.status === 'missed'"
+                          class="answered-by-text"
+                          >Missed</span
+                        >
+                        <span
+                          *ngIf="call.status === 'accepted'"
+                          class="answered-by-text"
+                          >Accepted by {{ call.attendee }}</span
+                        >
+                        <span
+                          *ngIf="call.status === 'assigned'"
+                          class="answered-by-text"
+                          >Assigned to {{ call.attendee }}</span
+                        >
+                      </nb-card-footer>
+                    </nb-card>
+                  </nb-card-body>
+                </nb-card>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-0 mt-md-3 mt-lg-0">
+          <div
+            class="schedule-calender-view"
+            [ngClass]="todaysCalender ? null : 'd-none d-md-block'"
+          >
+            <nb-card>
+              <nb-card-header class="p-3 bdr-btm">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    Today's Events -
+                    <span class="today-date">{{ todaysDate }} </span>
+                  </div>
+
+                  <button
+                    nbButton
+                    status="danger"
+                    shape="round"
+                    size="medium"
+                    class="pull-right"
+                  >
+                    <nb-icon
+                      icon="calendar-check"
+                      pack="font-awesome-regular"
+                      (click)="navigateToCalendar()"
+                    ></nb-icon>
+                  </button>
+                </div>
+              </nb-card-header>
+              <nb-card-body class="p-0 no-scroll">
+                <div class="calender-container">
+                  <ngx-scheduler
+                    #todaysCalendar
+                    readOnly="true"
+                    [showHeaderBar]="false"
+                    [schedulerHeight]="'calc(100vh - 200px)'"
+                    selectedView="Day"
+                    [quickInfoTemplatesContent]="quickInfoTemplatesContent"
+                    [quickInfoTemplatesHeader]="quickInfoTemplatesHeader"
+                    [onEventClick]="onEventClick"
+                    [currentUserId]="currentUser.id"
+                    [onNavigation]="onCalendarNavigation"
+                    [eventTemplate]="calendarConfig.eventTemplate"
+                  ></ngx-scheduler>
+                </div>
+              </nb-card-body>
+            </nb-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+<ng-template #quickInfoTemplatesContent let-data="data">
+  <div class="quick-template-content">
+    <p>
+      <span class="quick-color-box" [ngClass]="quickColorBox">&nbsp;</span>
+      {{ currentEvent.title }}
+      <nb-icon
+        pack="custom-icons"
+        icon="stethoscope"
+        *ngIf="currentEvent['isMaCall']"
+        title="Medical onDemand"
+      ></nb-icon>
+    </p>
+    <nb-card class="quick-nb-card p-0">
+      <nb-card-body class="p-0">
+        <p class="d-flex align-items-center">
+          <nb-icon
+            *ngIf="currentEvent.meetingType === 'audio'"
+            icon="phone-outline"
+            pack="eva"
+            class="mr-2"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="currentEvent.meetingType === 'video'"
+            icon="video-outline"
+            pack="eva"
+            class="mr-2"
+          ></nb-icon>
+          <span class="ml-2">
+            {{ currentEvent.startTime | date: 'MMM d, y, h:mm' }} -
+            {{ currentEvent.endTime | date: 'MMM d, y, h:mm a' }}
+          </span>
+        </p>
+        <p
+          class="d-flex flex-row text-capitalize"
+          *ngIf="currentEvent.attendees?.length && !currentEvent['isBusyEvent']"
+        >
+          <span class="mr-2">
+            <nb-icon icon="people-outline" pack="eva"></nb-icon>
+          </span>
+          <span class="quick-people">
+            <span class="mr-2 d-block mb-3"
+              >{{ currentEvent.attendees.length }} Attendees</span
+            >
+            <div
+              class="ml-2 mb-2"
+              *ngFor="
+                let attendee of currentEvent.attendees | slice: 0:2;
+                last as isLast
+              "
+            >
+              <span class="details-avatar">
+                <img src="assets/avatar.png" alt="" />
+              </span>
+              <span>
+                {{ attendee.name }}
+              </span>
+              <small *ngIf="attendee.isOrganizer" class="font-italic"
+                >(Organizer)
+              </small>
+            </div>
+          </span>
+        </p>
+        <div
+          class="mb-3 d-flex align-items-center"
+          *ngIf="currentEvent['teamName']"
+        >
+          <div class="mr-2"><strong>Team</strong></div>
+          <div class="team-name">{{ currentEvent['teamName'] }}</div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+    <div class="mb-2">
+      <a
+        id="meetingLink"
+        *ngIf="showStartOrJoinMeetingButton"
+        nbButton
+        (click)="joinMeeting(data.id)"
+        status="danger"
+        size="small"
+        class="mr-2"
+      >
+        {{ meetingLinkText }}
+      </a>
+      <a
+        *ngIf="!currentEvent['isMsEvent'] && !currentEvent['isBusyEvent']"
+        nbButton
+        size="small"
+        (click)="showMoreDetails(currentEvent)"
+        >More Details</a
+      >
+    </div>
+    <div
+      *ngIf="
+        isCurrentUserAnAttendee &&
+        data['timeline'] !== 'past' &&
+        !data.isCancelled &&
+        !data['isMsEvent'] &&
+        !currentEvent['isBusyEvent']
+      "
+    >
+      <ng-select
+        class="pb-0 mb-2"
+        [items]="quickNotes"
+        [multiple]="false"
+        [closeOnSelect]="true"
+        bindValue="id"
+        bindLabel="message"
+        placeholder="Send Quick Message"
+        appearance="outline"
+        floatLabel="never"
+        [searchable]="false"
+        (change)="onNoteChange($event)"
+      >
+      </ng-select>
+    </div>
+
+    <div
+      *ngIf="showRsvp"
+      class="footer-e-quick-buttons row no-gutters justify-content-center"
+    >
+      <div class="col-6">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          size="medium"
+          status="danger"
+          (click)="onRsvpChange('declined')"
+        >
+          Decline
+        </button>
+      </div>
+      <div class="col-6 position-relative">
+        <button
+          nbButton
+          ghost
+          fullWidth
+          size="medium"
+          status="success"
+          (click)="onRsvpChange('accepted')"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #quickInfoTemplatesHeader> </ng-template>

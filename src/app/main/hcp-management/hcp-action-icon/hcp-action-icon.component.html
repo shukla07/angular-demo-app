@@ -1,0 +1,39 @@
+<button
+  nbButton
+  status="danger"
+  size="tiny"
+  shape="round"
+  nbTooltip="View"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="view()"
+  *ngxPermissionsOnly="permissionKey.ViewTenantUser"
+>
+  <nb-icon icon="eye-outline" pack="eva"> </nb-icon>
+</button>
+<button
+  *ngIf="referralStatus === 'pending'"
+  nbButton
+  status="default"
+  size="tiny"
+  shape="round"
+  nbTooltip="Reject"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns dark-btn"
+  (click)="acceptRejectHcp('rejected')"
+>
+  <nb-icon icon="close-outline" pack="eva"> </nb-icon>
+</button>
+<button
+  *ngIf="referralStatus === 'pending'"
+  nbButton
+  status="success"
+  size="tiny"
+  shape="round"
+  nbTooltip="Approve"
+  nbTooltipPlacement="bottom"
+  class="mr-2 grid-btns"
+  (click)="acceptRejectHcp('approved')"
+>
+  <nb-icon icon="checkmark-outline" pack="eva"> </nb-icon>
+</button>

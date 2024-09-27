@@ -1,0 +1,314 @@
+@import '../../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '~@ng-select/ng-select/themes/material.theme.css';
+
+.direct-msg {
+  margin: 0 0 80px -20px;
+  width: 256px;
+  display: block;
+  min-height: 600px;
+
+  nb-card {
+    min-height: 100px;
+    max-height: calc(52vh - 53px);
+    overflow: auto;
+    border: 0;
+    border-radius: 0;
+
+    @media screen and (max-width: 1700px) {
+      max-height: calc(43vh - 53px);
+    }
+
+    @media screen and (max-width: 1400px) {
+      max-height: calc(33vh - 53px);
+    }
+
+    nb-card-body {
+      border: 0;
+      overflow-x: hidden !important;
+    }
+  }
+  .d-msg-row {
+    width: 100%;
+    padding-left: 10px;
+    margin-bottom: 5px;
+    background-color: nb-theme(background-basic-color-1);
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background-color: nb-theme(background-basic-color-2);
+    }
+
+    .answer-div {
+      width: 60px;
+      height: 100%;
+      display: none;
+
+      button.answer-button {
+        font-size: nb-theme(text-paragraph-2-font-size);
+        text-transform: capitalize;
+        border-radius: 0;
+        height: 67px;
+      }
+    }
+    .user-div {
+      width: 179px;
+      height: 100%;
+      padding: 5px 5px 5px 0;
+
+      .unread {
+        .user-container {
+          .info-container {
+            .user-name,
+            .user-title {
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+    .team-div {
+      width: 70px;
+      height: 100%;
+      padding: 10px 10px 10px 0;
+    }
+  }
+
+  .title-d-msg {
+    font-size: nb-theme(text-paragraph-font-size);
+    font-weight: bold;
+    padding: 10px 0 10px 20px;
+    margin-bottom: 10px;
+    background-color: nb-theme(background-basic-color-3);
+    border-top: 1px solid nb-theme(border-basic-color-5);
+  }
+  .time-sec {
+    text-align: right;
+    font-size: 11px;
+    margin-bottom: 5px;
+    line-height: 12px;
+    color: nb-theme(color-basic-600);
+  }
+  .d-team-name {
+    background-color: nb-theme(default-theme-color);
+    color: nb-theme(color-basic-100);
+    font-size: nb-theme(text-button-tiny-font-size);
+    border-radius: 20px;
+    width: auto;
+    padding: 1px 10px;
+    text-align: center;
+    display: block;
+    margin-bottom: 0px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  nb-user {
+    .user-container {
+      .info-container {
+        width: 126px;
+        overflow: hidden;
+
+        .user-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: nb-theme(text-paragraph-2-font-size);
+        }
+        .user-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 10px;
+        }
+      }
+    }
+  }
+  .search-direct-msg {
+    margin-bottom: 12px;
+
+    .ng-select {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    .ng-select .ng-dropdown-panel {
+      left: inherit;
+      right: 0;
+      font-size: 13px;
+      white-space: normal;
+      top: 100%;
+      font-weight: normal;
+
+      @include media-breakpoint-down(sm) {
+        left: 0;
+      }
+    }
+    .ng-select .ng-select-container.ng-appearance-outline {
+      height: 40px;
+      min-height: 40px;
+      max-height: 40px;
+      z-index: 1;
+    }
+    .ng-select.ng-select-single
+      .ng-select-container
+      .ng-value-container
+      .ng-input {
+      padding: 0 50px 0 15px !important;
+      bottom: 8px;
+      color: nb-theme(color-basic-600);
+      font-size: nb-theme(text-paragraph-font-size);
+      z-index: 3;
+    }
+    .ng-select.ng-select-single
+      .ng-select-container
+      .ng-value-container
+      .ng-input
+      > input {
+      line-height: 20px;
+    }
+    .ng-select .ng-has-value .ng-placeholder,
+    .ng-select.ng-select-opened .ng-placeholder,
+    .ng-select.ng-select-focused
+      .ng-select-container
+      .ng-value-container
+      .ng-placeholder {
+      transform: inherit !important;
+      opacity: 0 !important;
+    }
+    .ng-select .ng-select-container.ng-appearance-outline:after {
+      height: 100%;
+      bottom: 0;
+      border-color: nb-theme(border-basic-color-4);
+      background-color: nb-theme(background-basic-color-1);
+      transition: all 0.3s ease;
+    }
+    .ng-select .ng-select-container.ng-appearance-outline .ng-placeholder {
+      color: nb-theme(color-basic-600);
+      background-color: nb-theme(background-basic-color-1);
+      font-size: nb-theme(text-paragraph-font-size);
+      padding-left: 10px;
+      padding-top: 4px;
+      opacity: 1;
+      font-weight: normal;
+    }
+    .ng-select .ng-select-container .ng-value-container {
+      border-top: 0.19em solid transparent;
+      padding: 0.2375em 0;
+    }
+    .ng-select.ng-select-multiple
+      .ng-select-container.ng-appearance-outline
+      .ng-arrow-wrapper {
+      top: -2px;
+    }
+    .ng-select.ng-select-multiple
+      .ng-select-container
+      .ng-value-container
+      .ng-value
+      .ng-value-label {
+      font-size: nb-theme(text-paragraph-font-size);
+    }
+    .ng-select .ng-select-container.ng-appearance-outline .ng-value {
+      padding: 2px 56px 0 10px;
+      position: absolute;
+      z-index: 1;
+      width: 100%;
+      color: nb-theme(color-basic-800);
+      font-size: nb-theme(text-paragraph-font-size);
+      text-align: left;
+      font-weight: normal;
+    }
+    .ng-select.ng-select-single
+      .ng-select-container.ng-appearance-outline
+      .ng-arrow-wrapper {
+      bottom: 22px;
+    }
+    .ng-select.ng-select-single
+      .ng-select-container.ng-appearance-outline
+      .ng-clear-wrapper {
+      bottom: 6px;
+      z-index: 3;
+      right: -15px;
+      font-weight: normal;
+
+      @include media-breakpoint-down(md) {
+        bottom: 4px;
+      }
+
+      .ng-clear {
+        font-size: 24px;
+        color: nb-theme(color-basic-600);
+      }
+    }
+    .ng-dropdown-panel {
+      min-width: 100%;
+    }
+  }
+}
+.direct-msg-popover {
+  min-width: 250px;
+
+  nb-user {
+    padding: 10px 10px 0;
+
+    .user-container {
+      .info-container {
+        width: 200px;
+        .user-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .user-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  .team-info {
+    padding: 10px 20px;
+    border-bottom: 1px solid nb-theme(border-basic-color-3);
+
+    .team-name {
+      background-color: nb-theme(default-theme-color);
+      color: nb-theme(color-basic-100);
+      font-size: nb-theme(text-button-tiny-font-size);
+      border-radius: 20px;
+      width: auto;
+      padding: 1px 10px;
+      text-align: center;
+      display: inline-block;
+      margin-bottom: 0px;
+      font-weight: bold;
+    }
+    .time-info {
+      text-align: right;
+      font-size: nb-theme(text-paragraph-2-font-size);
+      margin-bottom: 5px;
+      color: nb-theme(color-basic-600);
+    }
+  }
+  .hcp-name {
+    margin: 4px 0 0 69px;
+  }
+}
+.hcp-name {
+  background-color: nb-theme(default-theme-color);
+  color: nb-theme(color-basic-100);
+  font-size: nb-theme(text-button-tiny-font-size);
+  border-radius: 20px;
+  width: auto;
+  max-width: 100%;
+  padding: 0px 10px;
+  text-align: center;
+  display: inline-block;
+  margin: 4px 0 0 48px;
+  font-weight: bold;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

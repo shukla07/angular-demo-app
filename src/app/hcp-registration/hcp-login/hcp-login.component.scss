@@ -1,0 +1,288 @@
+@import '../../theme/styles/themes';
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+
+.nb-theme-default {
+  [nbInput].status-success {
+    border-color: #e4e9f2;
+  }
+  .hcp-login-ui {
+    .login-ui-left {
+      background-color: nb-theme(default-theme-color);
+      background-image: url('/assets/logo/login-bg.png');
+      background-position: top left;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      color: #fff;
+      border-radius: 5px 0 0 5px;
+
+      @media screen and (max-width: 576px) {
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
+
+      .logo-container {
+        text-align: left;
+        padding: 10px 10px;
+        height: 100%;
+
+        > .d-flex {
+          height: calc(90% - 48px);
+        }
+
+        .main-logo {
+          @media screen and (max-width: 576px) {
+            margin-bottom: 20px;
+          }
+        }
+
+        h1,
+        h4.title {
+          display: inline-block;
+          margin-bottom: 0;
+          font-weight: normal;
+          color: #fff;
+          font-size: 20px;
+
+          img {
+            margin-right: 15px;
+            width: 40px;
+          }
+        }
+        .login-para {
+          color: #fff;
+          font-size: 13px;
+
+          @media screen and (max-width: 576px) {
+            margin-bottom: 15px;
+          }
+        }
+      }
+    }
+    .login-ui-right {
+      background-color: #fff;
+      border-radius: 0 5px 5px 0;
+      min-height: 450px;
+      overflow: hidden;
+
+      @media screen and (max-width: 576px) {
+        border-radius: 5px;
+        min-height: inherit;
+      }
+
+      .form-control-group {
+        margin-bottom: 1rem;
+
+        &.custom-form-group {
+          margin-bottom: 1.7rem;
+          position: relative;
+
+          .caption {
+            position: absolute;
+            top: 35px;
+            left: 0;
+          }
+        }
+      }
+
+      button {
+        text-transform: capitalize;
+        font-weight: normal;
+
+        &.appearance-filled.status-primary.grey-button {
+          background-color: nb-theme(login-screens-bg);
+          border-color: nb-theme(login-screens-bg);
+        }
+      }
+    }
+
+    .title {
+      sub {
+        bottom: 0;
+        font-size: 50%;
+      }
+    }
+    u,
+    a {
+      cursor: pointer;
+    }
+    .custom-tab-layout {
+      width: 100%;
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+          display: inline-block;
+          vertical-align: top;
+          text-align: center;
+          padding: 0;
+
+          a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: nb-theme(default-theme-color);
+            color: nb-theme(color-basic-100);
+            text-decoration: none;
+            padding: 13px 0px;
+            font-size: nb-theme(text-paragraph-font-size);
+            font-weight: normal;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            @include media-breakpoint-down(sm) {
+              padding: 5px;
+              height: 50px;
+              line-height: 16px;
+              font-size: 12px;
+            }
+
+            &:hover {
+              opacity: 0.7;
+            }
+            &.active {
+              opacity: 1;
+              background-color: nb-theme(background-basic-color-1);
+              color: nb-theme(color-basic-800);
+              cursor: default;
+
+              &:hover {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    .custom-content {
+      border-top: 0;
+      padding: 50px 20px 15px;
+      background-color: nb-theme(background-basic-color-1);
+      border-radius: 0 0 4px 4px;
+
+      @media screen and (max-width: 576px) {
+        padding: 40px 20px;
+      }
+
+      [nbInput].status-basic {
+        background-color: nb-theme(background-basic-color-1);
+      }
+
+      &.otp-screen {
+        .label {
+          font-size: nb-theme(text-paragraph-font-size);
+          color: nb-theme(color-basic-800);
+        }
+        @include media-breakpoint-down(sm) {
+          .otp-input {
+            width: 30px;
+            font-size: 18px;
+            height: 30px;
+          }
+        }
+      }
+
+      .login-title {
+        font-size: 25px;
+        font-weight: normal;
+        position: relative;
+        margin-bottom: 35px;
+        margin-top: 0;
+
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          z-index: 1;
+          width: 70px;
+          height: 2px;
+          background-color: nb-theme(default-theme-color);
+        }
+
+        @media screen and (max-width: 767px) {
+          font-size: 15px;
+          font-weight: bold;
+
+          &:after {
+            bottom: 0;
+          }
+        }
+      }
+    }
+  }
+  nb-auth-block {
+    max-width: 700px;
+
+    .sign-in-or-up {
+      margin-top: 2rem;
+      display: block;
+    }
+    .text-link {
+      a {
+        color: nb-theme(color-basic-700);
+      }
+    }
+  }
+  .login-footer-info {
+    color: nb-theme(color-basic-600);
+    font-size: nb-theme(text-paragraph-2-font-size);
+    padding: 20px 0;
+
+    a {
+      color: nb-theme(color-basic-600);
+      display: contents;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  nb-auth
+    nb-layout
+    .layout
+    .layout-container
+    .content
+    .columns
+    nb-layout-column {
+    padding: 0;
+    border: 0;
+
+    @include media-breakpoint-down(sm) {
+      padding: 0.5rem;
+    }
+
+    nb-card {
+      height: 100%;
+      background-color: nb-theme(login-screens-bg);
+      border: 0;
+      border-radius: 0;
+
+      @include media-breakpoint-down(sm) {
+        height: calc(100vh - 2 * 0.5rem);
+      }
+
+      nb-card-body {
+        @include media-breakpoint-down(sm) {
+          padding: 1rem 0.5rem;
+        }
+      }
+    }
+  }
+  .alert {
+    font-size: nb-theme(text-paragraph-2-font-size);
+  }
+  .modal-icon-header {
+    min-width: 360px;
+    @include media-breakpoint-down(sm) {
+      min-width: 100%;
+    }
+
+    nb-icon {
+      font-size: 4.25rem;
+    }
+  }
+}

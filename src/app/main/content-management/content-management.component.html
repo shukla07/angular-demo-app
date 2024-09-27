@@ -1,0 +1,299 @@
+<nb-layout class="content-title-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-md-6 col-sm-4">{{ title }}</div>
+          <div class="col-md-6 col-sm-8 text-right buttons-mrgn-top">
+            <div>
+              <button nbButton status="danger" size="small" class="ml-2 mr-1" ngClass.xs="mb-2"
+                (click)="onClickAddContent()" *ngxPermissionsOnly="permissionKey.CreateTenantContents">
+                Add Content
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div class="split-mobile" fxLayout="row wrap" fxLayoutAlign="start" fxFlex="1 0 auto">
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="title" [items]="contentNameList | async" [multiple]="false"
+                        [closeOnSelect]="true" [searchable]="true" [clearSearchOnAdd]="true" [clearable]="true"
+                        [typeahead]="contentSearchStr" [minTermLength]="1" typeToSearchText="Please type to search"
+                        [virtualScroll]="true" bindLabel="title" bindValue="id" placeholder="Content Name"
+                        appearance="outline" notFoundText="No content found" [(ngModel)]="filter.contentId"
+                        (change)="onSelectChange()">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="territories" [items]="territories" [multiple]="true" [closeOnSelect]="false"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="name" bindValue="name"
+                        appearance="outline" placeholder="Associated Territory" notFoundText="No territories found"
+                        appearance="outline" [(ngModel)]="filter.territories">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="TherapeuticAreas" [items]="therapeuticAreas" [multiple]="true"
+                        [closeOnSelect]="false" [searchable]="true" [clearSearchOnAdd]="true" bindLabel="name"
+                        bindValue="name" appearance="outline" placeholder="Associated Therapeutic Area"
+                        notFoundText="No Therapeutic Areas found" appearance="outline"
+                        [(ngModel)]="filter.therapeuticAreas">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="DiseaseAreas" [items]="diseaseAreas" [multiple]="true" [closeOnSelect]="false"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="name" bindValue="name"
+                        appearance="outline" placeholder="Associated Disease Area"
+                        notFoundText="No Product/Disease Area found" appearance="outline"
+                        [(ngModel)]="filter.diseaseAreas">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="Name" [items]="teamsNameList" [multiple]="true" [closeOnSelect]="false"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="teamName" bindValue="teamName"
+                        appearance="outline" placeholder="Associated Team" notFoundText="No Team Found"
+                        appearance="outline" [(ngModel)]="filter.teamsNameList">
+                      </ng-select>
+                    </div>
+                    <div *ngxPermissionsOnly="permissionKey.UpdateTenantContents" appearance="outline" fxFlex="100"
+                      fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="Hcps" [items]="hcps" [multiple]="true" [closeOnSelect]="false"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="fullName" bindValue="fullName"
+                        appearance="outline" placeholder="Associated HCP" notFoundText="No HCP Found"
+                        appearance="outline" [(ngModel)]="filter.hcps">
+                      </ng-select>
+                    </div>
+                    <div appearance="outline" fxFlex="100" fxFlex.gt-md="25" fxFlex.gt-xs="33.33" ngClass.gt-xs="pr-2">
+                      <ng-select name="FileType" [items]="fileTypes" [multiple]="false" [closeOnSelect]="true"
+                        [searchable]="true" [clearSearchOnAdd]="true" bindLabel="value" bindValue="id"
+                        placeholder="Content Type" appearance="outline" notFoundText="No file type found"
+                        [(ngModel)]="filter.fileType">
+                      </ng-select>
+                    </div>
+                    <div *ngxPermissionsOnly="permissionKey.UpdateTenantContents" appearance="outline" fxFlex="100"
+                      fxFlex.gt-md="25" fxFlex.gt-xs="32" ngClass.gt-xs="pl-2">
+                      <mat-radio-group name="status" class="radio-group" [(ngModel)]="filter.status">
+                        <mat-radio-button class="radio-button" value="{{ contentEnum.active }}">Active
+                        </mat-radio-button>
+                        <mat-radio-button class="radio-button" value="{{ contentEnum.inactive }}">Inactive
+                        </mat-radio-button>
+                      </mat-radio-group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-group align-items-center" ngClass.xs="d-block" ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex">
+                <button nbButton status="danger" size="small" type="submit" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading" [nbSpinner]="loading" nbSpinnerStatus="primary"
+                  nbSpinnerSize="small" (click)="
+                    getContentList(currentPage, itemsPerPage, form);
+                    isSearched = true
+                  ">
+                  Search
+                </button>
+                <button nbButton status="basic" type="button" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine" (click)="onClearFilter(form); getContentList(1, 12)">
+                  Clear
+                </button>
+                <ng-container *ngxPermissionsOnly="permissionKey.UpdateTenantContents">
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    (click)="exportContent('CSV')" [disabled]="titleList && !titleList.length">
+                    Export as CSV
+                  </button>
+                  <button nbButton status="danger" size="small" class="mr-2 mb-2" ngClass.gt-xs="mb-0"
+                    (click)="exportContent('PDF')" [disabled]="titleList && !titleList.length">
+                    Export as PDF
+                  </button>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+          <div class="content-manage-list d-flex flex-wrap">
+            <div class="no-content-found" *ngIf="!titleList.length">
+              No Content Available
+            </div>
+            <div [ngClass]="{deactive: card.status === contentEnum.inactive}" class="content-list" *ngFor="
+                let card of titleList
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalTitlesCount
+                      }
+              ">
+              <div class="content-list-card" (mouseenter)="card.hover = true" (mouseleave)="card.hover = false"
+                [ngClass]="card.hover ? 'active' : null" [style.backgroundImage]="
+                  card.listImg !== 'playIcon' ? 'url(' + card.listImg + ')' : ''
+                ">
+                <div *ngIf="card.listImg === 'playIcon'"
+                  class="h-100 content-play-bar d-flex align-items-center justify-content-center">
+                  <nb-icon pack="font-awesome-solid" (click)="view(card.id)" icon="play"></nb-icon>
+                </div>
+                <a *ngIf="card.listImg !== 'playIcon'" href="javascript:void(0);" (click)="
+                    card.isDownloadable ? download(card.id) : view(card.id)
+                  ">
+                  <div class="h-100 transparent-bg d-flex align-items-center justify-content-center"></div>
+                </a>
+                <div class="content-title-bar d-flex">
+                  <div class="content-title-icon">
+                    <nb-icon class="image-icon mx-2" pack="font-awesome-solid" icon="{{ card.fileIcon }}"></nb-icon>
+                  </div>
+                  <div class="content-title-text">
+                    {{ card.title }}
+                  </div>
+                </div>
+                <div class="content-list-actions" *ngxPermissionsOnly="permissionKey.UpdateTenantContents">
+                  <button nbButton status="basic" size="tiny" shape="round" nbTooltip="Edit" nbTooltipPlacement="bottom"
+                    class="ml-2 grid-btns" (click)="edit(card.id)">
+                    <nb-icon icon="edit" pack="eva"> </nb-icon>
+                  </button>
+                  <button nbButton status="danger" size="tiny" shape="round" nbTooltip="View/Download"
+                    nbTooltipPlacement="bottom" class="ml-2 grid-btns" (click)="download(card.id)">
+                    <nb-icon icon="download-outline" pack="eva"> </nb-icon>
+                  </button>
+                  <button nbButton status="default" size="tiny" shape="round" nbTooltip="Delete"
+                    nbTooltipPlacement="bottom" class="ml-2 grid-btns dark-btn" (click)="delete(card.id, card.title)">
+                    <nb-icon icon="trash-2-outline" pack="eva"> </nb-icon>
+                  </button>
+                  <button nbButton *ngIf="card.status === contentEnum.inactive" status="danger" size="tiny"
+                    shape="round" outline class="ml-2 grid-btns cursor-pointer" nbTooltip="Status (Inactive)"
+                    nbTooltipPlacement="bottom" pack="eva" (click)="onClickStatus(card.status, card.id)">
+                    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                  </button>
+                  <button nbButton *ngIf="card.status === contentEnum.active" status="success" size="tiny" shape="round"
+                    outline class="ml-2 grid-btns cursor-pointer" nbTooltip="Status (Active)"
+                    nbTooltipPlacement="bottom" pack="eva" (click)="onClickStatus(card.status, card.id)">
+                    <nb-icon icon="circle" pack="font-awesome-solid"> </nb-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="titleList">
+            <div ngClass.gt-xs="d-flex justify-content-between align-items-center">
+              <pagination-controls (pageChange)="paginationEvent($event)" responsive="true" previousLabel=""
+                nextLabel="" maxSize="5"></pagination-controls>
+              <div *ngIf="titleList.length > 0" class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                totalTitlesCount > currentPage * itemsPerPage
+                ? currentPage * itemsPerPage
+                : totalTitlesCount
+                }}
+                of {{ totalTitlesCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+        <ng-template #contentStatusDialog let-data let-ref="statusDialogRef">
+          <nb-card class="content-popup-width" *ngIf="!statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="statusDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="activOrDeactivContent()"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card class="content-popup-width" *ngIf="statusTemplateSwitch">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Updated Status</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      statusDialogRef.close(); statusTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+
+        <ng-template #deleteContentDeleteDialog let-data let-ref="deleteDialogRef">
+          <nb-card *ngIf="!deleteTemplateSwitch" class="content-popup-width">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="alert-circle-outline" status="danger" pack="eva"
+                  [options]="{animation: {type: 'shake', hover: false}}">
+                </nb-icon>
+                <h4 class="mt-3 mb-4">Are you sure?</h4>
+                <p>{{ data.message }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="basic" (click)="deleteDialogRef.close()">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="danger" (click)="deleteContent()"
+                    class="remove-text-capitalize">
+                    Yes, {{ data.status }} it.
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+          <nb-card *ngIf="deleteTemplateSwitch" class="content-popup-width">
+            <nb-card-body>
+              <div class="text-center modal-icon-header">
+                <nb-icon icon="checkmark-circle-outline" status="success" pack="eva"
+                  [options]="{animation: {type: 'flip', hover: false}}"></nb-icon>
+                <h4 class="mt-3 mb-4">Content Deleted</h4>
+                <p>{{ data.confirmMessage }}</p>
+              </div>
+            </nb-card-body>
+            <nb-card-footer class="p-0">
+              <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+                <div class="col-6">
+                  <button nbButton ghost fullWidth status="success" (click)="
+                      deleteDialogRef.close(); deleteTemplateSwitch = false
+                    ">
+                    OK
+                  </button>
+                </div>
+              </div>
+            </nb-card-footer>
+          </nb-card>
+        </ng-template>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

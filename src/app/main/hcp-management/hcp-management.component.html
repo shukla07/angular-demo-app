@@ -1,0 +1,383 @@
+<nb-layout class="hcp-management-ui">
+  <nb-layout-column class="no-layout-pdng">
+    <div class="main-bg">
+      <div class="title-header">
+        <div class="row no-margins">
+          <div class="col-sm-9">Healthcare Professional Registration List</div>
+          <div
+            class="col-sm-3 text-right buttons-mrgn-top"
+            *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+          >
+            <div>
+              <button
+                *ngIf="rowChecked"
+                nbButton
+                #activateBtn
+                status="default"
+                size="small"
+                shape="round"
+                class="ml-2 dark-btn"
+                nbTooltip="Reject Requests!"
+                nbTooltipPlacement="bottom"
+                (click)="
+                  open(hcpResToReqDialog, activateBtn.status, 'multiple')
+                "
+              >
+                <nb-icon icon="close-outline" pack="eva"></nb-icon>
+              </button>
+              <button
+                *ngIf="rowChecked"
+                nbButton
+                #deactivateBtn
+                status="success"
+                size="small"
+                shape="round"
+                class="ml-2 mr-1"
+                nbTooltip="Accept Requests!"
+                nbTooltipPlacement="bottom"
+                (click)="
+                  open(hcpResToReqDialog, deactivateBtn.status, 'multiple')
+                "
+              >
+                <nb-icon icon="checkmark-outline" pack="eva"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-1 px-4">
+      <nb-card>
+        <nb-card-body class="p-0 no-scroll">
+          <div class="p-3">
+            <form #form="ngForm">
+              <div fxLayout="column" fxLayoutAlign="start">
+                <div fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto">
+                  <div
+                    class="split-mobile"
+                    fxLayout="row wrap"
+                    fxLayoutAlign="start"
+                    fxFlex="1 0 auto"
+                  >
+                    <div
+                      appearance="outline"
+                      fxFlex="100"
+                      fxFlex.gt-md="30"
+                      fxFlex.gt-xs="30"
+                      ngClass.gt-xs="pr-1"
+                    >
+                      <ng-select
+                        name="Name"
+                        [items]="hcpNameList"
+                        [multiple]="false"
+                        [closeOnSelect]="true"
+                        [searchable]="true"
+                        [clearSearchOnAdd]="true"
+                        bindLabel="fullName"
+                        bindValue="id"
+                        placeholder="Name of Healthcare Professional"
+                        appearance="outline"
+                        notFoundText="No users found"
+                        [(ngModel)]="filter.hcpId"
+                        (clear)="onClearFilter(form); getHcpRequests(1, 10)"
+                        (change)="onSelectChange()"
+                      >
+                      </ng-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="btn-group align-items-center"
+                ngClass.xs="d-block"
+                ngClass.sm="d-block"
+                ngClass.gt-xs="d-flex"
+              >
+                <button
+                  nbButton
+                  status="danger"
+                  size="small"
+                  type="submit"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine || loading"
+                  [nbSpinner]="loading"
+                  nbSpinnerStatus="danger"
+                  nbSpinnerSize="small"
+                  (click)="getHcpRequests(currentPage, itemsPerPage, form); isSearched=true"
+                >
+                  Search
+                </button> 
+                <button
+                  nbButton
+                  status="basic"
+                  type="button"
+                  size="small"
+                  class="mr-2 mb-2"
+                  ngClass.gt-xs="mb-0"
+                  [disabled]="form.pristine"
+                  (click)="onClearFilter(form); getHcpRequests(1, 10)"
+                >
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="hcpRequests">
+            <vmsl-grid
+              [vmsl-data]="
+                hcpRequests
+                  | paginate
+                    : {
+                        itemsPerPage: itemsPerPage,
+                        currentPage: currentPage,
+                        totalItems: totalHcpsCount
+                      }
+              "
+              [vmsl-column-definition]="columnDefinition"
+              [vmsl-norows-template]="noRowsTemplate"
+              vmsl-row-selection="multiple"
+              [dropdownCount]="dropdownCount.asObservable()"
+              (itemsPerPage)="getPaginationValue($event)"
+              (onGridReady)="onGridReady($event)"
+              (rowChecked)="onRowChecked($event)"
+              [itemsPerPageList]="itemsPerPageList"
+            >
+            </vmsl-grid>
+
+            <div
+              ngClass.gt-xs="d-flex justify-content-between align-items-center"
+            >
+              <pagination-controls
+                (pageChange)="paginationEvent($event)"
+                responsive="true"
+                previousLabel=""
+                nextLabel=""
+                maxSize="5"
+              ></pagination-controls>
+              <div class="page-count" ngClass.xs="pb-3">
+                {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                {{
+                  totalHcpsCount > currentPage * itemsPerPage
+                    ? currentPage * itemsPerPage
+                    : totalHcpsCount
+                }}
+                of {{ totalHcpsCount }}
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>
+<ng-template #hcpResToReqDialog let-data let-ref="hcpReqDialogRef">
+  <nb-card class="mob-width" *ngIf="!requestTemplateSwitch">
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <nb-icon
+          icon="alert-circle-outline"
+          status="danger"
+          pack="eva"
+          [options]="{animation: {type: 'shake', hover: false}}"
+        >
+        </nb-icon>
+        <h4 class="mt-3 mb-4">Are you sure?</h4>
+        <p>{{ data.message }}</p>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div class="d-flex justify-content-between footer-buttons" ngClass.lt-sm="row">
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="basic"
+            (click)="hcpReqDialogRef.close()"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="danger"
+            (click)="
+              data.type === 'single'
+                ? acceptOrRejectHCPRequest(true, data.status, true)
+                : acceptOrRejectHCPRequest(false, data.status, true)
+            "
+            [disabled]="responseDialogLoding"
+            [nbSpinner]="responseDialogLoding"
+            nbSpinnerStatus="primary"
+            nbSpinnerSize="small"
+            class="remove-text-capitalize"
+          >
+            Yes, {{ data.status }} it.
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+  <nb-card class="mob-width" *ngIf="requestTemplateSwitch">
+    <nb-card-body>
+      <div class="text-center modal-icon-header">
+        <nb-icon
+          icon="checkmark-circle-outline"
+          status="success"
+          pack="eva"
+          [options]="{animation: {type: 'flip', hover: false}}"
+        ></nb-icon>
+        <h4 class="mt-3 mb-4">
+          Updated Status!
+        </h4>
+      </div>
+    </nb-card-body>
+    <nb-card-footer class="p-0">
+      <div class="d-flex justify-content-center footer-buttons" ngClass.lt-sm="row">
+        <div class="col-6">
+          <button
+            nbButton
+            ghost
+            fullWidth
+            status="success"
+            (click)="
+              hcpReqDialogRef.close(); requestTemplateSwitch = false
+            "
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #hcpProfileDialog let-data let-ref="hcpProfileDialogRef">
+  <div class="view-hcp-dialog">
+    <nb-card size="medium">
+      <nb-card-header class="p-3">
+        <div class="row align-items-center pb-0 no-gutters">
+          <div class="col-8">HCP User Profile</div>
+          <div class="col-4 text-right">
+            <button
+              nbButton
+              status="basic"
+              size="small"
+              (click)="hcpProfileDialogRef.close()"
+            >
+              <nb-icon
+                pack="eva"
+                icon="arrow-ios-back-outline"
+              ></nb-icon
+              >Close
+            </button>
+          </div>
+        </div>
+      </nb-card-header>
+      <nb-card-body class="p-3" *ngIf="data">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="profile-header text-center">
+              <ng-container
+                *ngxPermissionsOnly="permissionKey.UpdateTenantUser"
+              >
+                <div class="edit-profile-container">
+                  <nb-user
+                    size="giant"
+                    onlyPicture="true"
+                    [name]="data && data.fullName"
+                    [picture]=""
+                  ></nb-user>
+                </div>
+                <h5 class="font-weight-normal">
+                  {{ data.fullName }}
+                </h5>
+              </ng-container>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="profile-body">
+              <div class="row">
+                <div class="col-sm-6 email-view">
+                  <strong class="mr-1">Email Address: </strong>
+                  {{ data.email }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Mobile No: </strong>
+                  {{ data.phone }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Name: </strong>
+                  {{ data.fullName }}
+                </div>
+                <div class="col-sm-6">
+                  <strong class="mr-1">Institute: </strong>
+                  {{ data.institute }}
+                </div>
+                <div class="col-sm-12">
+                  <strong class="mr-1"
+                    >Professional Reg (license number):
+                  </strong>
+                  {{ data.licenseNumber }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+      <nb-card-footer class="p-0 overflow-hidden">
+        <div class="d-flex justify-content-between align-items-center footer-buttons" ngClass.lt-sm="row">
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="basic"
+              (click)="hcpProfileDialogRef.close()"
+              class="custom-mrgn"
+            >
+              Cancel
+            </button>
+          </div>
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="danger"
+              (click)="acceptOrRejectHCPRequest(true, 'reject', false)"
+              [disabled]="responseDialogLoding"
+              [nbSpinner]="responseDialogLoding"
+              nbSpinnerStatus="danger"
+              nbSpinnerSize="small"
+              class="split-btn-txt"
+            >
+              Reject Request!
+            </button>
+          </div>
+          <div class="col-4">
+            <button
+              nbButton
+              ghost
+              fullWidth
+              status="success"
+              (click)="acceptOrRejectHCPRequest(true, 'approve', false)"
+              [disabled]="responseDialogLoding"
+              [nbSpinner]="responseDialogLoding"
+              nbSpinnerStatus="success"
+              nbSpinnerSize="small"
+              class="split-btn-txt"
+            >
+              Accept Request!
+            </button>
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</ng-template>

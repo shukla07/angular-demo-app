@@ -1,0 +1,50 @@
+<div class="content-view-container">
+  <div
+    class="w-100 d-flex justify-content-between title-section align-items-center"
+  >
+    <h3>{{ content.title }}</h3>
+    <button
+      nbButton
+      status="basic"
+      size="small"
+      type="button"
+      class="mr-1"
+      (click)="goBack()"
+    >
+      <nb-icon icon="arrow-ios-back-outline" pack="eva"></nb-icon>Back
+    </button>
+  </div>
+  <div
+    *ngIf="content.fileType === fileEnum.audio"
+    class="video-content d-flex justify-content-center"
+  >
+    <audio width="1000" height="400" controls src="{{ content.fileUrl }}">
+      Your browser does not support the audio tag.
+    </audio>
+  </div>
+
+  <div
+    *ngIf="content.fileType === fileEnum.video"
+    class="video-content d-flex justify-content-center"
+  >
+    <video width="1000" height="400" controls>
+      <source src="{{ content.fileUrl }}" type="video/mp4" />
+      <track label="English" kind="subtitles" srclang="en" default />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div
+    *ngIf="content.fileType === fileEnum.image"
+    class="image-content d-flex justify-content-center"
+  >
+    <img src="{{ content.fileUrl }}" alt="" />
+  </div>
+
+  <pdf-viewer
+    *ngIf="content.fileType === fileEnum.document"
+    [src]="content.fileUrl"
+    [render-text]="true"
+    style="display: block"
+  ></pdf-viewer>
+</div>

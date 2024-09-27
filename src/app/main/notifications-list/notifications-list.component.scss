@@ -1,0 +1,116 @@
+@import '../../theme/styles/themes';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import 'flatpickr/dist/flatpickr.css';
+@import 'flatpickr/dist/themes/airbnb.css';
+
+.nb-theme-default {
+  nb-sidebar.left {
+    z-index: 99;
+  }
+
+  .flatpickr-calendar {
+    font-family: nb-theme(font-family-primary);
+    color: nb-theme(color-basic-800);
+    font-size: nb-theme(text-paragraph-2-font-size) !important;
+  }
+
+  .notification-ui {
+    .main-bg {
+      padding: 21px 22px 20px;
+
+      @include media-breakpoint-down(sm) {
+        padding: 21px 22px 20px;
+      }
+      @include media-breakpoint-down(xs) {
+        padding: 21px 15px 20px;
+      }
+
+      .buttons-mrgn-top {
+        height: 20px;
+
+        > div {
+          margin-top: -6px;
+        }
+      }
+    }
+
+    .no-layout-pdng {
+      margin: -2.2rem -2.2rem -0.5rem;
+      padding: 0 !important;
+
+      @include media-breakpoint-down(md) {
+        margin: -1.5rem -1.5rem 0.5rem;
+      }
+
+      @include media-breakpoint-down(sm) {
+        margin: -1rem -1rem 0;
+      }
+      @include media-breakpoint-down(xs) {
+        margin: -0.75rem -0.75rem 0;
+      }
+
+      .title-header {
+        font-size: 26px;
+        margin-bottom: 0;
+      }
+    }
+
+    .page-count {
+      text-align: right;
+      padding-right: 20px;
+      font-weight: normal;
+      font-family: nb-theme(font-family-primary);
+      color: nb-theme(color-basic-800);
+      font-size: nb-theme(text-paragraph-2-font-size);
+      line-height: normal;
+
+      @include media-breakpoint-down(sm) {
+        display: inline-block;
+      }
+    }
+
+    .nofity-text {
+      font-size: nb-theme(text-paragraph-2-font-size);
+      width: calc(100% - 350px);
+
+      @media screen and (max-width: 1100px) {
+        width: calc(100% - 250px);
+      }
+      @media screen and (max-width: 599px) {
+        margin-bottom: 15px;
+        width: 100%;
+      }
+    }
+    .nofity-btns {
+      width: 120px;
+
+      @media screen and (max-width: 599px) {
+        margin-bottom: 15px;
+        width: 100%;
+      }
+    }
+    .nofity-date {
+      font-size: nb-theme(text-paragraph-2-font-size);
+      text-align: right;
+      width: 200px;
+      min-width: 68px;
+
+      @media screen and (max-width: 1100px) {
+        width: 100px;
+      }
+      @media screen and (max-width: 599px) {
+        text-align: left;
+        width: 100%;
+      }
+    }
+    .pagination-inline {
+      @include media-breakpoint-down(sm) {
+        display: inline-block;
+      }
+    }
+  }
+  .new-time-model {
+    min-width: 300px;
+  }
+}

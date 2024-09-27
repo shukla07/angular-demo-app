@@ -1,0 +1,20 @@
+<ag-grid-angular
+  [class]="theme"
+  [rowData]="datasource"
+  [columnDefs]="columnDef"
+  [defaultColDef]="defaultGridDef"
+  [paginationPageSize]="10"
+  [rowSelection]="rowSelection"
+  [overlayNoRowsTemplate]="noRowsTemplate"
+  (rowSelected)="onRowSelected($event)"
+  (gridReady)="gridReadyHandler($event)"
+>
+</ag-grid-angular>
+<div class="items-per-page">
+  Items per page :
+  <select (change)="onPageSizeChanged()" [(ngModel)]="optionValue">
+      <option *ngFor="let itemsPerPage of itemsPerPageList" [value]="itemsPerPage">
+        {{ itemsPerPage }}
+      </option>
+  </select>
+</div>

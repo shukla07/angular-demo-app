@@ -1,0 +1,7 @@
+@import '../../../theme/styles/themes';
+
+.nb-theme-default {
+  p.small-para {
+    font-size: nb-theme(text-paragraph-2-font-size);
+  }
+}

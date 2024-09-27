@@ -1,0 +1,86 @@
+<div class="title-d-msg">
+  <nb-icon pack="eva" icon="message-circle-outline" class="mr-1"></nb-icon> Direct Messages
+</div>
+<div class="px-3 search-direct-msg">
+  <ng-select
+    appearance="outline"
+    name="name"
+    [items]="chatNameList | async"
+    [multiple]="false"
+    [closeOnSelect]="true"
+    [searchable]="true"
+    [clearSearchOnAdd]="true"
+    [clearable]="true"
+    [typeahead]="userSearchStr"
+    [minTermLength]="1"
+    typeToSearchText="Please type to search"
+    [virtualScroll]="true"
+    bindLabel="chatName"
+    placeholder="Search"
+    notFoundText="No chats found"
+    (change)="onSerach($event)"
+  >
+  </ng-select>
+</div>
+<nb-card class="m-0">
+  <nb-card-body
+    class="p-0"
+    infinite-scroll
+    [scrollWindow]="false"
+    (scrolled)="onScrollDown()"
+  >
+    <div *ngFor="let chat of chatList">
+      <div
+        class="d-flex align-items-center d-msg-row"
+        [nbPopover]="template"
+        [nbPopoverContext]="chat"
+        nbPopoverPlacement="right"
+        nbPopoverTrigger="click"
+        nbPopoverAdjustment="clockwise"
+      >
+        <div class="user-div" [title]="chat.chatName">
+          <nb-user
+            size="medium"
+            [name]="chat.chatName"
+            [title]="chat.chatTitle"
+            [ngClass]="chat.unreadCount ? 'unread' : ''"
+            [picture]="chat.chatProfile"
+          >
+          </nb-user>
+          <div class="hcp-name" *ngIf="chat.teamChat" [title]="chat.hcpName">{{ chat.hcpName }}</div>
+        </div>
+        <div class="team-div">
+          <div class="time-sec">{{ chat.date }}</div>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<ng-template #template let-data>
+  <div class="direct-msg-popover">
+    <div [title]="data.chatName">
+      <nb-user
+        size="large"
+        [name]="data.chatName"
+        [title]="data.chatTitle"
+        [picture]="data.chatProfile"
+      >
+      </nb-user>
+      <div class="hcp-name" *ngIf="data.teamChat" [title]="data.hcpName">{{ data.hcpName }}</div>
+    </div>
+    <div class="team-info d-flex justify-content-between align-items-center">
+      <div class="time-info">{{ data.date }}</div>
+    </div>
+    <button
+      nbButton
+      ghost
+      fullWidth
+      size="medium"
+      status="success"
+      (click)="answer(data)"
+    >
+      Open Chat
+    </button>
+  </div>
+</ng-template>
